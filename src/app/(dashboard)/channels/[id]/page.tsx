@@ -169,7 +169,7 @@ HOOK: ${s.hook}
 ---
 Please begin production based on this strategic alignment.`;
                            
-                           const project = await handleCreateProject(s.title, "YOUTUBE", initialIdea);
+                           const project = await handleCreateProject(s.title, "YOUTUBE", initialIdea, id as string);
                            if (project?.id) {
                              router.push(`/projects/${project.id}`);
                            }

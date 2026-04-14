@@ -33,6 +33,9 @@ export interface DraftCommit {
   production_bundle?: {
     thumbnailConcepts: { title: string; prompt: string }[];
     brollChecklist: string[];
+    sfxChecklist?: string[];
+    vfxRequirements?: string[];
+    musicInspiration?: string;
     voiceGuidance: string;
   };
 }
@@ -155,11 +158,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const fetchDrafts = useCallback(async (projectId: string) => {
     try {
+      console.log("LOG: [AppCtx] Loading drafts for project:", projectId);
       const res = await fetch(`/api/drafts?projectId=${projectId}`);
       const data = await res.json();
       if (Array.isArray(data)) {
         setCommits(data);
-        if (data.length > 0) setSelectedCommit(data[data.length - 1]);
+        if (data.length > 0) {
+          // Select the LATEST iteration by default
+          const latest = [...data].sort((a, b) => b.iteration - a.iteration)[0];
+          setSelectedCommit(latest);
+        } else {
+          setSelectedCommit(null);
+        }
       }
     } catch (e) {
       console.error("fetchDrafts error:", e);
@@ -189,13 +199,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       currentProject = newProj;
     }
 
-    // Reset session
-    setLogs(prev => [...prev, `User: ${userPrompt}`]);
+    // Reset session for NEW run
+    setLogs([`User: ${userPrompt}`]);
     setStatus("INTEL");
-    setCommits([]);
-    setSelectedCommit(null);
+    // We don't wipe commits here yet, as we might be editing one. 
+    // The graph handles adding the new iteration.
 
     try {
+      console.log("LOG: [AppCtx] Starting Agent for project:", currentProject.id);
       const res = await fetch("/api/agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -230,7 +241,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 setStatus("DRAFTER");
               }
               if (parsed.drafter) {
-                const it = parsed.drafter.iterations || parsed.iterations || 1;
+                const it = parsed.iterations || parsed.drafter.iterations || 1;
                 const newCommit: DraftCommit = {
                   iteration: it,
                   content: parsed.drafter.draftInfo,
@@ -249,9 +260,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               }
               if (parsed.hookScientist) {
                 setLogs(prev => [...prev, "Hooks: Finished engineering retention-focused script."]);
-                setStatus("REVIEWS");
-                // Update the commit with the script content
-                const it = parsed.iterations || (commits.length + 1);
+                setStatus("RETENTION"); // Corrected status mapping
+                const it = parsed.iterations || 1;
                 const newCommit: DraftCommit = {
                   iteration: it,
                   content: parsed.hookScientist.draftInfo || parsed.hookScientist.content || parsed.draftInfo || "",
@@ -264,22 +274,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 setSelectedCommit(newCommit);
               }
               if (parsed.retentionCritic) {
-                setLogs(prev => [...prev, `Retention: Evaluated hook. Score: ${parsed.retentionCritic.score}/10.`]);
-                setCommits(prev => prev.map(c => c.iteration === (parsed.iterations || prev.length) ? { ...c, critic_score: parsed.retentionCritic.score, critic_notes: parsed.retentionCritic.feedback } : c));
+                const score = parsed.retentionCritic.score || parsed.retentionCritic.retentionScore;
+                const feedback = parsed.retentionCritic.feedback || parsed.retentionCritic.retentionNotes;
+                const it = parsed.iterations || 1;
+                
+                if (score !== undefined) {
+                  setLogs(prev => [...prev, `Retention: Evaluated hook. Score: ${score}/10.`]);
+                }
+                setCommits(prev => prev.map(c => c.iteration === it ? { ...c, critic_score: score, critic_notes: feedback } : c));
               }
               if (parsed.visualist) {
+                const it = parsed.iterations || 1;
                 setLogs(prev => [...prev, "Visualist: Mapped B-Roll and visual cues across the script."]);
                 setStatus("PRODUCTION");
-                setCommits(prev => prev.map(c => c.iteration === (parsed.iterations || prev.length) ? { ...c, visual_cues: parsed.visualist.content || parsed.visualist } : c));
+                setCommits(prev => prev.map(c => c.iteration === it ? { ...c, visual_cues: parsed.visualist.content || parsed.visualist } : c));
               }
               if (parsed.production) {
+                 const it = parsed.iterations || 1;
                  setLogs(prev => [...prev, "Production: Asset bundle and thumbnail concepts ready."]);
                  setStatus("SEO");
-                 setCommits(prev => prev.map(c => c.iteration === (parsed.iterations || prev.length) ? { ...c, production_bundle: parsed.production.bundle || parsed.production } : c));
+                 setCommits(prev => prev.map(c => c.iteration === it ? { ...c, production_bundle: parsed.production.bundle || parsed.production } : c));
               }
               if (parsed.compliance) {
+                 const it = parsed.iterations || 1;
                  setLogs(prev => [...prev, "Compliance: SEO metadata and tags optimized."]);
-                 setCommits(prev => prev.map(c => c.iteration === (parsed.iterations || prev.length) ? { ...c, yt_metadata: parsed.compliance.ytMetadata || parsed.compliance } : c));
+                 setCommits(prev => prev.map(c => c.iteration === it ? { ...c, yt_metadata: parsed.compliance.ytMetadata || parsed.compliance } : c));
                  setStatus("DONE");
                  // Final sync to ensure everything is in the DB and local state
                  setTimeout(() => fetchDrafts(currentProject!.id), 1000);
@@ -354,7 +373,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const handleCreateProject = useCallback(async (name: string, type?: "FILM" | "YOUTUBE", initialIdea?: string) => {
+  const handleCreateProject = useCallback(async (name: string, type?: "FILM" | "YOUTUBE", initialIdea?: string, channel_id?: string) => {
     try {
       const res = await fetch("/api/projects", {
         method: "POST",
@@ -363,7 +382,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           name, 
           original_idea: initialIdea || "",
           content_mode: type || contentMode,
-          channel_id: activeChannel?.id || channels.find(c => c.name === "General")?.id || null
+          channel_id: channel_id || activeChannel?.id || channels.find(c => c.name === "General")?.id || null
         })
       });
       const data = await res.json();
@@ -433,6 +452,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     fetchChannels();
     fetchProjects();
   }, []);
+
+  // AUTO-SELECT LATEST COMMIT ON LOAD
+  useEffect(() => {
+    if (activeProject && commits.length > 0 && !selectedCommit) {
+      setSelectedCommit(commits[commits.length - 1]);
+    }
+  }, [activeProject, commits, selectedCommit]);
 
   return (
     <AppContext.Provider value={{

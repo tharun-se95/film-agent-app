@@ -5,7 +5,7 @@ import {
   Send, PenTool, LayoutDashboard, History, Download, 
   ChevronRight, Bot, Sparkles, Radio, CheckCircle2,
   FileText, Layers, Video, PanelRight, PanelRightClose,
-  ArrowLeft
+  ArrowLeft, Volume2, Music
 } from "lucide-react";
 import { useAppContext, DraftCommit } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
@@ -16,7 +16,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     projects, activeProject, setActiveProject,
     status, prompt, setPrompt,
     commits, selectedCommit, setSelectedCommit,
-    logs, runAgent,
+    logs, runAgent, fetchDrafts,
     agentPanelCollapsed, setAgentPanelCollapsed
   } = useAppContext();
 
@@ -30,9 +30,22 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
   };
 
   useEffect(() => {
+    // 1. ISOLATION: On mount or ID change, clear previous project's session data
+    console.log("LOG: [Editor] Project Change Detected. Sanitizing workspace...");
+    setPrompt("");
+    
+    // 2. Fetch project metadata
     const proj = projects.find(p => p.id === projectId);
-    if (proj) setActiveProject(proj);
-  }, [projectId, projects, setActiveProject]);
+    if (proj) {
+      setActiveProject(proj);
+      // 3. Clear logs and status to prevent leakage
+      // We don't have direct access to setLogs/setStatus here easily if they aren't exposed,
+      // but fetchDrafts will overwrite 'commits'.
+      fetchDrafts(projectId).then(() => {
+        console.log("LOG: [Editor] Workspace hydrated for:", proj.name);
+      });
+    }
+  }, [projectId, projects, setActiveProject, fetchDrafts, setPrompt]);
 
   if (!activeProject) return <div className="p-12 text-neutral-500">Loading project...</div>;
 
@@ -127,7 +140,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                           {selectedCommit.content}
                        </p>
                     </div>
-                  ) : status !== "IDLE" ? (
+                  ) : status !== "IDLE" && status !== "DONE" ? (
                     <div className="h-[600px] flex flex-col items-center justify-center space-y-8 animate-pulse text-primary">
                         <div className="relative">
                            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
@@ -227,29 +240,83 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                     </div>
                   </section>
 
-                  {/* Production Checklist */}
-                  <section className="p-12 rounded-[3rem] bg-neutral-900 shadow-2xl space-y-8">
-                     <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                           <h2 className="text-xl font-black text-white">Visual Cues & B-Roll</h2>
-                           <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-[0.2em]">Shot list for Editors</p>
-                        </div>
-                        <CheckCircle2 className="w-8 h-8 text-primary" />
-                     </div>
-                     
-                     <div className="space-y-3">
-                        {selectedCommit?.production_bundle?.brollChecklist?.map((item, idx) => (
-                           <div key={idx} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all group">
-                              <div className="w-6 h-6 rounded-lg bg-primary/20 flex items-center justify-center text-[10px] font-black text-primary">
-                                 {idx + 1}
-                              </div>
-                              <p className="text-xs text-neutral-300 font-medium group-hover:text-white transition-colors">{item}</p>
+                  {/* Production Assets Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     {/* B-Roll Checklist */}
+                     <section className="p-10 rounded-[2.5rem] bg-neutral-900 shadow-2xl space-y-6">
+                        <div className="flex items-center justify-between">
+                           <div className="space-y-1">
+                              <h2 className="text-lg font-black text-white">Visual Cues & B-Roll</h2>
+                              <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-[0.2em]">Shot list for Editors</p>
                            </div>
-                        )) || (
-                          <p className="text-xs text-neutral-600 italic">No visual cues mapped yet.</p>
-                        )}
+                           <CheckCircle2 className="w-6 h-6 text-primary" />
+                        </div>
+                        
+                        <div className="space-y-2">
+                           {selectedCommit?.production_bundle?.brollChecklist?.map((item, idx) => (
+                              <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all group">
+                                 <div className="w-5 h-5 rounded-lg bg-primary/20 flex items-center justify-center text-[9px] font-black text-primary">
+                                    {idx + 1}
+                                 </div>
+                                 <p className="text-[10px] text-neutral-300 font-medium group-hover:text-white transition-colors">{item}</p>
+                              </div>
+                           )) || (
+                              <p className="text-[10px] text-neutral-600 italic">No visual cues mapped yet.</p>
+                           )}
+                        </div>
+                     </section>
+
+                     {/* Audio & Effects */}
+                     <div className="space-y-8">
+                        {/* SFX & VFX */}
+                        <section className="p-10 rounded-[2.5rem] bg-white border border-neutral-100 shadow-xl space-y-6">
+                           <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600">
+                                 <Volume2 className="w-5 h-5" />
+                              </div>
+                              <div>
+                                 <h2 className="text-sm font-black uppercase tracking-widest text-neutral-800">Audio & FX</h2>
+                                 <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-widest">SFX & Motion Graphics</p>
+                              </div>
+                           </div>
+
+                           <div className="space-y-4">
+                              <div className="space-y-2">
+                                 <h3 className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Sound Effects</h3>
+                                 <div className="flex flex-wrap gap-2">
+                                    {(selectedCommit?.production_bundle as any)?.sfxChecklist?.map((sfx: string, idx: number) => (
+                                       <span key={idx} className="px-3 py-1.5 rounded-full bg-neutral-100 text-[10px] font-bold text-neutral-600 border border-neutral-200">
+                                          {sfx}
+                                       </span>
+                                    )) || <span className="text-[9px] text-neutral-400 italic">Pending...</span>}
+                                 </div>
+                              </div>
+                              <div className="space-y-2">
+                                 <h3 className="text-[9px] font-black uppercase tracking-widest text-neutral-400">VFX / Graphics</h3>
+                                 <div className="space-y-2">
+                                    {(selectedCommit?.production_bundle as any)?.vfxRequirements?.map((vfx: string, idx: number) => (
+                                       <div key={idx} className="flex items-center gap-2">
+                                          <div className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+                                          <p className="text-[10px] font-medium text-neutral-600">{vfx}</p>
+                                       </div>
+                                    )) || <p className="text-[9px] text-neutral-400 italic">Pending...</p>}
+                                 </div>
+                              </div>
+                           </div>
+                        </section>
+
+                        {/* Music Mood */}
+                        <section className="p-8 rounded-[2rem] bg-primary/10 border border-primary/20 space-y-4">
+                           <div className="flex items-center gap-3">
+                              <Music className="w-4 h-4 text-primary" />
+                              <h2 className="text-[10px] font-black uppercase tracking-widest text-primary">Music Inspiration</h2>
+                           </div>
+                           <p className="text-[11px] leading-relaxed text-neutral-700 font-medium">
+                              {(selectedCommit?.production_bundle as any)?.musicInspiration || "Consulting the music supervisor..."}
+                           </p>
+                        </section>
                      </div>
-                  </section>
+                  </div>
 
                </div>
             )}

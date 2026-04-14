@@ -11,7 +11,7 @@ import { logAgentExecution } from "../utils/logger";
 
 const API_KEY = process.env.GROQ_API_KEY;
 const BASE_URL = "https://api.groq.com/openai/v1";
-const MODEL_NAME = "llama-3.3-70b-versatile"; 
+const MODEL_NAME = "llama-3.3-70b-versatile";
 
 // CREATIVE LLM: High temperature for brainstorming and script writing
 const creativeLlm = new ChatOpenAI({
@@ -29,6 +29,14 @@ const evaluatorLlm = new ChatOpenAI({
   apiKey: API_KEY,
   configuration: { baseURL: BASE_URL },
   timeout: 15000 // Strict enforcement for logic steps
+});
+
+// UTILITY LLM: 8b model for low-complexity, high-volume generation (visuals, bundling)
+const utilityLlm = new ChatOpenAI({
+  modelName: "llama-3.1-8b-instant",
+  temperature: 0.7,
+  apiKey: API_KEY,
+  configuration: { baseURL: BASE_URL }
 });
 
 // Zod Schema for Strategic Suggestions
@@ -122,17 +130,32 @@ export const AgentState = Annotation.Root({
     reducer: (current, update) => update,
     default: () => "",
   }),
-  productionBundle: Annotation<{ 
+  productionBundle: Annotation<{
     thumbnailConcepts: { title: string; prompt: string }[];
     brollChecklist: string[];
+    sfxChecklist?: string[];
+    vfxRequirements?: string[];
+    musicInspiration?: string;
     voiceGuidance: string;
   }>({
     reducer: (current, update) => update,
-    default: () => ({ thumbnailConcepts: [], brollChecklist: [], voiceGuidance: "" }),
+    default: () => ({
+      thumbnailConcepts: [],
+      brollChecklist: [],
+      sfxChecklist: [],
+      vfxRequirements: [],
+      musicInspiration: "",
+      voiceGuidance: ""
+    }),
   }),
   ytCriticIterations: Annotation<number>({
     reducer: (current, update) => current + update,
     default: () => 0,
+  }),
+  // Conversational Intent (Autonomous Routing)
+  intent: Annotation<"FULL" | "INTEL" | "DRAFT" | "CRITIC" | "VISUALS" | "NONE">({
+    reducer: (current, update) => update,
+    default: () => "NONE",
   }),
   // Strategic Suggestions (Industrial Mode)
   suggestions: Annotation<{ title: string; reasoning: string; hook: string }[]>({
@@ -158,7 +181,7 @@ async function outlinerAgent(state: typeof AgentState.State) {
         new SystemMessage("You are an expert Hollywood Script Doctor. You are refining an existing BEAT SHEET based on new user instructions. Keep the core narrative structure where possible, but integrate the new changes seamslessly. Be concise and punchy."),
         new HumanMessage(`EXISTING BEAT SHEET:\n${state.outline}\n\nNEW INSTRUCTIONS:\n${latestMessage}`)
       ]);
-      
+
       return {
         messages: ["Outliner: Successfully refined the plot beats."],
         outline: response.content as string,
@@ -171,7 +194,7 @@ async function outlinerAgent(state: typeof AgentState.State) {
       new SystemMessage("You are an expert Hollywood Outliner. Write a detailed, rich 3-act beat sheet based on the user's idea. Provide deep character motivations and cinematic pacing. Focus on the core emotional arc."),
       new HumanMessage(latestMessage)
     ]);
-    
+
     console.log("LOG: [Outliner] Finished plotting.");
     return {
       messages: ["Outliner: Finished plotting the scene."],
@@ -188,26 +211,30 @@ async function outlinerAgent(state: typeof AgentState.State) {
 async function drafterAgent(state: typeof AgentState.State) {
   try {
     console.log("HEARTBEAT: [Drafter] Entry");
-    console.log(`LOG: [Drafter] Starting... Iteration: ${state.iterations}, Outline Length: ${state.outline?.length || 0}`);
-    
+    const stepMsg = state.iterations === 0 ? "Drafting: Constructing the narrative architecture..." : "Refining: Performing surgical script edits...";
+    console.log(`LOG: [Drafter] ${stepMsg}`);
+
     // LOGIC FIX: Find the actual user instruction by filtering out agent-prefixed logs
-    const instructionLogs = state.messages.filter(m => 
-      !m.startsWith("Outliner:") && 
-      !m.startsWith("Drafter:") && 
+    const instructionLogs = state.messages.filter(m =>
+      !m.startsWith("Outliner:") &&
+      !m.startsWith("Drafter:") &&
       !m.startsWith("Critic:") &&
       !m.startsWith("System:")
     );
     const latestUserMessage = instructionLogs[instructionLogs.length - 1] || state.messages[0];
-    
+
     let finalPrompt = `Write a comprehensive screenplay scene based on this plot outline:\n\n${state.outline}\n\nInitial Ideas: ${latestUserMessage}\n\nFocus on vivid scene descriptions and nuanced dialogue. Keep the scene tight and cinematic.`;
-    
-    if (state.iterations > 0) {
-       const historyLog = state.historicalFeedback.map((fb, idx) => `Rewrite ${idx + 1} Feedback:\n${fb}`).join("\n\n");
-       finalPrompt = `You must REWRITE the screenplay scene based on NEW User Instructions and previous Critic Feedback.\n\nOutline: ${state.outline}\n\nPrevious Draft:\n${state.draftInfo}\n\n--- NEW USER INSTRUCTIONS ---\n${latestUserMessage}\n\n--- LATEST CRITIC NOTES ---\n${state.criticNotes}`;
+
+    let sysPrompt = "You are an award-winning Screenwriter. Write visually stunning, emotionally rich scenes. Do not use asterisks or markdown bolding, just pure text caps for names. Ensure your output is substantial but stays focused on the key scene beats.";
+
+    if (state.iterations > 0 && state.draftInfo) {
+      console.log("LOG: [Drafter] Transitioning to Refinement Mode...");
+      finalPrompt = `You are a Script Doctor. You are editing an EXISTING screenplay scene.\n\nOutline: ${state.outline}\n\n--- EXISTING DRAFT ---\n${state.draftInfo}\n\n--- USER REFINEMENT QUERY ---\n${latestUserMessage}\n\n--- LATEST CRITIC NOTES ---\n${state.criticNotes}\n\nINSTRUCTION: ONLY change the specific parts of the script mentioned in the Refinement Query or Critic Notes. Keep the rest of the dialogue and prose EXACTLY as it is. Return the FULL updated script.`;
+      sysPrompt = "You are an expert Script Doctor. Perform surgical precision edits. Preserve the existing script's voice and only modify what is necessary to fulfill the request.";
     }
 
-    const response = await creativeLlm.invoke([
-      new SystemMessage("You are an award-winning Screenwriter. Write visually stunning, emotionally rich scenes. Do not use asterisks or markdown bolding, just pure text caps for names. Ensure your output is substantial but stays focused on the key scene beats."),
+    const response = await utilityLlm.invoke([
+      new SystemMessage(sysPrompt),
       new HumanMessage(finalPrompt)
     ]);
 
@@ -221,14 +248,14 @@ async function drafterAgent(state: typeof AgentState.State) {
     if (supabase) {
       console.log(`LOG: [Drafter] Saving to Supabase iteration ${nextIteration}...`);
       const { error } = await supabase.from('drafts').insert([
-        { 
+        {
           project_id: state.projectId,
-          content: rawContent, 
+          content: rawContent,
           iteration: nextIteration,
-          prompt_context: state.outline 
+          prompt_context: state.outline
         }
       ]);
-      
+
       if (error) {
         console.error("Supabase storage error [Drafter]:", error.message);
         throw new Error(`Persistence Error: ${error.message}`);
@@ -236,9 +263,9 @@ async function drafterAgent(state: typeof AgentState.State) {
     }
 
     return {
-      messages: ["Drafter Agent finished writing the scene."],
+      messages: ["Drafter: Script written. Passing to compliance for review."],
       draftInfo: rawContent,
-      drafts: [rawContent], 
+      drafts: [rawContent],
       iterations: 1, // Reducer increments global state by 1
     };
   } catch (e) {
@@ -253,12 +280,12 @@ async function criticAgent(state: typeof AgentState.State) {
   try {
     console.log("HEARTBEAT: [Critic] Entry");
     console.log("LOG: [Critic] Starting evaluation...");
-    
+
     // Use .withStructuredOutput() to force LLM to return JSON validated by our Zod schema
     const analyzer = evaluatorLlm.withStructuredOutput(CriticSchema, { name: "evaluate_script", method: "functionCalling" });
 
     const prompt = `You are a harsh but fair Hollywood Script Critic. Critique this screenplay draft carefully. Focus on pacing, character voice, and action.\n\nDraft:\n${state.draftInfo}`;
-    
+
     const result = await analyzer.invoke([
       new SystemMessage("Analyze the text strictly. You are interacting via an API so you MUST return only valid JSON matching the exact schema provided."),
       new HumanMessage(prompt)
@@ -271,7 +298,7 @@ async function criticAgent(state: typeof AgentState.State) {
         .update({ critic_score: result.score, critic_notes: result.feedback })
         .eq('project_id', state.projectId)
         .eq('iteration', state.iterations);
-        
+
       if (error) {
         console.error("Supabase critic update error:", error.message);
         throw new Error(`Critic Persistence Error: ${error.message}`);
@@ -300,11 +327,11 @@ async function criticAgent(state: typeof AgentState.State) {
 async function intelAgent(state: typeof AgentState.State) {
   try {
     console.log("HEARTBEAT: [Intel] Entry");
-    console.log("LOG: [Intel] Starting niche discovery...");
+    console.log("LOG: [Intel] Analyzing niche using Utility Model (8b)...");
     const latestMessage = state.messages[state.messages.length - 1];
-    
-    // In a real app, this would use Tavily/Serper tools. For now, simulated.
-    const response = await evaluatorLlm.invoke([
+
+    // Switch to utilityLlm (8b) to save premium tokens and bypass 70b rate limits
+    const response = await utilityLlm.invoke([
       new SystemMessage("You are a YouTube Market Intelligence Agent. Analyze the niche, CPM potential, and competitor metrics. Identify a 'Viral Angle' for the provided topic."),
       new HumanMessage(`Topic: ${latestMessage}\n\nProvide Niche Intel, estimated CPM, and competitor gaps.`)
     ]);
@@ -314,8 +341,7 @@ async function intelAgent(state: typeof AgentState.State) {
     const nextIteration = state.iterations + 1;
 
     if (supabase) {
-      // We use upsert to allow retry logic in the same iteration if needed
-      const { error } = await supabase.from('drafts').upsert({ 
+      const { error } = await supabase.from('drafts').upsert({
         project_id: state.projectId,
         niche_data: response.content as string,
         iteration: nextIteration,
@@ -332,9 +358,9 @@ async function intelAgent(state: typeof AgentState.State) {
     logAgentExecution(state.projectId, `[INTEL RESPONSE]\n${response.content}`);
 
     return {
-      messages: ["Intel: Identified viral niche angle and competitor gaps."],
+      messages: ["Intel: [Progress: 1/6] Niche intelligence and viral angle identified."],
       nicheData: response.content as string,
-      iterations: 1, // Increment iterations for the YouTube flow too!
+      iterations: 1,
     };
   } catch (e) {
     console.error("Intel Error:", e);
@@ -345,10 +371,20 @@ async function intelAgent(state: typeof AgentState.State) {
 async function hookScientistAgent(state: typeof AgentState.State) {
   try {
     console.log("HEARTBEAT: [Hook Scientist] Entry");
-    console.log("LOG: [Hook Scientist] Engineering first 3 seconds...");
+    const stepMsg = state.iterations === 0 ? "Hooking: Reverse-engineering viral patterns..." : "Refining: Polishing the hook for maximum retention...";
+    console.log(`LOG: [Hook Scientist] ${stepMsg}`);
+    let sysPrompt = "You are a YouTube Scriptwriting Expert. Write a COMPLETE, COMPREHENSIVE, AND CINEMATIC script. Your goal is a 10-minute video duration (approx 1500 words). DO NOT just focus on the intro; write the entire narrative arc. CRITICAL: The first 3 seconds MUST have a psychological pattern interrupt.";
+    let humPrompt = `Niche Data: ${state.nicheData}\n\nWrite the FULL, COMPLETE script for this video. Include all sections, transitions, and the final call-to-action. Ensure the content is deep and engaging throughout.`;
+
+    if (state.iterations > 0 && state.draftInfo) {
+      console.log("LOG: [Hook Scientist] Transitioning to Refinement Mode...");
+      sysPrompt = "You are an expert YouTube Script Doctor. You are refining an existing script based on user feedback. Perform surgical, targeted edits only.";
+      humPrompt = `--- EXISTING SCRIPT ---\n${state.draftInfo}\n\n--- REFINEMENT REQUEST ---\n${state.messages[state.messages.length - 1]}\n\nINSTRUCTION: ONLY change the specific sections mentioned in the request. If the user asks for a better hook, keep the rest of the body exactly the same. Return the FULL updated script.`;
+    }
+
     const response = await creativeLlm.invoke([
-      new SystemMessage("You are a YouTube Scriptwriting Expert. Write a COMPLETE, COMPREHENSIVE, AND CINEMATIC script. Your goal is a 10-minute video duration (approx 1500 words). DO NOT just focus on the intro; write the entire narrative arc. CRITICAL: The first 3 seconds MUST have a psychological pattern interrupt."),
-      new HumanMessage(`Niche Data: ${state.nicheData}\n\nWrite the FULL, COMPLETE script for this video. Include all sections, transitions, and the final call-to-action. Ensure the content is deep and engaging throughout.`)
+      new SystemMessage(sysPrompt),
+      new HumanMessage(humPrompt)
     ]);
 
     // AUDIT: Log raw AI response
@@ -361,7 +397,7 @@ async function hookScientistAgent(state: typeof AgentState.State) {
         .update({ content: response.content as string })
         .eq('project_id', state.projectId)
         .eq('iteration', state.iterations);
-        
+
       if (error) {
         console.error("Supabase hook storage error:", error.message);
         throw new Error(`Hook Persistence Error: ${error.message}`);
@@ -369,7 +405,7 @@ async function hookScientistAgent(state: typeof AgentState.State) {
     }
 
     return {
-      messages: ["Hook Scientist: Engineered high-retention script with pattern interrupts."],
+      messages: ["Hooks: [Progress: 2/6] Logic-cloned and engineered script."],
       draftInfo: response.content as string,
       hooks: [response.content.toString().substring(0, 500)], // Store start of script as hook sample
     };
@@ -383,7 +419,7 @@ async function visualistAgent(state: typeof AgentState.State) {
   try {
     console.log("HEARTBEAT: [Visualist] Entry");
     console.log("LOG: [Visualist] Mapping B-roll and visual cues...");
-    const response = await creativeLlm.invoke([
+    const response = await utilityLlm.invoke([
       new SystemMessage("You are a Video Editor & Visual Designer. Read the script and add detailed visual cues, B-Roll notes, and Stock footage prompts to every paragraph. Format as [Visual: <Description>]"),
       new HumanMessage(`Script:\n${state.draftInfo}`)
     ]);
@@ -395,7 +431,7 @@ async function visualistAgent(state: typeof AgentState.State) {
         .update({ visual_cues: response.content as string })
         .eq('project_id', state.projectId)
         .eq('iteration', state.iterations);
-        
+
       if (error) {
         console.error("Supabase visualist storage error:", error.message);
         throw new Error(`Visualist Persistence Error: ${error.message}`);
@@ -406,7 +442,7 @@ async function visualistAgent(state: typeof AgentState.State) {
     logAgentExecution(state.projectId, `[VISUALIST RESPONSE]\n${response.content}`);
 
     return {
-      messages: ["Visualist: Mapped B-Roll and visual cues across the script."],
+      messages: ["Visualist: [Progress: 3/6] Cinematic B-Roll mapped."],
       visualCues: response.content as string,
     };
   } catch (e) {
@@ -424,11 +460,12 @@ async function complianceAgent(state: typeof AgentState.State) {
       description: z.string(),
       tags: z.array(z.string())
     });
-    
-    const analyzer = evaluatorLlm.withStructuredOutput(SEO_SCHEMA, { name: "generate_seo", method: "functionCalling" });
+
+    // Use a simpler system prompt and clear schema to avoid 400 errors with the 8b model
+    const analyzer = utilityLlm.withStructuredOutput(SEO_SCHEMA, { name: "generate_seo", method: "functionCalling" });
     const result = await analyzer.invoke([
-      new SystemMessage("You are a YouTube SEO Expert. Generate a viral title, descriptive meta description, and high-performance tags."),
-      new HumanMessage(`Script:\n${state.draftInfo}\nVisuals:\n${state.visualCues}`)
+      new SystemMessage("You are a YouTube SEO Expert. Generate a viral title, descriptive meta description, and 10 high-performance tags for the following video script."),
+      new HumanMessage(`VIDEO CONTENT:\n${state.draftInfo}\nVISUAL STYLE:\n${state.visualCues}`)
     ]);
 
     // Update draft with SEO metadata
@@ -438,7 +475,7 @@ async function complianceAgent(state: typeof AgentState.State) {
         .update({ yt_metadata: result })
         .eq('project_id', state.projectId)
         .eq('iteration', state.iterations);
-        
+
       if (error) {
         console.error("Supabase compliance storage error:", error.message);
         throw new Error(`Metadata Persistence Error: ${error.message}`);
@@ -449,7 +486,7 @@ async function complianceAgent(state: typeof AgentState.State) {
     logAgentExecution(state.projectId, `[COMPLIANCE RESPONSE]\n${JSON.stringify(result, null, 2)}`);
 
     return {
-      messages: ["Compliance: Optimized SEO metadata for maximum search visibility."],
+      messages: ["Compliance: [Progress: 5/6] Optimized SEO metadata for discovery."],
       ytMetadata: result,
     };
   } catch (e) {
@@ -467,10 +504,10 @@ async function retentionCriticAgent(state: typeof AgentState.State) {
       feedback: z.string().describe("Specific notes for the hook scientist.")
     });
 
-    const analyzer = evaluatorLlm.withStructuredOutput(RETENTION_SCHEMA, { name: "evaluate_retention", method: "functionCalling" });
+    const analyzer = utilityLlm.withStructuredOutput(RETENTION_SCHEMA, { name: "evaluate_retention", method: "functionCalling" });
     const result = await analyzer.invoke([
       new SystemMessage("You are a YouTube Retention Expert. Evaluate if the script has a strong 3s hook and pattern interrupts every 30s. Be extremely critical."),
-      new HumanMessage(`Script:\n${state.draftInfo}`)
+      new HumanMessage(`Script:\n${state.draftInfo || "No script provided"}`)
     ]);
 
     // AUDIT: Log raw AI response
@@ -480,18 +517,20 @@ async function retentionCriticAgent(state: typeof AgentState.State) {
     const supabase = getSupabaseAdminClient();
     if (supabase) {
       await supabase.from('drafts')
-        .update({ 
+        .update({
           critic_score: result.score,
-          critic_notes: result.feedback 
+          critic_notes: result.feedback
         })
         .eq('project_id', state.projectId)
         .eq('iteration', state.iterations);
     }
 
     return {
-      messages: [`Retention Critic: Analysis complete. Score: ${result.score}/10.`],
+      messages: [`Retention: [Progress: 6/6] Final audit complete. Score: ${result.score}/10.`],
       retentionScore: result.score,
       retentionNotes: result.feedback,
+      score: result.score,      // STANDARD FIELD FOR UI
+      feedback: result.feedback, // STANDARD FIELD FOR UI
       ytCriticIterations: 1
     };
   } catch (e) {
@@ -507,13 +546,23 @@ async function productionBundlerAgent(state: typeof AgentState.State) {
     const PROD_SCHEMA = z.object({
       thumbnailConcepts: z.array(z.object({ title: z.string(), prompt: z.string() })),
       brollChecklist: z.array(z.string()),
+      sfxChecklist: z.array(z.string()),
+      vfxRequirements: z.array(z.string()),
+      musicInspiration: z.string(),
       voiceGuidance: z.string()
     });
 
-    const bundler = creativeLlm.withStructuredOutput(PROD_SCHEMA, { name: "generate_production_bundle", method: "functionCalling" });
+    const bundler = utilityLlm.withStructuredOutput(PROD_SCHEMA, { name: "generate_production_bundle", method: "functionCalling" });
     const result = await bundler.invoke([
-      new SystemMessage("You are a YouTube Production Director. Generate thumbnail concepts, a B-Roll checklist, and voiceover guidance for the script."),
-      new HumanMessage(`Script:\n${state.draftInfo}\nVisuals:\n${state.visualCues}`)
+      new SystemMessage(`You are a YouTube Production Director. 
+Generate:
+- 3 Thumbnail Concepts
+- 5-10 B-Roll stock footage descriptions (Be specific about lighting/camera angle)
+- 5 SFX cues (Whooshes, transitions, impact sounds)
+- 3 VFX/Motion Graphics requirements (Text overlays, callouts)
+- Music mood/inspiration
+- Final Voiceover direction`),
+      new HumanMessage(`Script:\n${state.draftInfo}\nVisual Style:\n${state.visualCues}`)
     ]);
 
     // Save bundle to Supabase
@@ -523,7 +572,7 @@ async function productionBundlerAgent(state: typeof AgentState.State) {
         .update({ production_bundle: result })
         .eq('project_id', state.projectId)
         .eq('iteration', state.iterations);
-        
+
       if (error) {
         console.error("Supabase production bundle update error:", error.message);
         throw new Error(`Bundle Persistence Error: ${error.message}`);
@@ -531,7 +580,7 @@ async function productionBundlerAgent(state: typeof AgentState.State) {
     }
 
     return {
-      messages: ["Production Bundler: Generated comprehensive production checklist and thumbnail concepts."],
+      messages: ["Production: [Progress: 4/6] Assets and thumbnails bundled."],
       productionBundle: result,
     };
   } catch (e) {
@@ -563,19 +612,16 @@ IMPORTANT: You MUST return ONLY a valid JSON object with the following structure
   ]
 }`;
 
-    // We use invoke with json_object format for better compatibility with Groq/Llama
-    const response = await evaluatorLlm.invoke([
+    const response = await utilityLlm.invoke([
       new SystemMessage(systemPrompt),
       new HumanMessage(`Channel Niche Context: ${state.nicheData}
       Current Strategy Request: ${latestMessage}`)
-    ], { 
-      response_format: { type: "json_object" } 
+    ], {
+      response_format: { type: "json_object" }
     } as any);
 
     const content = response.content as string;
     const parsed = JSON.parse(content);
-
-    console.log("LOG: [Strategic Intel] Successfully generated concepts.");
 
     return {
       suggestions: parsed.suggestions || [],
@@ -583,11 +629,53 @@ IMPORTANT: You MUST return ONLY a valid JSON object with the following structure
     };
   } catch (error) {
     console.error("ERROR: [Strategic Intel Agent] Failed:", error);
-    // Fallback to empty suggestions instead of crashing the whole flow
     return {
       suggestions: [],
       messages: ["Strategist: I encountered an error and couldn't generate concepts at this time."]
     };
+  }
+}
+// ==========================================
+// 4b. INTENT CLASSIFIER (Conversational Autonomy)
+// ==========================================
+async function intentClassifierAgent(state: typeof AgentState.State) {
+  try {
+    console.log("LOG: [Intent Classifier] Parsing user command...");
+    const latestMessage = (state as any).latestCommand || state.messages[state.messages.length - 1] || "";
+
+    // If it's the very first message and looks like a generic idea, it's FULL production
+    if (state.iterations === 0 && latestMessage.length > 20) {
+      return { intent: "FULL" as const };
+    }
+
+    const systemPrompt = `You are a Studio Orchestrator. 
+Analyze the user's request and categorize it into ONE of these intents:
+- 'INTEL': Researching niches, CPM, or competitor gaps.
+- 'DRAFT': Writing or rewriting a script.
+- 'CRITIC': Reviewing or scoring a script.
+- 'VISUALS': Generating B-roll, thumbnails, or visual cues.
+- 'FULL': Starting a complete end-to-end production.
+
+IMPORTANT: Return ONLY the category name.`;
+
+    const response = await utilityLlm.invoke([
+      new SystemMessage(systemPrompt),
+      new HumanMessage(latestMessage)
+    ]);
+
+    const intentText = response.content.toString().toUpperCase();
+    let intent: any = "FULL";
+    if (intentText.includes("INTEL")) intent = "INTEL";
+    else if (intentText.includes("DRAFT")) intent = "DRAFT";
+    else if (intentText.includes("CRITIC")) intent = "CRITIC";
+    else if (intentText.includes("VISUALS")) intent = "VISUALS";
+
+    console.log(`LOG: [Intent Classifier] Detected Intent: ${intent}`);
+
+    return { intent };
+  } catch (error) {
+    console.error("ERROR: [Intent Classifier] Failed:", error);
+    return { intent: "FULL" as const };
   }
 }
 
@@ -596,6 +684,13 @@ IMPORTANT: You MUST return ONLY a valid JSON object with the following structure
 // ==========================================
 
 function modeRouter(state: typeof AgentState.State) {
+  // If we have a specific intent from the classifier, use it
+  if (state.intent === "INTEL") return "intel";
+  if (state.intent === "DRAFT") return "hookScientist";
+  if (state.intent === "CRITIC") return "retentionCritic";
+  if (state.intent === "VISUALS") return "visualist";
+
+  // Default legacy behavior
   return state.contentMode === "YOUTUBE" ? "intel" : "outliner";
 }
 
@@ -621,6 +716,8 @@ function reviewRouting(state: typeof AgentState.State) {
 // ==========================================
 
 export const graph = new StateGraph(AgentState)
+  // CORE NODES
+  .addNode("intentClassifier", intentClassifierAgent)
   // FILM NODES
   .addNode("outliner", outlinerAgent)
   .addNode("drafter", drafterAgent)
@@ -633,8 +730,9 @@ export const graph = new StateGraph(AgentState)
   .addNode("production", productionBundlerAgent)
   .addNode("compliance", complianceAgent)
   .addNode("strategicIntel", strategicIntelAgent)
-  // STARTING POINT
-  .addConditionalEdges("__start__", modeRouter)
+  // ROUTING POINT
+  .addEdge("__start__", "intentClassifier")
+  .addConditionalEdges("intentClassifier", modeRouter)
   // FILM FLOW
   .addEdge("outliner", "drafter")
   .addEdge("drafter", "critic")

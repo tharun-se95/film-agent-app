@@ -13,7 +13,8 @@ export async function POST(req: Request) {
     let initialState: any = {
       messages: [prompt],
       projectId: projectId,
-      contentMode: "FILM" // Default
+      contentMode: "FILM", // Default, will be updated by project hydration
+      latestCommand: prompt // Explicit field for Intent Classifier
     };
 
     logAgentExecution(projectId, { type: "START", prompt, initialState });
