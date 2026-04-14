@@ -133,12 +133,19 @@ export const AgentState = Annotation.Root({
   productionBundle: Annotation<{
     thumbnailConcepts: { title: string; prompt: string }[];
     brollChecklist: string[];
+    brollSearchQueries?: string[];
     sfxChecklist?: string[];
     vfxRequirements?: string[];
     musicInspiration?: string;
+    scenes?: {
+      title: string;
+      narration: string;
+      visualCue: string;
+      searchQueries: string[];
+    }[];
     voiceGuidance: string;
   }>({
-    reducer: (current, update) => update,
+    reducer: (current, update) => ({ ...current, ...update }),
     default: () => ({
       thumbnailConcepts: [],
       brollChecklist: [],
@@ -441,9 +448,42 @@ async function visualistAgent(state: typeof AgentState.State) {
     // AUDIT: Log raw AI response
     logAgentExecution(state.projectId, `[VISUALIST RESPONSE]\n${response.content}`);
 
+    // SECOND PASS: Extract structured scenes mapping
+    const STORYBOARD_SCHEMA = z.object({
+      scenes: z.array(z.object({
+        title: z.string().describe("Scene title (e.g. 'Intro', 'Innovation #1')"),
+        narration: z.string().describe("The spoken narrator text for this scene."),
+        visualCue: z.string().describe("The visual description for this scene."),
+        searchQueries: z.array(z.string()).describe("3-5 precise, 3-5 word search terms for stock footage for this specific scene.")
+      })).describe("A list of vibrant, structured scenes that map the script to visuals."),
+      allSearchQueries: z.array(z.string()).describe("A master list of ALL search queries for the entire video to ensure the global gallery is full.")
+    });
+    
+    const searchAgent = utilityLlm.withStructuredOutput(STORYBOARD_SCHEMA, { name: "generate_storyboard", method: "functionCalling" });
+    const storyboardResult = await searchAgent.invoke([
+      new SystemMessage("You are a Cinematographic Search Expert and Storyboard Artist. Convert the visual cues into a structured storyboard. Each scene must map directly to its narration and specific searchable keywords."),
+      new HumanMessage(`Visual Cues:\n${response.content}`)
+    ]);
+
+    const updatedBundle = { 
+      ...state.productionBundle, 
+      scenes: storyboardResult.scenes,
+      brollSearchQueries: storyboardResult.allSearchQueries,
+      brollChecklist: storyboardResult.scenes.map(s => s.visualCue)
+    };
+
+    // Update production bundle with these queries (we merge with existing if needed)
+    if (supabase) {
+      await supabase.from('drafts')
+        .update({ production_bundle: updatedBundle })
+        .eq('project_id', state.projectId)
+        .eq('iteration', state.iterations);
+    }
+
     return {
-      messages: ["Visualist: [Progress: 3/6] Cinematic B-Roll mapped."],
+      messages: ["Visualist: [Progress: 3/6] Cinematic B-Roll mapped & search queries generated."],
       visualCues: response.content as string,
+      productionBundle: updatedBundle
     };
   } catch (e) {
     console.error("Visualist Error:", e);
@@ -543,6 +583,7 @@ async function productionBundlerAgent(state: typeof AgentState.State) {
   try {
     console.log("HEARTBEAT: [Production Bundler] Entry");
     console.log("LOG: [Production Bundler] Generating asset package...");
+    
     const PROD_SCHEMA = z.object({
       thumbnailConcepts: z.array(z.object({ title: z.string(), prompt: z.string() })),
       brollChecklist: z.array(z.string()),
@@ -554,22 +595,28 @@ async function productionBundlerAgent(state: typeof AgentState.State) {
 
     const bundler = utilityLlm.withStructuredOutput(PROD_SCHEMA, { name: "generate_production_bundle", method: "functionCalling" });
     const result = await bundler.invoke([
-      new SystemMessage(`You are a YouTube Production Director. 
-Generate:
-- 3 Thumbnail Concepts
-- 5-10 B-Roll stock footage descriptions (Be specific about lighting/camera angle)
-- 5 SFX cues (Whooshes, transitions, impact sounds)
-- 3 VFX/Motion Graphics requirements (Text overlays, callouts)
-- Music mood/inspiration
-- Final Voiceover direction`),
-      new HumanMessage(`Script:\n${state.draftInfo}\nVisual Style:\n${state.visualCues}`)
+      new SystemMessage(`You are a Professional Production Director. 
+Your goal is to extract every technical requirement needed for the final video edit.
+1. Thumbnail Concepts: 3 viral, high-contrast ideas.
+2. B-Roll Checklist: 5-8 descriptive shots for an editor.
+3. SFX Checklist: Identify where impact sounds, whooshes, or ambient loops are needed.
+4. VFX/MGFX: Identify text overlays, callouts, or data visualizations.
+5. Music: Describe the BPM, mood, and genre.
+6. Voiceover: Direct the narrator on tone (e.g. "Hyper-enthusiastic" vs "Grave and serious").`),
+      new HumanMessage(`SCRIPT:\n${state.draftInfo}\nVISUAL CUES:\n${state.visualCues}`)
     ]);
+
+    // Merge with existing bundle (preserving brollSearchQueries from Visualist)
+    const updatedBundle = {
+      ...state.productionBundle,
+      ...result
+    };
 
     // Save bundle to Supabase
     const supabase = getSupabaseAdminClient();
     if (supabase) {
       const { error } = await supabase.from('drafts')
-        .update({ production_bundle: result })
+        .update({ production_bundle: updatedBundle })
         .eq('project_id', state.projectId)
         .eq('iteration', state.iterations);
 
@@ -581,7 +628,7 @@ Generate:
 
     return {
       messages: ["Production: [Progress: 4/6] Assets and thumbnails bundled."],
-      productionBundle: result,
+      productionBundle: updatedBundle,
     };
   } catch (e) {
     console.error("Production Bundler Error:", e);

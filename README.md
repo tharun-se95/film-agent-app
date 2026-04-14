@@ -13,10 +13,12 @@ Gravity Studio is a professional-grade workspace for content creators and filmma
 *   **Retention Engineering**: Every script is scrutinized by a "Retention Critic" to ensure high-engagement hooks (the critical first 3 seconds).
 *   **Multi-Agent Collaborative Writing**: Utilizes an Outliner, Drafter, and Critic loop to produce cinematic-quality scripts.
 
-### 🎞️ Production Bundling
-*   **B-Roll Mapping**: Automatically generates visual cues and shot lists for every paragraph of your script.
+### 🎞️ Production Bundling & Storyboarding
+*   **Interactive Storyboard**: Transforms static scripts into section-aware storyboards, mapping narration directly to visual cues.
+*   **Scene-Aware Hydration**: Live-hydrates the storyboard with Pexels stock footage keywords mapped to every scene.
 *   **Thumbnail Ideation**: Pattern-interrupt thumbnail concepts with AI-ready prompts.
 *   **SEO Compliance**: Automatic metadata, title, and tag generation optimized for platform algorithms.
+*   **SFX & VFX Checklists**: Automated technical cues for editors.
 
 ### 🧘 Zen Workspace
 *   **Minimalist Interface**: Collapsible sidebars and agent controls allow for a distraction-free "Producer Mode".

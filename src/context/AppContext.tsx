@@ -33,12 +33,19 @@ export interface DraftCommit {
   production_bundle?: {
     thumbnailConcepts: { title: string; prompt: string }[];
     brollChecklist: string[];
+    brollSearchQueries?: string[];
     sfxChecklist?: string[];
     vfxRequirements?: string[];
     musicInspiration?: string;
+    scenes?: {
+      title: string;
+      narration: string;
+      visualCue: string;
+      searchQueries: string[];
+    }[];
     voiceGuidance: string;
   };
-}
+};
 
 export interface Suggestion {
   id?: string;
@@ -76,6 +83,8 @@ interface AppContextType {
   setSelectedCommit: (c: DraftCommit | null) => void;
   suggestions: Suggestion[];
   setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>;
+  pexelsAssets: Record<string, any[]>;
+  fetchPexelsAssets: (queries: string[]) => Promise<void>;
   
   // UI State
   isCreatingChannel: boolean;
@@ -96,7 +105,7 @@ interface AppContextType {
   handleCreateChannel: (name: string, dna?: { niche: string, brand_voice: string }) => Promise<void>;
   handleUpdateChannel: (id: string, name: string, niche: string, brand_voice: string) => Promise<void>;
   handleDeleteChannel: (id: string) => Promise<void>;
-  handleCreateProject: (name: string, type?: "FILM" | "YOUTUBE", initialIdea?: string) => Promise<any>;
+  handleCreateProject: (name: string, type?: "FILM" | "YOUTUBE", initialIdea?: string, channel_id?: string) => Promise<any>;
   fetchStrategy: (channelId: string) => Promise<void>;
   fetchSuggestions: (channelId: string) => Promise<void>;
   deleteSuggestion: (id: string) => Promise<void>;
@@ -110,6 +119,7 @@ interface AppContextType {
   fetchChannels: () => Promise<void>;
   fetchDrafts: (projectId: string) => Promise<void>;
   runAgent: (prompt: string, projectId?: string) => Promise<void>;
+  fetchPexelsAssets: (queries: string[]) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -126,6 +136,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [commits, setCommits] = useState<DraftCommit[]>([]);
   const [selectedCommit, setSelectedCommit] = useState<DraftCommit | null>(null);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [pexelsAssets, setPexelsAssets] = useState<Record<string, any[]>>({});
 
   // UI State
   const [isCreatingChannel, setIsCreatingChannel] = useState(false);
@@ -448,10 +459,37 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const fetchPexelsAssets = useCallback(async (queries: string[]) => {
+    if (!queries || queries.length === 0) return;
+    console.log("LOG: [AppCtx] Fetching Pexels assets for queries:", queries);
+    try {
+      const newAssets: Record<string, any[]> = { ...pexelsAssets };
+      let changed = false;
+      const fetchPromises = queries.map(async (q) => {
+        if (newAssets[q]) return;
+        try {
+          const orientation = contentMode === "YOUTUBE" ? "landscape" : "portrait";
+          const res = await fetch(`/api/assets/pexels?query=${encodeURIComponent(q)}&orientation=${orientation}`);
+          const data = await res.json();
+          if (data.videos) {
+            newAssets[q] = data.videos;
+            changed = true;
+          }
+        } catch (err) {
+          console.error(`Error fetching pexels for ${q}:`, err);
+        }
+      });
+      await Promise.all(fetchPromises);
+      if (changed) setPexelsAssets(newAssets);
+    } catch (e) {
+      console.error("Global fetchPexelsAssets error:", e);
+    }
+  }, [pexelsAssets, contentMode]);
+
   useEffect(() => {
     fetchChannels();
     fetchProjects();
-  }, []);
+  }, [fetchChannels, fetchProjects]);
 
   // AUTO-SELECT LATEST COMMIT ON LOAD
   useEffect(() => {
@@ -460,13 +498,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [activeProject, commits, selectedCommit]);
 
+  // ORCHESTRATE PEXELS FETCH ON COMMIT SELECT
+  useEffect(() => {
+    const bundle = selectedCommit?.production_bundle;
+    const globalQueries = bundle?.brollSearchQueries || [];
+    const sceneQueries = bundle?.scenes?.flatMap(s => s.searchQueries) || [];
+    
+    // Merge into unique set
+    const allQueries = Array.from(new Set([...globalQueries, ...sceneQueries]));
+    
+    if (allQueries.length > 0) {
+      fetchPexelsAssets(allQueries);
+    }
+  }, [selectedCommit, fetchPexelsAssets]);
+
   return (
     <AppContext.Provider value={{
       projects, channels, activeProject, activeChannel,
       setProjects, setChannels, setActiveProject, setActiveChannel,
       status, setStatus, logs, setLogs, prompt, setPrompt,
       commits, setCommits, selectedCommit, setSelectedCommit,
-      suggestions, setSuggestions,
+      suggestions, setSuggestions, pexelsAssets, fetchPexelsAssets,
       fetchProjects, fetchChannels, fetchDrafts,
       runAgent, fetchStrategy, fetchSuggestions, deleteSuggestion,
       isCreatingChannel, setIsCreatingChannel,

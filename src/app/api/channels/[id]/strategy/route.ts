@@ -3,10 +3,10 @@ import { strategicIntelAgent } from "@/agent/graph";
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
-    const { id } = await params;
     const { prompt } = await req.json();
     
     const supabase = getSupabaseAdminClient();
@@ -37,7 +37,7 @@ export async function POST(
     
     // Persist to DB
     if (result.suggestions && result.suggestions.length > 0) {
-      const suggestionsToInsert = result.suggestions.map(s => ({
+      const suggestionsToInsert = (result.suggestions as any[]).map((s: { title: string; reasoning: string; hook: string }) => ({
         channel_id: id,
         title: s.title,
         reasoning: s.reasoning,
