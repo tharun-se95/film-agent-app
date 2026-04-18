@@ -734,8 +734,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     const scene = selectedCommit.production_bundle.scenes[cinemaSceneIdx];
     if (!scene) return;
     // Count how many clips are loaded for this scene
-    const totalClips = scene.searchQueries.reduce((count, _, qIdx) =>
-      storyboardAssets[`${cinemaSceneIdx}_${qIdx}`] ? count + 1 : count, 0);
+    const totalClips = scene.searchQueries.length;
     const progress = audio.currentTime / audio.duration;
     setCinemaProgress(progress);
 
@@ -1116,7 +1115,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                           {/* Render the current scene asset */}
                           {(() => {
                              const scene = selectedCommit.production_bundle.scenes[cinemaSceneIdx];
-                             const asset = storyboardAssets[`${cinemaSceneIdx}_0`];
+                             const asset = storyboardAssets[`${cinemaSceneIdx}_${cinemaClipIdx}`] || storyboardAssets[`${cinemaSceneIdx}_0`];
                              if (asset) {
                                return asset.type === 'video' ? (
                                  <video src={asset.videoUrl} autoPlay muted loop className="w-full h-full object-cover" />
@@ -1345,6 +1344,8 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                       isPlaying={isPlaying}
                       onSelect={(idx, startTime) => {
                         setCinemaSceneIdx(idx);
+                        // Reset clip index to 0 when selecting a new scene from the start
+                        setCinemaClipIdx(0);
                         if (audioRef.current) {
                           audioRef.current.currentTime = 0; // Each scene has its own audio file
                           setCurrentTime(startTime);
@@ -1358,6 +1359,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                         let accumulated = 0;
                         let targetSceneIdx = 0;
                         let localTime = 0;
+                        let sceneDuration = 0;
                         
                         for (let i = 0; i < selectedCommit.production_bundle.scenes.length; i++) {
                           const s = selectedCommit.production_bundle.scenes[i];
@@ -1365,9 +1367,19 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                           if (time >= accumulated && time <= accumulated + d) {
                             targetSceneIdx = i;
                             localTime = time - accumulated;
+                            sceneDuration = d;
                             break;
                           }
                           accumulated += d;
+                        }
+
+                        // Calculate which clip within the scene we should be at
+                        const scene = selectedCommit.production_bundle.scenes[targetSceneIdx];
+                        if (scene) {
+                          const totalClips = scene.searchQueries.length;
+                          const progress = localTime / sceneDuration;
+                          const desiredClipIdx = Math.min(Math.floor(progress * totalClips), totalClips - 1);
+                          setCinemaClipIdx(desiredClipIdx);
                         }
 
                         setCinemaSceneIdx(targetSceneIdx);
