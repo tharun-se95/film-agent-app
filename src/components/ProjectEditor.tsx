@@ -136,7 +136,7 @@ function MasterTimeline({
             </div>
 
             {/* VISUAL TRACK */}
-            <div className="absolute top-8 left-0 right-0 h-24 flex gap-[2px]">
+            <div className="absolute top-8 left-0 right-0 h-24">
               {scenes.map((scene, sceneIdx) => {
                 const { start, duration } = sceneStarts[sceneIdx];
                 const isSelected = selectedIndex === sceneIdx;
@@ -146,8 +146,11 @@ function MasterTimeline({
                   <div 
                     key={`track-scene-${sceneIdx}`}
                     onClick={(e) => { e.stopPropagation(); onSelect(sceneIdx, start); }}
-                    className={`flex gap-px shrink-0 relative cursor-pointer transition-all ${isSelected ? 'z-10' : ''}`}
-                    style={{ width: duration * pixelsPerSecond }}
+                    className={`absolute top-0 h-full cursor-pointer transition-all ${isSelected ? 'z-10' : ''}`}
+                    style={{ 
+                      left: start * pixelsPerSecond,
+                      width: duration * pixelsPerSecond 
+                    }}
                   >
                     {/* Scene separator line */}
                     <div className={`absolute left-0 top-0 bottom-0 w-[2px] z-10 ${isSelected ? 'bg-primary' : 'bg-white/15'}`} />
@@ -157,52 +160,57 @@ function MasterTimeline({
                     }`}>
                       S{sceneIdx + 1}
                     </div>
-                    {scene.searchQueries.map((query: string, clipIdx: number) => {
-                      const asset = storyboardAssets[`${sceneIdx}_${clipIdx}`];
-                      return (
-                        <div 
-                          key={`clip-${sceneIdx}-${clipIdx}`}
-                          className={`relative flex-1 h-full border border-white/5 overflow-hidden transition-all group/clip ${
-                            isSelected ? 'bg-primary/10 border-primary/20' : 'bg-neutral-900/40 hover:bg-neutral-800/60'
-                          }`}
-                        >
-                          {asset ? (
-                            <>
-                              <img src={asset.thumbnail} className="w-full h-full object-cover opacity-60 group-hover/clip:opacity-90 transition-opacity" alt="" />
-                              {asset.type === 'video' && (
-                                <div className="absolute top-1 right-1 px-1 rounded bg-black/70 text-[5px] font-black text-blue-400">MOV</div>
-                              )}
-                            </>
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-black/40">
-                              <Sparkles className="w-3 h-3 text-neutral-800 animate-pulse" />
+                    <div className="flex h-full w-full">
+                      {scene.searchQueries.map((query: string, clipIdx: number) => {
+                        const asset = storyboardAssets[`${sceneIdx}_${clipIdx}`];
+                        return (
+                          <div 
+                            key={`clip-${sceneIdx}-${clipIdx}`}
+                            className={`relative flex-1 h-full border border-white/5 overflow-hidden transition-all group/clip ${
+                              isSelected ? 'bg-primary/10 border-primary/20' : 'bg-neutral-900/40 hover:bg-neutral-800/60'
+                            }`}
+                          >
+                            {asset ? (
+                              <>
+                                <img src={asset.thumbnail} className="w-full h-full object-cover opacity-60 group-hover/clip:opacity-90 transition-opacity" alt="" />
+                                {asset.type === 'video' && (
+                                  <div className="absolute top-1 right-1 px-1 rounded bg-black/70 text-[5px] font-black text-blue-400">MOV</div>
+                                )}
+                              </>
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-black/40">
+                                <Sparkles className="w-3 h-3 text-neutral-800 animate-pulse" />
+                              </div>
+                            )}
+                            <div className="absolute bottom-0.5 left-1 right-1 flex justify-end items-end">
+                              <span className="text-[5px] font-black text-primary/50">{clipDuration.toFixed(1)}s</span>
                             </div>
-                          )}
-                          <div className="absolute bottom-0.5 left-1 right-1 flex justify-end items-end">
-                            <span className="text-[5px] font-black text-primary/50">{clipDuration.toFixed(1)}s</span>
+                            {isSelected && clipIdx === 0 && <div className="absolute inset-x-0 top-0 h-[2px] bg-primary" />}
                           </div>
-                          {isSelected && clipIdx === 0 && <div className="absolute inset-x-0 top-0 h-[2px] bg-primary" />}
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 );
               })}
             </div>
 
             {/* AUDIO TRACK */}
-            <div className="absolute top-32 left-0 right-0 h-16 flex gap-[2px]">
+            <div className="absolute top-32 left-0 right-0 h-16">
               {scenes.map((scene, idx) => {
-                const { duration } = sceneStarts[idx];
+                const { start, duration } = sceneStarts[idx];
                 const isSelected = selectedIndex === idx;
                 return (
                   <div 
                     key={`track-aud-${idx}`}
-                    onClick={(e) => { e.stopPropagation(); onSelect(idx, sceneStarts[idx].start); }}
-                    className={`relative shrink-0 border border-white/5 flex flex-col justify-center px-2 cursor-pointer transition-all ${
-                      isSelected ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-neutral-950/60 hover:bg-neutral-900/40'
+                    onClick={(e) => { e.stopPropagation(); onSelect(idx, start); }}
+                    className={`absolute top-0 flex flex-col justify-center px-2 cursor-pointer transition-all ${
+                      isSelected ? 'bg-emerald-500/10 border border-emerald-500/30' : 'bg-neutral-950/60 border border-white/5 hover:bg-neutral-900/40'
                     }`}
-                    style={{ width: duration * pixelsPerSecond }}
+                    style={{ 
+                      left: start * pixelsPerSecond,
+                      width: duration * pixelsPerSecond 
+                    }}
                   >
                     <div className="h-6 w-full bg-emerald-500/5 rounded-sm relative overflow-hidden">
                       <div className="absolute inset-0 flex items-center gap-[1px] px-1">
