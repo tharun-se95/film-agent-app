@@ -1168,6 +1168,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                                  <img key={asset.id || asset.url} src={asset.url} className="w-full h-full object-cover" alt="" />
                                );
                              }
+                             }
                              return (
                                <div className="w-full h-full flex flex-col items-center justify-center gap-4">
                                  <Sparkles className="w-12 h-12 text-neutral-800 animate-pulse" />
