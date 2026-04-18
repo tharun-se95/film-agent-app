@@ -1179,6 +1179,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                             onTimeUpdate={(e) => {
                               const sceneStart = sceneStarts[cinemaSceneIdx]?.start || 0;
                               setCurrentTime(sceneStart + e.currentTarget.currentTime);
+                              handleAudioTimeUpdate(e);
                             }}
                             onEnded={() => {
                               if (cinemaSceneIdx < (selectedCommit.production_bundle?.scenes?.length || 0) - 1) {
