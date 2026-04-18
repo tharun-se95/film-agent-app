@@ -163,18 +163,24 @@ function MasterTimeline({
                     <div className="flex h-full w-full">
                       {scene.searchQueries.map((query: string, clipIdx: number) => {
                         const asset = storyboardAssets[`${sceneIdx}_${clipIdx}`];
+                        // Math-based active clip calculation for frame-perfect sync
+                        const localTime = Math.max(0, currentTime - start);
+                        const activeClipIdx = Math.min(Math.floor((localTime / (duration || 1)) * clipCount), clipCount - 1);
+                        const isClipActive = isSelected && clipIdx === activeClipIdx;
+
                         return (
                           <div 
                             key={`clip-${sceneIdx}-${clipIdx}`}
                             className={`relative flex-1 h-full border border-white/5 overflow-hidden transition-all group/clip ${
-                              isSelected ? 'bg-primary/10 border-primary/20' : 'bg-neutral-900/40 hover:bg-neutral-800/60'
+                              isClipActive ? 'bg-primary/20 ring-1 ring-inset ring-primary/40' : 
+                              isSelected ? 'bg-primary/5 border-primary/10' : 'bg-neutral-900/40 hover:bg-neutral-800/60'
                             }`}
                           >
                             {asset ? (
                               <>
-                                <img src={asset.thumbnail} className="w-full h-full object-cover opacity-60 group-hover/clip:opacity-90 transition-opacity" alt="" />
+                                <img src={asset.thumbnail} className={`w-full h-full object-cover transition-opacity duration-500 ${isClipActive ? 'opacity-90' : 'opacity-40 group-hover/clip:opacity-80'}`} alt="" />
                                 {asset.type === 'video' && (
-                                  <div className="absolute top-1 right-1 px-1 rounded bg-black/70 text-[5px] font-black text-blue-400">MOV</div>
+                                  <div className={`absolute top-1 right-1 px-1 rounded bg-black/70 text-[5px] font-black ${isClipActive ? 'text-blue-400' : 'text-neutral-500'}`}>MOV</div>
                                 )}
                               </>
                             ) : (
@@ -183,9 +189,9 @@ function MasterTimeline({
                               </div>
                             )}
                             <div className="absolute bottom-0.5 left-1 right-1 flex justify-end items-end">
-                              <span className="text-[5px] font-black text-primary/50">{clipDuration.toFixed(1)}s</span>
+                              <span className={`text-[5px] font-black ${isClipActive ? 'text-primary' : 'text-neutral-700'}`}>{clipDuration.toFixed(1)}s</span>
                             </div>
-                            {isSelected && clipIdx === 0 && <div className="absolute inset-x-0 top-0 h-[2px] bg-primary" />}
+                            {isClipActive && <div className="absolute inset-x-0 top-0 h-[2px] bg-primary animate-pulse" />}
                           </div>
                         );
                       })}
@@ -787,9 +793,16 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
   }, [cinemaSceneIdx, selectedCommit, storyboardAssets]);
 
   const currentCinemaScene = selectedCommit?.production_bundle?.scenes?.[cinemaSceneIdx];
-  const currentCinemaAsset = currentCinemaScene
-    ? (storyboardAssets[`${cinemaSceneIdx}_${cinemaClipIdx}`] || storyboardAssets[`${cinemaSceneIdx}_0`])
-    : null;
+  const currentCinemaAsset = useMemo(() => {
+    if (!currentCinemaScene) return null;
+    const timing = sceneStarts[cinemaSceneIdx];
+    const sceneStart = timing?.start || 0;
+    const sceneDur = timing?.duration || 1;
+    const localTime = Math.max(0, currentTime - sceneStart);
+    const totalClips = currentCinemaScene.searchQueries?.length || 0;
+    const activeIdx = totalClips > 0 ? Math.min(Math.floor((localTime / sceneDur) * totalClips), totalClips - 1) : 0;
+    return storyboardAssets[`${cinemaSceneIdx}_${activeIdx}`] || storyboardAssets[`${cinemaSceneIdx}_0`];
+  }, [currentCinemaScene, cinemaSceneIdx, currentTime, sceneStarts, storyboardAssets]);
 
   // Count total loaded clips for current scene (for HUD display)
   const totalCinemaClipsForScene = currentCinemaScene
@@ -1158,9 +1171,17 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                           {(() => {
                              const scene = selectedCommit?.production_bundle?.scenes?.[cinemaSceneIdx];
                              if (scene) {
+                               const timing = sceneStarts[cinemaSceneIdx];
+                               const sceneStart = timing?.start || 0;
+                               const sceneDur = timing?.duration || 1;
+                               const localTime = Math.max(0, currentTime - sceneStart);
+                               
                                const totalQueries = scene.searchQueries?.length || 0;
-                               const safeClipIdx = cinemaClipIdx >= totalQueries ? 0 : cinemaClipIdx;
-                               const asset = storyboardAssets[`${cinemaSceneIdx}_${safeClipIdx}`] || storyboardAssets[`${cinemaSceneIdx}_0`];
+                               const dynamicClipIdx = totalQueries > 0 
+                                 ? Math.min(Math.floor((localTime / sceneDur) * totalQueries), totalQueries - 1)
+                                 : 0;
+
+                               const asset = storyboardAssets[`${cinemaSceneIdx}_${dynamicClipIdx}`] || storyboardAssets[`${cinemaSceneIdx}_0`];
                                if (asset) {
                                return asset.type === 'video' ? (
                                  <video key={asset.id || asset.videoUrl} src={asset.videoUrl} autoPlay muted loop className="w-full h-full object-cover" />
