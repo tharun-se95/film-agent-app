@@ -698,36 +698,39 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     if (audioRef.current) audioRef.current.playbackRate = playbackRate;
   }, [playbackRate]);
 
-  // VIRTUAL CLOCK: Drive playback when audio is missing
+  // VIRTUAL CLOCK: Drive playback when audio is missing or empty
   useEffect(() => {
     if (!isPlaying || !selectedCommit?.production_bundle?.scenes) return;
     const scene = selectedCommit.production_bundle.scenes[cinemaSceneIdx];
-    if (scene?.audioUrl) return; // Audio-driven mode takes over
+    
+    // Check if audio is actually ready and playing
+    const hasAudio = !!scene?.audioUrl && audioRef.current && audioRef.current.src !== "";
+    if (hasAudio) return; 
 
     const sceneDuration = scene?.duration || estimateDuration(scene?.narration || "");
-    const interval = 50; // 20fps logic
+    const interval = 100; // 10fps logic for stability
     
     const timer = setInterval(() => {
-      setCurrentTime(prev => {
+      setCurrentTime(prevTime => {
         const localStart = sceneStarts[cinemaSceneIdx]?.start || 0;
-        const localTime = prev - localStart;
+        const localTime = prevTime - localStart;
         const newLocalTime = localTime + (interval / 1000) * playbackRate;
         
-        // Calculate new clip index
+        // Calculate and update clip index using functional update to avoid dependency loop
         const totalClips = scene.searchQueries.length;
         const progress = newLocalTime / sceneDuration;
         const desiredClipIdx = Math.min(Math.floor(progress * totalClips), totalClips - 1);
-        if (desiredClipIdx !== cinemaClipIdx) setCinemaClipIdx(desiredClipIdx);
+        
+        setCinemaClipIdx(prevIdx => prevIdx !== desiredClipIdx ? desiredClipIdx : prevIdx);
 
-        // Handle scene transition
         if (newLocalTime >= sceneDuration) {
           if (cinemaSceneIdx < selectedCommit.production_bundle!.scenes!.length - 1) {
             setCinemaSceneIdx(idx => idx + 1);
             setCinemaClipIdx(0);
-            return localStart + sceneDuration; // Lock to boundary for next tick
+            return localStart + sceneDuration;
           } else {
             setIsPlaying(false);
-            return prev;
+            return prevTime;
           }
         }
         return localStart + newLocalTime;
@@ -735,7 +738,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     }, interval);
 
     return () => clearInterval(timer);
-  }, [isPlaying, cinemaSceneIdx, selectedCommit, playbackRate, cinemaClipIdx, sceneStarts]);
+  }, [isPlaying, cinemaSceneIdx, selectedCommit, playbackRate, sceneStarts]);
 
   // Keyboard Orchestration
   useEffect(() => {
