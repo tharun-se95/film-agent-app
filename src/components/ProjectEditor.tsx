@@ -698,6 +698,45 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     if (audioRef.current) audioRef.current.playbackRate = playbackRate;
   }, [playbackRate]);
 
+  // VIRTUAL CLOCK: Drive playback when audio is missing
+  useEffect(() => {
+    if (!isPlaying || !selectedCommit?.production_bundle?.scenes) return;
+    const scene = selectedCommit.production_bundle.scenes[cinemaSceneIdx];
+    if (scene?.audioUrl) return; // Audio-driven mode takes over
+
+    const sceneDuration = scene?.duration || estimateDuration(scene?.narration || "");
+    const interval = 50; // 20fps logic
+    
+    const timer = setInterval(() => {
+      setCurrentTime(prev => {
+        const localStart = sceneStarts[cinemaSceneIdx]?.start || 0;
+        const localTime = prev - localStart;
+        const newLocalTime = localTime + (interval / 1000) * playbackRate;
+        
+        // Calculate new clip index
+        const totalClips = scene.searchQueries.length;
+        const progress = newLocalTime / sceneDuration;
+        const desiredClipIdx = Math.min(Math.floor(progress * totalClips), totalClips - 1);
+        if (desiredClipIdx !== cinemaClipIdx) setCinemaClipIdx(desiredClipIdx);
+
+        // Handle scene transition
+        if (newLocalTime >= sceneDuration) {
+          if (cinemaSceneIdx < selectedCommit.production_bundle!.scenes!.length - 1) {
+            setCinemaSceneIdx(idx => idx + 1);
+            setCinemaClipIdx(0);
+            return localStart + sceneDuration; // Lock to boundary for next tick
+          } else {
+            setIsPlaying(false);
+            return prev;
+          }
+        }
+        return localStart + newLocalTime;
+      });
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [isPlaying, cinemaSceneIdx, selectedCommit, playbackRate, cinemaClipIdx, sceneStarts]);
+
   // Keyboard Orchestration
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
