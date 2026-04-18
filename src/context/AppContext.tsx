@@ -565,10 +565,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const bundle = selectedCommit?.production_bundle;
     if (!bundle?.scenes) return;
 
-    const hybridQueries = bundle.scenes.map(s => ({
-      query: s.searchQueries[0], // Use primary query
-      type: s.assetType || 'video'
-    }));
+    const hybridQueries = bundle.scenes.flatMap(s => 
+      s.searchQueries.map(q => ({
+        query: q,
+        type: (s as any).assetType || 'video'
+      }))
+    );
     
     // Filter out already fetched
     const needed = hybridQueries.filter(q => !pexelsAssets[q.query]);

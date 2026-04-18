@@ -1156,9 +1156,12 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                         <div className="w-full h-full max-w-4xl aspect-video relative rounded-2xl overflow-hidden bg-neutral-900 shadow-2xl border border-white/10">
                           {/* Render the current scene asset */}
                           {(() => {
-                             const scene = selectedCommit.production_bundle.scenes[cinemaSceneIdx];
-                             const asset = storyboardAssets[`${cinemaSceneIdx}_${cinemaClipIdx}`] || storyboardAssets[`${cinemaSceneIdx}_0`];
-                             if (asset) {
+                             const scene = selectedCommit?.production_bundle?.scenes?.[cinemaSceneIdx];
+                             if (scene) {
+                               const totalQueries = scene.searchQueries?.length || 0;
+                               const safeClipIdx = cinemaClipIdx >= totalQueries ? 0 : cinemaClipIdx;
+                               const asset = storyboardAssets[`${cinemaSceneIdx}_${safeClipIdx}`] || storyboardAssets[`${cinemaSceneIdx}_0`];
+                               if (asset) {
                                return asset.type === 'video' ? (
                                  <video key={asset.id || asset.videoUrl} src={asset.videoUrl} autoPlay muted loop className="w-full h-full object-cover" />
                                ) : (
