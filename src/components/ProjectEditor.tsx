@@ -1118,9 +1118,9 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                              const asset = storyboardAssets[`${cinemaSceneIdx}_${cinemaClipIdx}`] || storyboardAssets[`${cinemaSceneIdx}_0`];
                              if (asset) {
                                return asset.type === 'video' ? (
-                                 <video src={asset.videoUrl} autoPlay muted loop className="w-full h-full object-cover" />
+                                 <video key={asset.id || asset.videoUrl} src={asset.videoUrl} autoPlay muted loop className="w-full h-full object-cover" />
                                ) : (
-                                 <img src={asset.url} className="w-full h-full object-cover" alt="" />
+                                 <img key={asset.id || asset.url} src={asset.url} className="w-full h-full object-cover" alt="" />
                                );
                              }
                              return (
@@ -1130,6 +1130,14 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                                </div>
                              );
                           })()}
+                          
+                          {/* Debug HUD Overlay */}
+                          <div className="absolute top-4 right-4 px-3 py-1.5 bg-black/50 backdrop-blur-xl border border-white/10 rounded-xl z-30">
+                             <span className="text-[9px] font-mono text-white/60">
+                               S{cinemaSceneIdx + 1} : CL{cinemaClipIdx + 1}
+                             </span>
+                          </div>
+
                           {/* Playback Controls Overlay */}
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/preview:opacity-100 transition-opacity z-20">
                             <button 
