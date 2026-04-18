@@ -6,7 +6,7 @@ import {
   ChevronRight, Bot, Sparkles, Radio, CheckCircle2,
   FileText, Layers, Video, PanelRight, PanelRightClose,
   ArrowLeft, Volume2, Music, AlertCircle, Menu, MoreVertical,
-  Play, Loader2, CheckCircle, Clock, Zap, Search, Target, Shield, Package, Globe
+  Play, Pause, SkipBack, Loader2, CheckCircle, Clock, Zap, Search, Target, Shield, Package, Globe
 } from "lucide-react";
 
 const PIPELINE_NODES = [
@@ -25,6 +25,7 @@ function MasterTimeline({
   zoomLevel, 
   selectedIndex, 
   currentTime,
+  isPlaying,
   onSelect,
   onSeek,
   setZoomLevel
@@ -34,13 +35,13 @@ function MasterTimeline({
   zoomLevel: number, 
   selectedIndex: number,
   currentTime: number,
+  isPlaying: boolean,
   onSelect: (idx: number, startTime: number) => void,
   onSeek: (time: number) => void,
   setZoomLevel: React.Dispatch<React.SetStateAction<number>>
 }) {
   const pixelsPerSecond = zoomLevel;
   
-  // Calculate scene start times
   const sceneStarts = useMemo(() => {
     let current = 0;
     return scenes.map(s => {
@@ -51,90 +52,130 @@ function MasterTimeline({
     });
   }, [scenes]);
 
-  const totalDuration = sceneStarts.length > 0 ? sceneStarts[sceneStarts.length - 1].start + sceneStarts[sceneStarts.length - 1].duration : 0;
+  const totalDuration = sceneStarts.length > 0
+    ? sceneStarts[sceneStarts.length - 1].start + sceneStarts[sceneStarts.length - 1].duration
+    : 0;
 
-  const handleTimelineClick = (e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
+  // BUG FIX 1: Use imperative addEventListener with passive:false so Ctrl+Scroll zoom works
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const handler = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -10 : 10;
+        setZoomLevel(prev => Math.max(10, Math.min(200, prev + delta)));
+      }
+    };
+    el.addEventListener('wheel', handler, { passive: false });
+    return () => el.removeEventListener('wheel', handler);
+  }, [setZoomLevel]);
+
+  // BUG FIX 2: Click on inner div, accounting for scrollLeft so seek position is accurate
+  const LANE_W = 56; // px width of the fixed lane label column
+  const handleInnerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const scrollLeft = scrollContainerRef.current?.scrollLeft || 0;
+    const rect = scrollContainerRef.current!.getBoundingClientRect();
+    const x = (e.clientX - rect.left) + scrollLeft - LANE_W;
     const newTime = x / pixelsPerSecond;
+    if (newTime < 0) return;
     onSeek(Math.max(0, Math.min(newTime, totalDuration)));
   };
 
-  const handleWheel = (e: React.WheelEvent) => {
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -10 : 10;
-      setZoomLevel(prev => Math.max(10, Math.min(200, prev + delta)));
-    }
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60).toString().padStart(2, '0');
+    const s = Math.floor(secs % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
   };
 
   return (
-    <div 
-      className="flex-1 flex flex-col bg-[#050505] border-t border-white/5 overflow-hidden"
-      onWheel={handleWheel}
-    >
-      {/* Unified Scroll Container */}
+    <div className="flex-1 flex flex-col bg-[#050505] border-t border-white/5 overflow-hidden">
       <div 
-        className="flex-1 overflow-x-auto overflow-y-hidden custom-scrollbar-thin relative bg-black/20 group/timeline"
-        onClick={handleTimelineClick}
+        ref={scrollContainerRef}
+        className="flex-1 overflow-x-auto overflow-y-hidden custom-scrollbar-thin relative bg-black/20"
       >
-        <div className="relative h-full" style={{ width: totalDuration * pixelsPerSecond }}>
-          
+        {/* Fixed Lane Labels */}
+        <div className="sticky left-0 top-0 bottom-0 z-40 pointer-events-none flex flex-col absolute h-full">
+          <div style={{ width: LANE_W }} className="h-8 bg-[#050505] border-b border-r border-white/5 flex items-center justify-center">
+            <span className="text-[6px] font-black text-neutral-600">TC</span>
+          </div>
+          <div style={{ width: LANE_W }} className="h-24 bg-[#050505]/90 border-r border-white/5 flex items-center justify-center">
+            <span className="text-[7px] font-black text-neutral-600 uppercase tracking-widest" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>VISUAL</span>
+          </div>
+          <div style={{ width: LANE_W }} className="h-16 bg-[#050505]/90 border-r border-white/5 flex items-center justify-center">
+            <span className="text-[7px] font-black text-neutral-600 uppercase tracking-widest" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>AUDIO</span>
+          </div>
+        </div>
+
+        <div 
+          className="relative h-full cursor-crosshair"
+          style={{ width: Math.max(totalDuration * pixelsPerSecond + LANE_W, 400) }}
+          onClick={handleInnerClick}
+        >
           {/* Time Ruler */}
-          <div className="h-8 border-b border-white/5 flex bg-black/40 relative">
+          <div className="h-8 border-b border-white/5 flex bg-black/60 relative">
+            <div style={{ minWidth: LANE_W }} className="border-r border-white/5" />
             {Array.from({ length: Math.ceil(totalDuration) + 1 }).map((_, i) => (
               <div 
                 key={`time-${i}`} 
                 className="shrink-0 border-l border-white/10 flex flex-col justify-end pb-1 pl-1"
                 style={{ width: pixelsPerSecond }}
               >
-                <span className="text-[7px] font-black text-neutral-500">{i}s</span>
+                {(pixelsPerSecond >= 20 || i % 5 === 0) && (
+                  <span className="text-[7px] font-black text-neutral-500">{i}s</span>
+                )}
               </div>
             ))}
           </div>
 
           {/* VISUAL TRACK */}
-          <div className="absolute top-12 left-0 right-0 h-24 flex gap-0.5">
+          <div className="absolute top-8 right-0 h-24 flex gap-[2px]" style={{ left: LANE_W }}>
             {scenes.map((scene, sceneIdx) => {
               const { start, duration } = sceneStarts[sceneIdx];
               const isSelected = selectedIndex === sceneIdx;
               const clipCount = scene.searchQueries.length;
               const clipDuration = duration / Math.max(1, clipCount);
-
               return (
                 <div 
                   key={`track-scene-${sceneIdx}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelect(sceneIdx, start);
-                  }}
-                  className={`flex gap-px shrink-0 transition-all cursor-pointer ${isSelected ? 'z-10' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); onSelect(sceneIdx, start); }}
+                  className={`flex gap-px shrink-0 relative cursor-pointer transition-all ${isSelected ? 'z-10' : ''}`}
                   style={{ width: duration * pixelsPerSecond }}
                 >
+                  {/* Scene separator line */}
+                  <div className={`absolute left-0 top-0 bottom-0 w-[2px] z-10 ${isSelected ? 'bg-primary' : 'bg-white/15'}`} />
+                  {/* Scene number badge */}
+                  <div className={`absolute top-1 left-2 z-20 px-1 py-0.5 rounded text-[6px] font-black leading-none pointer-events-none select-none ${
+                    isSelected ? 'bg-primary text-white shadow-[0_0_8px_rgba(59,130,246,0.6)]' : 'bg-black/70 text-neutral-500'
+                  }`}>
+                    S{sceneIdx + 1}
+                  </div>
                   {scene.searchQueries.map((query: string, clipIdx: number) => {
                     const asset = storyboardAssets[`${sceneIdx}_${clipIdx}`];
-                    
                     return (
                       <div 
                         key={`clip-${sceneIdx}-${clipIdx}`}
-                        className={`relative flex-1 h-full border border-white/5 overflow-hidden transition-all group/clip
-                          ${isSelected ? 'bg-primary/10 border-primary/30' : 'bg-neutral-900/40 hover:bg-neutral-800/60'}`}
+                        className={`relative flex-1 h-full border border-white/5 overflow-hidden transition-all group/clip ${
+                          isSelected ? 'bg-primary/10 border-primary/20' : 'bg-neutral-900/40 hover:bg-neutral-800/60'
+                        }`}
                       >
                         {asset ? (
                           <>
-                            <img src={asset.thumbnail} className="w-full h-full object-cover opacity-60 group-hover/clip:opacity-100 transition-opacity" alt="" />
-                            {asset.type === 'video' && <div className="absolute top-1 right-1 px-1 rounded-sm bg-black/60 text-[6px] font-black text-white">MOV</div>}
+                            <img src={asset.thumbnail} className="w-full h-full object-cover opacity-60 group-hover/clip:opacity-90 transition-opacity" alt="" />
+                            {asset.type === 'video' && (
+                              <div className="absolute top-1 right-1 px-1 rounded bg-black/70 text-[5px] font-black text-blue-400">MOV</div>
+                            )}
                           </>
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-black/40">
                             <Sparkles className="w-3 h-3 text-neutral-800 animate-pulse" />
                           </div>
                         )}
-                        <div className="absolute bottom-1 left-1 right-1 flex justify-between items-end">
-                           <span className="text-[5px] font-black text-white/30 uppercase tracking-tighter truncate max-w-[40px]">{query}</span>
-                           <span className="text-[5px] font-black text-primary/60">{clipDuration.toFixed(1)}s</span>
+                        <div className="absolute bottom-0.5 left-1 right-1 flex justify-end items-end">
+                          <span className="text-[5px] font-black text-primary/50">{clipDuration.toFixed(1)}s</span>
                         </div>
-                        {isSelected && clipIdx === 0 && <div className="absolute inset-x-0 top-0 h-0.5 bg-primary animate-pulse" />}
+                        {isSelected && clipIdx === 0 && <div className="absolute inset-x-0 top-0 h-[2px] bg-primary" />}
                       </div>
                     );
                   })}
@@ -144,52 +185,81 @@ function MasterTimeline({
           </div>
 
           {/* AUDIO TRACK */}
-          <div className="absolute top-40 left-0 right-0 h-16 flex gap-0.5">
-             {scenes.map((scene, idx) => {
-               const { duration } = sceneStarts[idx];
-               const isSelected = selectedIndex === idx;
-
-               return (
-                 <div 
-                   key={`track-aud-${idx}`}
-                   className={`relative shrink-0 border border-white/5 flex flex-col justify-center px-3
-                     ${isSelected ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-neutral-950/60'}`}
-                   style={{ width: duration * pixelsPerSecond }}
-                 >
-                   <div className="h-5 w-full bg-emerald-500/5 rounded-sm relative overflow-hidden group/audio">
-                      <div className="absolute inset-0 flex items-center gap-[1px] px-1">
-                        {Array.from({ length: Math.floor((duration * pixelsPerSecond) / 3) }).map((_, i) => {
-                          const val = Math.sin(i * 0.5) * Math.cos(idx * 2) * Math.sin(i * 0.2);
-                          const height = 20 + Math.abs(val) * 70;
-                          return (
-                            <div 
-                              key={i} 
-                              className={`w-[2px] rounded-full transition-all duration-700
-                                ${isSelected ? 'bg-emerald-500/50' : 'bg-neutral-700'}`} 
-                              style={{ height: `${height}%` }} 
-                            />
-                          );
-                        })}
+          <div className="absolute top-32 right-0 h-16 flex gap-[2px]" style={{ left: LANE_W }}>
+            {scenes.map((scene, idx) => {
+              const { duration } = sceneStarts[idx];
+              const isSelected = selectedIndex === idx;
+              return (
+                <div 
+                  key={`track-aud-${idx}`}
+                  onClick={(e) => { e.stopPropagation(); onSelect(idx, sceneStarts[idx].start); }}
+                  className={`relative shrink-0 border border-white/5 flex flex-col justify-center px-2 cursor-pointer transition-all ${
+                    isSelected ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-neutral-950/60 hover:bg-neutral-900/40'
+                  }`}
+                  style={{ width: duration * pixelsPerSecond }}
+                >
+                  <div className="h-6 w-full bg-emerald-500/5 rounded-sm relative overflow-hidden">
+                    <div className="absolute inset-0 flex items-center gap-[1px] px-1">
+                      {Array.from({ length: Math.max(1, Math.floor((duration * pixelsPerSecond) / 3)) }).map((_, i) => {
+                        const val = Math.sin(i * 0.5) * Math.cos(idx * 2) * Math.sin(i * 0.2);
+                        const h = 20 + Math.abs(val) * 70;
+                        return (
+                          <div 
+                            key={i}
+                            className={`w-[2px] rounded-full ${isSelected ? 'bg-emerald-500/60' : 'bg-neutral-700'}`}
+                            style={{ height: `${h}%` }}
+                          />
+                        );
+                      })}
+                    </div>
+                    {/* BUG FIX 3: VU meter via inline style, not CSS class which JIT may miss */}
+                    {isSelected && isPlaying && (
+                      <div className="absolute inset-0 flex items-center justify-center gap-[2px]">
+                        {[0.3, 0.6, 1, 0.8, 0.5, 0.9, 0.4].map((amp, i) => (
+                          <div
+                            key={i}
+                            className="w-[2px] bg-emerald-400 rounded-full"
+                            style={{
+                              animation: `vu-meter ${0.4 + amp * 0.4}s ease-in-out ${i * 0.07}s infinite alternate`,
+                              height: `${30 + amp * 60}%`
+                            }}
+                          />
+                        ))}
                       </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-                   </div>
-                   <div className="mt-1.5 flex items-center justify-between">
-                     <p className={`text-[6px] font-black uppercase tracking-widest ${isSelected ? 'text-emerald-500' : 'text-neutral-600'}`}>
-                       {scene.audioUrl ? 'VOICE MASTER' : 'SILENT DRAFT'}
-                     </p>
-                     <p className="text-[5px] font-bold text-neutral-700 uppercase">{duration.toFixed(1)}s</p>
-                   </div>
-                 </div>
-               );
-             })}
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
+                  </div>
+                  {pixelsPerSecond >= 15 && (
+                    <div className="mt-1 flex items-center justify-between">
+                      <p className={`text-[6px] font-black uppercase tracking-widest ${isSelected ? 'text-emerald-400' : 'text-neutral-600'}`}>
+                        {scene.audioUrl ? '▶ VOICE' : 'SILENT'}
+                      </p>
+                      <p className="text-[5px] font-bold text-neutral-700">{duration.toFixed(1)}s</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
-          {/* PLAYHEAD */}
+          {/* PLAYHEAD — triangle head, offset by lane width */}
           <div 
-            className="absolute top-0 bottom-0 w-[2px] bg-primary z-50 pointer-events-none shadow-[0_0_15px_rgba(59,130,246,0.8)] transition-all duration-75" 
-            style={{ left: currentTime * pixelsPerSecond }} 
+            className="absolute top-0 bottom-0 w-[2px] bg-primary z-50 pointer-events-none"
+            style={{ 
+              left: (currentTime * pixelsPerSecond) + LANE_W,
+              boxShadow: '0 0 10px rgba(59,130,246,0.8), 0 0 3px rgba(255,255,255,0.3)'
+            }} 
           >
-            <div className="absolute -top-1 -left-2 w-4 h-4 bg-primary rotate-45 rounded-sm" />
+            {/* Triangle head */}
+            <div
+              className="absolute -left-[7px] top-0"
+              style={{
+                width: 0, height: 0,
+                borderLeft: '8px solid transparent',
+                borderRight: '8px solid transparent',
+                borderTop: '10px solid #3b82f6',
+              }}
+            />
           </div>
         </div>
       </div>
@@ -414,6 +484,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [timelineScroll, setTimelineScroll] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Calculate scene start times for global sync
@@ -431,6 +502,21 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
   const [isCinemaMode, setIsCinemaMode] = useState(false);
   const [cinemaSceneIdx, setCinemaSceneIdx] = useState(0);
   const [cinemaClipIdx, setCinemaClipIdx] = useState(0);
+
+  // BUG FIX: Reset playhead to 0 when first entering script/timeline view
+  const didEnterTimeline = useRef(false);
+  useEffect(() => {
+    if (localViewMode === 'script' && !didEnterTimeline.current) {
+      didEnterTimeline.current = true;
+      setCurrentTime(0);
+      setCinemaSceneIdx(0);
+      setIsPlaying(false);
+    }
+    if (localViewMode !== 'script') {
+      didEnterTimeline.current = false;
+      setIsPlaying(false); // Stop audio when leaving timeline view
+    }
+  }, [localViewMode]);
 
   // ESTIMATION HELPERS
   const estimateDuration = (text: string) => Math.max(2, text.split(' ').length / 2.5); // ~150 wpm
@@ -558,10 +644,10 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
           const isNewSrc = audioRef.current.src !== scene.audioUrl;
           if (isNewSrc) {
             audioRef.current.src = scene.audioUrl;
-            // Use pendingSeek if it was set by onSeek, otherwise 0
             audioRef.current.currentTime = (audioRef.current as any).pendingSeek || 0;
-            (audioRef.current as any).pendingSeek = 0; // Clear it
+            (audioRef.current as any).pendingSeek = 0;
           }
+          audioRef.current.playbackRate = playbackRate;
           audioRef.current.play().catch(e => console.log("Audio play blocked", e));
         }
       } else {
@@ -570,7 +656,12 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     } else {
       audioRef.current?.pause();
     }
-  }, [cinemaSceneIdx, localViewMode, selectedCommit, isPlaying]);
+  }, [cinemaSceneIdx, localViewMode, selectedCommit, isPlaying, playbackRate]);
+
+  // Sync playbackRate changes to audio element even while playing
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.playbackRate = playbackRate;
+  }, [playbackRate]);
 
   // Keyboard Orchestration
   useEffect(() => {
@@ -1011,24 +1102,29 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                               onClick={() => setIsPlaying(!isPlaying)}
                               className="w-20 h-20 rounded-full bg-primary/20 backdrop-blur-xl border border-primary/40 flex items-center justify-center text-primary hover:scale-110 active:scale-95 transition-all shadow-[0_0_40px_rgba(59,130,246,0.3)]"
                             >
-                              {isPlaying ? <MoreVertical className="w-8 h-8 rotate-90" /> : <Play className="w-8 h-8 ml-1" fill="currentColor" />}
+                              {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" fill="currentColor" />}
                             </button>
                           </div>
 
-                          <div className="absolute top-6 left-6 px-4 py-2 bg-black/40 backdrop-blur-xl border border-white/10 rounded-xl flex items-center gap-3 z-20 animate-in fade-in">
-                            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                            <span className="text-[10px] font-black text-white uppercase tracking-widest">
-                              {selectedCommit.production_bundle.scenes[cinemaSceneIdx].audioUrl ? 'Audio Ready' : 'Silent Track'}
-                            </span>
-                            <div className="flex gap-0.5 h-3 items-end ml-1">
-                              {[1, 2, 3, 4].map(i => (
-                                <div 
-                                  key={i} 
-                                  className={`w-0.5 bg-primary rounded-full transition-all duration-150 ${isPlaying ? 'animate-vu-meter' : 'h-1 opacity-30'}`}
-                                  style={{ animationDelay: `${i * 0.1}s` }}
-                                />
-                              ))}
-                            </div>
+                          <div className="absolute top-4 left-4 px-3 py-1.5 bg-black/50 backdrop-blur-xl border border-white/10 rounded-xl flex items-center gap-2 z-20">
+                             <div className={`w-1.5 h-1.5 rounded-full ${isPlaying ? 'bg-primary animate-pulse' : 'bg-neutral-600'}`} />
+                             <span className="text-[9px] font-black text-white uppercase tracking-widest">
+                               {selectedCommit.production_bundle.scenes[cinemaSceneIdx].audioUrl ? (isPlaying ? 'Playing' : 'Audio Ready') : 'Silent Track'}
+                             </span>
+                             {isPlaying && (
+                               <div className="flex gap-0.5 h-3 items-end ml-1">
+                                 {[0.4, 0.8, 1.0, 0.6].map((amp, i) => (
+                                   <div 
+                                     key={i}
+                                     className="w-0.5 bg-primary rounded-full"
+                                     style={{
+                                       animation: `vu-meter ${0.3 + amp * 0.4}s ease-in-out ${i * 0.08}s infinite alternate`,
+                                       height: `${30 + amp * 70}%`
+                                     }}
+                                   />
+                                 ))}
+                               </div>
+                             )}
                           </div>
 
                           <div className="absolute bottom-6 left-6 right-6 p-6 bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl animate-in slide-in-from-bottom-4 z-20">
@@ -1116,39 +1212,75 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                     </div>
                   </div>
 
+                  {/* Timeline Toolbar */}
+                  <div className="px-6 py-2 bg-black/80 border-y border-white/5 flex items-center gap-4">
+                    {/* Return to Start */}
+                    <button 
+                      onClick={() => { setCurrentTime(0); setCinemaSceneIdx(0); setIsPlaying(false); if (audioRef.current) { audioRef.current.currentTime = 0; } }}
+                      className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 text-neutral-500 hover:text-white transition-all"
+                      title="Return to start"
+                    >
+                      <SkipBack className="w-3.5 h-3.5" />
+                    </button>
+                    {/* Play / Pause */}
+                    <button 
+                      onClick={() => setIsPlaying(p => !p)}
+                      className={`p-1.5 rounded-md transition-all ${
+                        isPlaying ? 'bg-primary text-white' : 'bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white'
+                      }`}
+                      title="Play / Pause (Space)"
+                    >
+                      {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" fill="currentColor" />}
+                    </button>
+                    {/* Timecode */}
+                    <div className="font-mono text-[11px] text-white/60 tabular-nums min-w-[90px]">
+                      {(() => { const m = Math.floor(currentTime/60).toString().padStart(2,'0'); const s = Math.floor(currentTime%60).toString().padStart(2,'0'); const f = Math.floor((currentTime%1)*10); return `${m}:${s}.${f}`; })()}
+                      <span className="text-neutral-700 mx-1">/</span>
+                      {(() => { const tot = selectedCommit?.production_bundle?.scenes?.reduce((a:number,s:any) => a+(s.duration||estimateDuration(s.narration)),0)||0; const m = Math.floor(tot/60).toString().padStart(2,'0'); const s = Math.floor(tot%60).toString().padStart(2,'0'); return `${m}:${s}`; })()}
+                    </div>
+                    <div className="h-4 w-px bg-white/10" />
+                    {/* Zoom */}
+                    <span className="text-[9px] font-black text-neutral-600 uppercase tracking-widest">Zoom</span>
+                    <input 
+                      type="range" min="10" max="200" step="5" 
+                      value={zoomLevel} 
+                      onChange={(e) => setZoomLevel(parseInt(e.target.value))}
+                      className="w-28 accent-primary"
+                    />
+                    <span className="text-[9px] font-mono text-neutral-600">{zoomLevel}px/s</span>
+                    <div className="h-4 w-px bg-white/10" />
+                    {/* Playback Speed */}
+                    <span className="text-[9px] font-black text-neutral-600 uppercase tracking-widest">Speed</span>
+                    {[0.5, 1, 1.5, 2].map(rate => (
+                      <button
+                        key={rate}
+                        onClick={() => setPlaybackRate(rate)}
+                        className={`px-2 py-0.5 rounded text-[9px] font-black transition-all ${
+                          playbackRate === rate
+                            ? 'bg-primary text-white'
+                            : 'bg-white/5 text-neutral-500 hover:text-white hover:bg-white/10'
+                        }`}
+                      >
+                        {rate}x
+                      </button>
+                    ))}
+                    <div className="ml-auto flex items-center gap-3">
+                      <span className="text-[9px] font-black text-neutral-600 uppercase">Scene {cinemaSceneIdx + 1}/{selectedCommit?.production_bundle?.scenes?.length||0}</span>
+                      <button onClick={() => setIsCinemaMode(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-black transition-all">
+                        <Play size={9} fill="currentColor" /> Full Preview
+                      </button>
+                    </div>
+                  </div>
+
                   {/* BOTTOM PANE: MASTER TIMELINE CANVAS */}
                   <div className="h-[320px] shrink-0 flex flex-col">
-                    <div className="px-8 py-3 bg-black/60 border-y border-white/5 flex items-center justify-between">
-                       <div className="flex items-center gap-6">
-                         <div className="flex items-center gap-3">
-                           <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Timeline Zoom</span>
-                           <input 
-                             type="range" min="10" max="200" step="5" 
-                             value={zoomLevel} 
-                             onChange={(e) => setZoomLevel(parseInt(e.target.value))}
-                             className="w-32 accent-primary"
-                           />
-                         </div>
-                         <div className="h-4 w-px bg-white/10" />
-                         <div className="flex items-center gap-4">
-                           <button onClick={() => setIsCinemaMode(true)} className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-black transition-all">
-                             <Play size={10} fill="currentColor" /> Full Preview
-                           </button>
-                         </div>
-                       </div>
-                       <div className="flex items-center gap-4">
-                          <div className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] font-mono text-neutral-400">
-                             Total Length: {selectedCommit?.production_bundle?.scenes?.reduce((acc: number, s: any) => acc + (s.duration || estimateDuration(s.narration)), 0).toFixed(1)}s
-                          </div>
-                       </div>
-                    </div>
-
                     <MasterTimeline 
                       scenes={selectedCommit?.production_bundle?.scenes || []}
                       storyboardAssets={storyboardAssets}
                       zoomLevel={zoomLevel}
                       selectedIndex={cinemaSceneIdx}
                       currentTime={currentTime}
+                      isPlaying={isPlaying}
                       onSelect={(idx, startTime) => {
                         setCinemaSceneIdx(idx);
                         if (audioRef.current) {
