@@ -492,6 +492,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
   // VOICE STUDIO STATES
   const [selectedVoiceId, setSelectedVoiceId] = useState(AVAILABLE_VOICES[0].id);
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
+  const [isHydrating, setIsHydrating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [generatingScenes, setGeneratingScenes] = useState<Set<number>>(new Set());
 
@@ -600,33 +601,51 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     setIsGeneratingAll(false);
   };
 
+  const handleHydrateAllAssets = async () => {
+    if (!selectedCommit?.production_bundle?.scenes) return;
+    setIsHydrating(true);
+    const allQueries: { query: string, type: 'video' | 'image' | 'ai_gen' }[] = [];
+    selectedCommit.production_bundle.scenes.forEach(s => {
+      s.searchQueries.forEach(q => {
+        allQueries.push({ query: q, type: (s as any).assetType || 'video' });
+      });
+    });
+    if (allQueries.length > 0) {
+      await fetchPexelsAssets(allQueries);
+    }
+    setIsHydrating(false);
+  };
+
   const storyboardAssets = useMemo(() => {
     const mappings: Record<string, any> = {};
     const seenAssetIds = new Set<string | number>();
     if (!selectedCommit?.production_bundle?.scenes) return mappings;
 
     selectedCommit.production_bundle.scenes.forEach((scene, sIdx) => {
-      const query = scene.searchQueries[0];
-      const type = scene.assetType || 'video';
-      const results = pexelsAssets[query];
+      scene.searchQueries.forEach((query, qIdx) => {
+        const type = (scene as any).assetType || 'video';
+        const results = pexelsAssets[query];
 
-      if (results && results.length > 0) {
-        const skipCount = assetCycleMap[query] || 0;
-        
-        // Find a unique asset if possible
-        let selected = results.find(v => !seenAssetIds.has(v.id));
-        
-        if (!selected) {
-          const fallbackIdx = (sIdx + skipCount) % results.length;
-          selected = results[fallbackIdx];
-        } else if (skipCount > 0) {
-          const matches = results.filter(v => !seenAssetIds.has(v.id));
-          selected = matches[skipCount % matches.length] || selected;
+        if (results && results.length > 0) {
+          const skipCount = assetCycleMap[query] || 0;
+          
+          // Find a unique asset if possible
+          let selected = results.find(v => !seenAssetIds.has(v.id));
+          
+          if (!selected) {
+            const fallbackIdx = (sIdx + qIdx + skipCount) % results.length;
+            selected = results[fallbackIdx];
+          } else if (skipCount > 0) {
+            const matches = results.filter(v => !seenAssetIds.has(v.id));
+            selected = matches[skipCount % matches.length] || selected;
+          }
+
+          if (selected) {
+            seenAssetIds.add(selected.id);
+            mappings[`${sIdx}_${qIdx}`] = selected;
+          }
         }
-
-        seenAssetIds.add(selected.id);
-        mappings[`${sIdx}_0`] = selected;
-      }
+      });
     });
     return mappings;
   }, [selectedCommit, pexelsAssets, assetCycleMap]);
@@ -1281,6 +1300,33 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                       </button>
                     ))}
                     <div className="ml-auto flex items-center gap-3">
+                      <button 
+                        onClick={handleHydrateAllAssets}
+                        disabled={isHydrating}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-widest transition-all ${
+                          isHydrating 
+                            ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' 
+                            : 'bg-white/5 text-neutral-400 border-white/10 hover:bg-white/10 hover:text-white'
+                        }`}
+                      >
+                        {isHydrating ? <Loader2 size={10} className="animate-spin" /> : <Layers size={10} />}
+                        {isHydrating ? "Syncing..." : "Sync Visuals"}
+                      </button>
+
+                      <button 
+                        onClick={handleGenerateAllAudio}
+                        disabled={isGeneratingAll}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-widest transition-all ${
+                          isGeneratingAll 
+                            ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' 
+                            : 'bg-white/5 text-neutral-400 border-white/10 hover:bg-white/10 hover:text-white'
+                        }`}
+                      >
+                        {isGeneratingAll ? <Loader2 size={10} className="animate-spin" /> : <Volume2 size={10} />}
+                        {isGeneratingAll ? `${Math.round(generationProgress)}%` : "Sync Audio"}
+                      </button>
+
+                      <div className="w-px h-4 bg-white/10 mx-1" />
                       <span className="text-[9px] font-black text-neutral-600 uppercase">Scene {cinemaSceneIdx + 1}/{selectedCommit?.production_bundle?.scenes?.length||0}</span>
                       <button onClick={() => setIsCinemaMode(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-black transition-all">
                         <Play size={9} fill="currentColor" /> Full Preview
