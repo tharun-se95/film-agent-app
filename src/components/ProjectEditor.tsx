@@ -478,7 +478,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     logs, runAgent, fetchDrafts, fetchProjects,
     agentPanelCollapsed, setAgentPanelCollapsed,
     mobileSidebarOpen, setMobileSidebarOpen,
-    pexelsAssets, updateDraftBundle
+    pexelsAssets, updateDraftBundle, fetchPexelsAssets
   } = useAppContext();
 
   const [localViewMode, setLocalViewMode] = useState<"script" | "assets">("script");
