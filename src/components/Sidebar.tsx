@@ -42,32 +42,45 @@ export default function Sidebar() {
       )}
 
       <nav className={`
-        fixed inset-y-0 left-0 lg:relative z-[70] lg:z-50
-        ${sidebarCollapsed ? "lg:w-20" : "lg:w-72"} 
-        ${mobileSidebarOpen ? "translate-x-0 w-[85vw] max-w-[300px]" : "-translate-x-full lg:translate-x-0 w-[85vw] max-w-[300px] lg:w-72"}
-        border-r border-white/5 bg-[#0a0a0a] flex flex-col items-stretch overflow-hidden transition-all duration-300 ease-in-out
+        fixed inset-y-0 left-0 lg:static z-[70] lg:z-50
+        ${sidebarCollapsed ? "lg:w-20" : "lg:w-80"} 
+        ${mobileSidebarOpen ? "translate-x-0 w-[85vw] max-w-[320px]" : "-translate-x-full lg:translate-x-0 w-[85vw] max-w-[320px]"}
+        border-r border-white/10 bg-[#0d0d0d] flex flex-col items-stretch overflow-hidden transition-all duration-500 ease-in-out shadow-2xl shadow-black/50
       `}>
         
         {/* Brand Header */}
-        <div className={`p-6 flex items-center justify-between shrink-0 mb-2 ${sidebarCollapsed ? "px-4" : ""}`}>
+        <div className={`flex items-center shrink-0 mb-4 transition-all duration-500 ${sidebarCollapsed ? "p-4 justify-center" : "p-6 justify-between"}`}>
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
               <Clapperboard className="w-5 h-5 text-white" />
             </div>
             {!sidebarCollapsed && (
-              <div className="animate-in fade-in slide-in-from-left-2 duration-300">
+              <div className="animate-in fade-in slide-in-from-left-2 duration-500">
                 <h1 className="font-black text-sm tracking-tight text-white">GRAVITY</h1>
                 <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest">Studio 1.0</p>
               </div>
             )}
           </div>
-          <button 
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="hidden lg:block p-2 rounded-lg hover:bg-white/5 text-neutral-500 hover:text-white transition-all"
-          >
-            {sidebarCollapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
-          </button>
+          {!sidebarCollapsed && (
+            <button 
+              onClick={() => setSidebarCollapsed(true)}
+              className="p-2 rounded-lg hover:bg-white/5 text-neutral-500 hover:text-white transition-all"
+            >
+              <PanelLeftClose className="w-4 h-4" />
+            </button>
+          )}
         </div>
+
+        {sidebarCollapsed && (
+          <div className="px-4 mb-6 flex justify-center">
+             <button 
+                onClick={() => setSidebarCollapsed(false)}
+                className="p-3 rounded-xl bg-white/[0.03] border border-white/10 text-neutral-500 hover:text-white transition-all"
+             >
+                <PanelLeft className="w-4 h-4" />
+             </button>
+          </div>
+        )}
 
         {/* Search Bar */}
         {!sidebarCollapsed && (
@@ -86,18 +99,18 @@ export default function Sidebar() {
         )}
 
         {/* Actions */}
-        <div className={`flex gap-1.5 px-4 mb-6 ${sidebarCollapsed ? "flex-col" : ""}`}>
+        <div className={`flex gap-2 px-4 mb-8 ${sidebarCollapsed ? "flex-col items-center" : ""}`}>
           <button 
             onClick={() => setIsCreatingProject(true)}
-            className={`group flex items-center justify-center rounded-xl bg-primary text-white hover:scale-[1.05] active:scale-95 transition-all shadow-lg shadow-primary/20 ${sidebarCollapsed ? "w-12 h-12 p-0 mx-auto" : "flex-1 p-3 gap-2.5"}`}
+            className={`group flex items-center justify-center rounded-xl bg-primary text-white hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primary/20 ${sidebarCollapsed ? "w-12 h-12 p-0" : "flex-1 p-3.5 gap-3"}`}
             title="New Project"
           >
             <Plus className="w-4 h-4 shrink-0 transition-transform group-hover:rotate-90" />
-            {!sidebarCollapsed && <span className="text-[10px] font-black uppercase tracking-widest animate-in fade-in slide-in-from-left-2 transition-all">New Project</span>}
+            {!sidebarCollapsed && <span className="text-[10px] font-black uppercase tracking-[0.15em] animate-in fade-in slide-in-from-left-2 transition-all">New Project</span>}
           </button>
           <button 
             onClick={() => setIsCreatingChannel(true)}
-            className={`flex items-center justify-center rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-all ${sidebarCollapsed ? "w-12 h-12 mx-auto" : "px-4"}`}
+            className={`flex items-center justify-center rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] text-neutral-400 hover:text-white transition-all shadow-sm ${sidebarCollapsed ? "w-12 h-12" : "px-4"}`}
             title="Establish Channel"
           >
             <Globe className="w-4 h-4 shrink-0" />
@@ -165,10 +178,10 @@ export default function Sidebar() {
         </div>
 
         {/* Footer / User */}
-        <div className={`p-4 border-t border-white/5 mt-auto ${sidebarCollapsed ? "px-2" : ""}`}>
+        <div className={`border-t border-white/5 mt-auto transition-all duration-500 ${sidebarCollapsed ? "p-3" : "p-4"}`}>
           <div className={`flex items-center rounded-xl hover:bg-white/5 transition-all group cursor-pointer ${sidebarCollapsed ? "justify-center p-2 h-12" : "justify-between p-2"}`}>
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-700 flex items-center justify-center border border-white/10 group-hover:border-primary/50 transition-colors shrink-0`}>
+              <div className={`w-9 h-9 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-700 flex items-center justify-center border border-white/10 group-hover:border-primary/50 transition-colors shrink-0`}>
                 <User className="w-4 h-4 text-neutral-400 group-hover:text-white" />
               </div>
               {!sidebarCollapsed && (

@@ -6,31 +6,18 @@ const PEXELS_API_KEY = process.env.PEXELS_API_KEY || "rRAs0Hia2ZpYh2X9X30e06m5Xh
 export async function GET(req: NextRequest) {
   const query = req.nextUrl.searchParams.get("query");
   const orientation = req.nextUrl.searchParams.get("orientation") || "landscape";
+  const type = req.nextUrl.searchParams.get("type") || "video"; // 'video' or 'photo'
   
   if (!query) {
     return NextResponse.json({ error: "Missing query" }, { status: 400 });
   }
 
-  // MOCK MODE: Return sample data if no API key is set
-  if (!PEXELS_API_KEY) {
-    console.warn("LOG: [Pexels Proxy] API Key missing. Returning mock assets.");
-    return NextResponse.json({
-      query,
-      videos: [
-        {
-          id: 1,
-          image: "https://images.pexels.com/videos/3196605/free-video-3196605.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          url: "https://www.pexels.com/video/vibrant-futuristic-city-3196605/",
-          video_files: [
-            { link: "https://player.vimeo.com/external/371433846.sd.mp4?s=236da37574a3d43d1f07.mp4" }
-          ]
-        }
-      ]
-    });
-  }
-
   try {
-    const response = await fetch(`https://api.pexels.com/videos/search?query=${encodeURIComponent(query)}&per_page=1&orientation=${orientation}`, {
+    const endpoint = type === "video" 
+      ? `https://api.pexels.com/videos/search?query=${encodeURIComponent(query)}&per_page=15&orientation=${orientation}`
+      : `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=15&orientation=${orientation}`;
+
+    const response = await fetch(endpoint, {
       headers: {
         Authorization: PEXELS_API_KEY
       }

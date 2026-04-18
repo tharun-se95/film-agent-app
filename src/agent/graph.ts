@@ -13,39 +13,36 @@ const API_KEY = process.env.GROQ_API_KEY;
 const BASE_URL = "https://api.groq.com/openai/v1";
 const MODEL_NAME = "llama-3.1-8b-instant"; // GHOST BRAIN MODE: Temporarily using 8b with advanced prompting
 
-// 1. SURGEON (8B - Simulating 70B): Forced pedantry for narrative logic
+// 1. SURGEON (Gemini 2.5 Flash): Elite conceptualization and visual metaphor engineering
 const surgeonLlm = new ChatOpenAI({
-  modelName: MODEL_NAME,
-  temperature: 0.8, // Slightly higher to force creative leaps in smaller model
-  apiKey: API_KEY,
-  configuration: { baseURL: BASE_URL },
-  timeout: 30000 
+  modelName: "gemini-2.5-flash",
+  temperature: 0.7,
+  apiKey: process.env.VITE_GEMINI_API_KEY,
+  configuration: { baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/" },
 });
 
-// 2. EVALUATOR (70B): Zero-temp for deterministic grading
+// 2. EVALUATOR (Llama 3.3 70B): High-IQ logic and grading
 const evaluatorLlm = new ChatOpenAI({
-  modelName: MODEL_NAME,
+  modelName: "llama-3.3-70b-versatile",
   temperature: 0.0,
-  apiKey: API_KEY,
-  configuration: { baseURL: BASE_URL },
-  timeout: 20000
+  apiKey: process.env.GROQ_API_KEY,
+  configuration: { baseURL: "https://api.groq.com/openai/v1" },
 });
 
 // 3. NURSE (8B): High-speed, high-volume for technical checklists and queries
 const nurseLlm = new ChatOpenAI({
   modelName: "llama-3.1-8b-instant",
   temperature: 0.5,
-  apiKey: API_KEY,
-  configuration: { baseURL: BASE_URL }
+  apiKey: process.env.GROQ_API_KEY,
+  configuration: { baseURL: "https://api.groq.com/openai/v1" }
 });
 
 // 4. THE BOSS (70B): High-Fidelity Strategic Brain for Viral Architecting
 const bossLlm = new ChatOpenAI({
   modelName: "llama-3.3-70b-versatile",
   temperature: 0.7,
-  apiKey: API_KEY,
-  configuration: { baseURL: BASE_URL },
-  timeout: 45000
+  apiKey: process.env.GROQ_API_KEY,
+  configuration: { baseURL: "https://api.groq.com/openai/v1" },
 });
 
 // Zod Schema for Strategic Suggestions
@@ -103,16 +100,18 @@ export const AgentState = Annotation.Root({
     reducer: (current, update) => current.concat(update),
     default: () => [],
   }),
-  // Extracted values for immediate UI rendering logic
+  // Latest script draft
   draftInfo: Annotation<string>({
     reducer: (current, update) => update,
     default: () => "",
   }),
+  // Critic's current score
   criticScore: Annotation<number>({
     reducer: (current, update) => update,
     default: () => 0,
   }),
-  criticNotes: Annotation<string>({
+  // Project-level configuration
+  projectId: Annotation<string>({
     reducer: (current, update) => update,
     default: () => "",
   }),
@@ -120,86 +119,45 @@ export const AgentState = Annotation.Root({
     reducer: (current, update) => current + update,
     default: () => 0,
   }),
-  // Project tracking
-  projectId: Annotation<string>({
+  // YouTube specific states
+  nicheOpportunities: Annotation<any[]>({
     reducer: (current, update) => update,
-    default: () => "",
-  }),
-  // YouTube Strategist Fields
-  contentMode: Annotation<"FILM" | "YOUTUBE">({
-    reducer: (current, update) => update,
-    default: () => "FILM",
+    default: () => [],
   }),
   nicheData: Annotation<string>({
     reducer: (current, update) => update,
     default: () => "",
   }),
-  hooks: Annotation<string[]>({
-    reducer: (current, update) => current.concat(update),
-    default: () => [],
-  }),
-  visualCues: Annotation<string>({
-    reducer: (current, update) => update,
-    default: () => "",
-  }),
-  ytMetadata: Annotation<{ title: string; description: string; tags: string[] }>({
-    reducer: (current, update) => update,
-    default: () => ({ title: "", description: "", tags: [] }),
-  }),
   retentionScore: Annotation<number>({
     reducer: (current, update) => update,
     default: () => 0,
-  }),
-  retentionNotes: Annotation<string>({
-    reducer: (current, update) => update,
-    default: () => "",
-  }),
-  productionBundle: Annotation<{
-    thumbnailConcepts: { title: string; prompt: string }[];
-    brollChecklist: string[];
-    brollSearchQueries?: string[];
-    sfxChecklist?: string[];
-    vfxRequirements?: string[];
-    musicInspiration?: string;
-    scenes?: {
-      title: string;
-      narration: string;
-      visualCue: string;
-      searchQueries: string[];
-    }[];
-    voiceGuidance: string;
-    cleanNarratorScript?: string;
-  }>({
-    reducer: (current, update) => ({ ...current, ...update }),
-    default: () => ({
-      thumbnailConcepts: [],
-      brollChecklist: [],
-      sfxChecklist: [],
-      vfxRequirements: [],
-      musicInspiration: "",
-      voiceGuidance: "",
-      cleanNarratorScript: ""
-    }),
   }),
   ytCriticIterations: Annotation<number>({
     reducer: (current, update) => current + update,
     default: () => 0,
   }),
-  // Conversational Intent (Autonomous Routing)
+  visualCues: Annotation<string>({
+    reducer: (current, update) => update,
+    default: () => "",
+  }),
+  productionBundle: Annotation<any>({
+    reducer: (current, update) => ({ ...current, ...update }),
+    default: () => ({}),
+  }),
+  ytMetadata: Annotation<any>({
+    reducer: (current, update) => update,
+    default: () => ({}),
+  }),
+  contentMode: Annotation<string>({
+    reducer: (current, update) => update,
+    default: () => "YOUTUBE",
+  }),
   intent: Annotation<"FULL" | "INTEL" | "DRAFT" | "CRITIC" | "VISUALS" | "NONE">({
     reducer: (current, update) => update,
     default: () => "NONE",
   }),
-  // Strategic Suggestions (Industrial Mode)
-  suggestions: Annotation<{ title: string; reasoning: string; hook: string }[]>({
-    reducer: (current, update) => update,
-    default: () => [],
-  }),
-  // Niche Architecture (Discovery Mode)
-  nicheOpportunities: Annotation<{
-    name: string;
-    cpm: string;
-    competition: "LOW" | "MEDIUM" | "HIGH";
+  suggestions: Annotation<{
+    title: string;
     hook: string;
     reasoning: string;
   }[]>({
@@ -355,7 +313,7 @@ async function criticAgent(state: typeof AgentState.State) {
     }
 
     return {
-      messages: [`Shadow Critic: [Audit Result: ${result.score}/10] Recommendation: ${result.score < 6 ? 'REJECTED' : 'CONDITIONALLY ACCEPTED'}`],
+      messages: [`Shadow Critic: [Progress: 4/8] [Audit Result: ${result.score}/10] Recommendation: ${result.score < 6 ? 'REJECTED' : 'CONDITIONALLY ACCEPTED'}`],
       criticScore: result.score,
       criticNotes: result.feedback,
       historicalFeedback: [result.feedback]
@@ -430,7 +388,7 @@ async function nicheArchitectAgent(state: typeof AgentState.State) {
     }
 
     return {
-      messages: ["Niche Architect: Discovery complete. I've identified a rich list of high-value opportunities."],
+      messages: ["Niche Architect: [Progress: 1/8] Discovery complete. I've identified a rich list of high-value opportunities."],
       nicheOpportunities: normalizedNiches
     };
   } catch (e) {
@@ -478,7 +436,7 @@ async function intelAgent(state: typeof AgentState.State) {
     logAgentExecution(state.projectId, `[INTEL RESPONSE]\n${response.content}`);
 
     return {
-      messages: ["Intel: [Progress: 1/6] Deep-dive market analysis complete."],
+      messages: ["Intel: [Progress: 2/8] Deep-dive market analysis complete."],
       nicheData: response.content as string,
       iterations: 1,
     };
@@ -525,7 +483,7 @@ async function hookScientistAgent(state: typeof AgentState.State) {
     }
 
     return {
-      messages: ["Hooks: [Progress: 2/6] Logic-cloned and engineered script."],
+      messages: ["Hooks: [Progress: 3/8] Logic-cloned and engineered script."],
       draftInfo: response.content as string,
     };
   } catch (e) {
@@ -537,22 +495,25 @@ async function hookScientistAgent(state: typeof AgentState.State) {
 async function visualistAgent(state: typeof AgentState.State) {
   try {
     console.log("HEARTBEAT: [Visualist] Entry");
-    console.log("LOG: [Visualist] Mapping B-roll with Concept Logic...");
+    console.log("LOG: [Visualist] Mapping Hybrid Assets with Concept Logic...");
     
     const FORBIDDEN_LIST = "Technology, AI, Innovation, Future, Digital, Success, Growth, Data, Medicine, Health, Science";
     
-    // SURGEON LAYER: High-intelligence concept mapping
+    // SURGEON LAYER: High-intelligence concept and media strategy mapping
     const conceptMapper = await surgeonLlm.invoke([
       new SystemMessage(`You are a Professional Cinematographer and Visual Concept Designer.
       
-      === THE FORBIDDEN LIST ===
-      NEVER search for the following generic keywords: ${FORBIDDEN_LIST}. 
-      If the topic is "Innovation", search for "Steam escaping a brass machine" or "Macro shot of a seed sprouting". 
+      === MEDIA STRATEGY RULES ===
+      You must decide the best media type for each scene beat:
+      - STOCK_VIDEO: Use for realistic, human, or natural action (e.g. people, landscapes).
+      - STOCK_PHOTO: Use for emotional, atmospheric, or macro textures where a still is more powerful.
+      - AI_GENERATED: Use for abstract, historical, or futuristic concepts that do not exist in stock libraries.
       
-      === CONCEPT MAPPING RULES ===
-      1. Map keywords to TEXTURES and MOODS. 
-      2. If the text is SAD, search for "Rain on a window", "Shadows on a brick wall". 
-      3. If the text is ENERGETIC, search for "Fast shutter speed water splash", "City lights moving".`),
+      === THE FORBIDDEN LIST ===
+      NEVER search for generic keywords: ${FORBIDDEN_LIST}. Use metaphors.
+      
+      === CONCEPT MAPPING ===
+      1. Map keywords to TEXTURES, MOODS, and MEDIA TYPES.`),
       new HumanMessage(`Script:\n${state.draftInfo}`)
     ]);
 
@@ -564,45 +525,114 @@ async function visualistAgent(state: typeof AgentState.State) {
         .eq('iteration', state.iterations);
     }
 
-    logAgentExecution(state.projectId, `[VISUALIST CONCEPTS]\n${conceptMapper.content}`);
+    logAgentExecution(state.projectId, `[VISUALIST HYBRID CONCEPTS]\n${conceptMapper.content}`);
 
     const STORYBOARD_SCHEMA = z.object({
       scenes: z.array(z.object({
         title: z.string().describe("Scene title."),
         narration: z.string().describe("Verbatim narrator spoken text."),
         visualCue: z.string().describe("Concise mood description."),
-        searchQueries: z.array(z.string()).min(2).max(15).describe("Highly specific Pexels-ready queries.")
+        assetType: z.enum(["video", "image", "ai_gen"]).describe("The media type decided by the strategy."),
+        searchQueries: z.array(z.string()).min(2).max(30).describe("Highly specific Pexels/Pixabay/Flux ready queries."),
+        captions: z.array(z.object({
+          text: z.string().describe("A 1-3 word high-impact hook phrase extracted from the narration. ALL CAPS."),
+          startTime: z.number().describe("The normalized start time (0.0 to 1.0) of this phrase within the scene."),
+          duration: z.number().describe("How long to show the phrase (0.1 to 0.4 normalized)."),
+          emphasis: z.enum(["POP", "SHAKE", "GLOW"]).describe("Visual animation style."),
+          color: z.enum(["YELLOW", "WHITE", "CYAN", "RED"]).describe("Contrast color.")
+        })).describe("Dynamic on-screen text overlays for high retention.")
       })),
       allSearchQueries: z.array(z.string())
     });
     
-    // NURSE LAYER: High-volume query generation using 8b
-    const queryGen = nurseLlm.withStructuredOutput(STORYBOARD_SCHEMA, { name: "generate_storyboard", method: "jsonMode" });
-    const storyboardResult = await queryGen.invoke([
-      new SystemMessage(`You are a Search Specialist. 
-      FORBIDDEN WORDS: ${FORBIDDEN_LIST}. 
-      Use highly descriptive textures (e.g., 'rusty metal', 'macro eye iris', 'cracked soil').
-      Every query MUST be English and MUST describe a SPECIFIC cinematic shot.
-      Return the results in JSON format.`),
-      new HumanMessage(`=== SOURCE SCRIPT ===\n${state.draftInfo}\n=== ANNOTATED CUES ===\n${conceptMapper.content}\n\nSTRICT INSTRUCTION: Return the above analysis in valid JSON format.`)
-    ]);
+    // SURGEON LAYER: Structured output generation (Upgraded to Gemini for large context)
+    console.log("HEARTBEAT: [Visualist] Generating structured storyboard...");
+    let storyboardResult: any;
+    try {
+      const queryGen = surgeonLlm.withStructuredOutput(STORYBOARD_SCHEMA, { name: "generate_storyboard", method: "jsonMode" });
+      storyboardResult = await queryGen.invoke([
+        new SystemMessage(`You are a Social Media Retention Specialist. 
+        FORBIDDEN WORDS: ${FORBIDDEN_LIST}. 
+        
+        === MANDATORY JSON STRUCTURE ===
+        You MUST return a JSON object with the following structure:
+        {
+          "scenes": [
+            {
+              "title": "...",
+              "narration": "...",
+              "visualCue": "...",
+              "assetType": "video" | "image" | "ai_gen",
+              "searchQueries": ["...", "..."],
+              "captions": [
+                {
+                  "text": "1-3 WORDS",
+                  "startTime": 0.0,
+                  "duration": 0.3,
+                  "emphasis": "POP" | "SHAKE" | "GLOW",
+                  "color": "YELLOW" | "WHITE" | "CYAN" | "RED"
+                }
+              ]
+            }
+          ],
+          "allSearchQueries": ["...", "..."]
+        }
+
+        === CAPTION RULES ===
+        1. Extract only the most SHOCKING or IMPORTANT 1-3 words from the narration for captions.
+        2. Set startTime incrementally (e.g. first caption at 0.1, second at 0.5).
+        3. Use 'SHAKE' for aggressive/scary words and 'POP' for facts.
+        
+        === ASSET RULES ===
+        - If assetType is 'ai_gen', write vivid prompts for an image generator.
+        - If assetType is 'video' or 'image', write cinematic search queries.
+        
+        Return ONLY the valid JSON.`),
+        new HumanMessage(`=== SOURCE SCRIPT ===\n${state.draftInfo}\n=== ANNOTATED CUES & STRATEGY ===\n${conceptMapper.content}\n\nSTRICT INSTRUCTION: Return the above analysis in valid JSON format matching the schema.`)
+      ]);
+      console.log("HEARTBEAT: [Visualist] Storyboard generation complete.");
+    } catch (parseError) {
+      console.error("CRITICAL: [Visualist] Parsing Failed:", parseError);
+      throw new Error(`Visualist Failed: ${parseError instanceof Error ? parseError.message : "Parsing Failure"}`);
+    }
 
     const updatedBundle = { 
       ...state.productionBundle, 
       scenes: storyboardResult.scenes,
       brollSearchQueries: storyboardResult.allSearchQueries,
-      brollChecklist: storyboardResult.scenes.map(s => s.visualCue)
+      brollChecklist: storyboardResult.scenes.map((s: any) => s.visualCue)
     };
 
     if (supabase) {
-      await supabase.from('drafts')
-        .update({ production_bundle: updatedBundle })
+      console.log("HEARTBEAT: [Visualist] Persisting storyboard to Supabase...");
+      
+      // Fetch existing bundle to prevent overwriting other fields (e.g. from productionBundler)
+      const { data: existing } = await supabase.from('drafts')
+        .select('production_bundle')
+        .eq('project_id', state.projectId)
+        .eq('iteration', state.iterations)
+        .single();
+      
+      const currentBundle = typeof existing?.production_bundle === 'string' 
+        ? JSON.parse(existing.production_bundle) 
+        : (existing?.production_bundle || {});
+
+      const mergedBundle = { ...currentBundle, ...updatedBundle };
+
+      const { error } = await supabase.from('drafts')
+        .update({ production_bundle: mergedBundle })
         .eq('project_id', state.projectId)
         .eq('iteration', state.iterations);
+
+      if (error) {
+        console.error("Supabase bundle storage error:", error.message);
+        throw new Error(`Bundle Persistence Error: ${error.message}`);
+      }
+      console.log("HEARTBEAT: [Visualist] Persistance complete.");
     }
 
     return {
-      messages: ["Visualist: Hybrid logic applied. Surgeon mapped the textures, Nurse generated the queries."],
+      messages: ["Visualist: [Progress: 5/8] Strategic concept mapped and hybrid assets assigned."],
       visualCues: conceptMapper.content as string,
       productionBundle: updatedBundle
     };
@@ -647,7 +677,7 @@ async function complianceAgent(state: typeof AgentState.State) {
     logAgentExecution(state.projectId, `[COMPLIANCE RESPONSE]\n${JSON.stringify(result, null, 2)}`);
 
     return {
-      messages: ["Compliance: [Progress: 5/6] Optimized SEO metadata for discovery."],
+      messages: ["Compliance: [Progress: 7/8] SEO metadata and tags optimized."],
       ytMetadata: result,
     };
   } catch (e) {
@@ -692,7 +722,7 @@ async function retentionCriticAgent(state: typeof AgentState.State) {
     }
 
     return {
-      messages: [`Shadow Retention Critic: [Result: ${result.score}/10] Note: ${result.feedback}`],
+      messages: [`Shadow Retention Critic: [Progress: 4/8] [Result: ${result.score}/10] Note: ${result.feedback}`],
       retentionScore: result.score,
       criticNotes: result.feedback,
       ytCriticIterations: state.ytCriticIterations + 1
@@ -751,8 +781,21 @@ Your goal is to extract every technical requirement needed for the final video e
     // Save bundle to Supabase
     const supabase = getSupabaseAdminClient();
     if (supabase) {
+      // Fetch existing bundle to prevent overwriting scenes from Visualist
+      const { data: existing } = await supabase.from('drafts')
+        .select('production_bundle')
+        .eq('project_id', state.projectId)
+        .eq('iteration', state.iterations)
+        .single();
+      
+      const currentBundle = typeof existing?.production_bundle === 'string' 
+        ? JSON.parse(existing.production_bundle) 
+        : (existing?.production_bundle || {});
+
+      const mergedBundle = { ...currentBundle, ...updatedBundle };
+
       const { error } = await supabase.from('drafts')
-        .update({ production_bundle: updatedBundle })
+        .update({ production_bundle: mergedBundle })
         .eq('project_id', state.projectId)
         .eq('iteration', state.iterations);
 
@@ -763,7 +806,7 @@ Your goal is to extract every technical requirement needed for the final video e
     }
 
     return {
-      messages: ["Production: [Progress: 4/6] Assets and thumbnails bundled."],
+      messages: ["Production: [Progress: 6/8] Assets and thumbnails bundled."],
       productionBundle: updatedBundle,
     };
   } catch (e) {
@@ -835,6 +878,13 @@ async function intentClassifierAgent(state: typeof AgentState.State) {
       console.log(`LOG: [Intent Classifier] Respecting Pre-set Intent: ${state.intent}`);
       return { intent: state.intent };
     }
+
+    // EXPLICIT TRIGGER: Check if the prompt starts with an intent keyword
+    const upperMessage = latestMessage.toUpperCase();
+    if (upperMessage.startsWith("VISUALS:")) return { intent: "VISUALS" as const };
+    if (upperMessage.startsWith("DRAFT:")) return { intent: "DRAFT" as const };
+    if (upperMessage.startsWith("INTEL:")) return { intent: "INTEL" as const };
+    if (upperMessage.startsWith("CRITIC:")) return { intent: "CRITIC" as const };
 
     console.log("LOG: [Intent Classifier] Parsing user command...");
 

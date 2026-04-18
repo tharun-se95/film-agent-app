@@ -1,13 +1,372 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { 
   Send, PenTool, LayoutDashboard, History, Download, 
   ChevronRight, Bot, Sparkles, Radio, CheckCircle2,
   FileText, Layers, Video, PanelRight, PanelRightClose,
   ArrowLeft, Volume2, Music, AlertCircle, Menu, MoreVertical,
-  Play, Loader2, CheckCircle, Clock
+  Play, Loader2, CheckCircle, Clock, Zap, Search, Target, Shield, Package, Globe
 } from "lucide-react";
+
+const PIPELINE_NODES = [
+  { id: "NICHE_ARCHITECT", label: "Strategy", icon: Target },
+  { id: "INTEL", label: "Intel", icon: Search },
+  { id: "HOOKS", label: "Hooks", icon: Zap },
+  { id: "RETENTION", label: "Reviews", icon: Shield },
+  { id: "VISUALS", label: "Visuals", icon: Video },
+  { id: "PRODUCTION", label: "Bundle", icon: Package },
+  { id: "SEO", label: "SEO", icon: Globe }
+];
+
+function MasterTimeline({ 
+  scenes, 
+  storyboardAssets, 
+  zoomLevel, 
+  selectedIndex, 
+  currentTime,
+  onSelect,
+  onSeek,
+  setZoomLevel
+}: { 
+  scenes: any[], 
+  storyboardAssets: any, 
+  zoomLevel: number, 
+  selectedIndex: number,
+  currentTime: number,
+  onSelect: (idx: number, startTime: number) => void,
+  onSeek: (time: number) => void,
+  setZoomLevel: React.Dispatch<React.SetStateAction<number>>
+}) {
+  const pixelsPerSecond = zoomLevel;
+  
+  // Calculate scene start times
+  const sceneStarts = useMemo(() => {
+    let current = 0;
+    return scenes.map(s => {
+      const start = current;
+      const duration = s.duration || Math.max(3, s.narration.split(' ').length / 2.5);
+      current += duration;
+      return { start, duration };
+    });
+  }, [scenes]);
+
+  const totalDuration = sceneStarts.length > 0 ? sceneStarts[sceneStarts.length - 1].start + sceneStarts[sceneStarts.length - 1].duration : 0;
+
+  const handleTimelineClick = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const newTime = x / pixelsPerSecond;
+    onSeek(Math.max(0, Math.min(newTime, totalDuration)));
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -10 : 10;
+      setZoomLevel(prev => Math.max(10, Math.min(200, prev + delta)));
+    }
+  };
+
+  return (
+    <div 
+      className="flex-1 flex flex-col bg-[#050505] border-t border-white/5 overflow-hidden"
+      onWheel={handleWheel}
+    >
+      {/* Unified Scroll Container */}
+      <div 
+        className="flex-1 overflow-x-auto overflow-y-hidden custom-scrollbar-thin relative bg-black/20 group/timeline"
+        onClick={handleTimelineClick}
+      >
+        <div className="relative h-full" style={{ width: totalDuration * pixelsPerSecond }}>
+          
+          {/* Time Ruler */}
+          <div className="h-8 border-b border-white/5 flex bg-black/40 relative">
+            {Array.from({ length: Math.ceil(totalDuration) + 1 }).map((_, i) => (
+              <div 
+                key={`time-${i}`} 
+                className="shrink-0 border-l border-white/10 flex flex-col justify-end pb-1 pl-1"
+                style={{ width: pixelsPerSecond }}
+              >
+                <span className="text-[7px] font-black text-neutral-500">{i}s</span>
+              </div>
+            ))}
+          </div>
+
+          {/* VISUAL TRACK */}
+          <div className="absolute top-12 left-0 right-0 h-24 flex gap-0.5">
+            {scenes.map((scene, sceneIdx) => {
+              const { start, duration } = sceneStarts[sceneIdx];
+              const isSelected = selectedIndex === sceneIdx;
+              const clipCount = scene.searchQueries.length;
+              const clipDuration = duration / Math.max(1, clipCount);
+
+              return (
+                <div 
+                  key={`track-scene-${sceneIdx}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelect(sceneIdx, start);
+                  }}
+                  className={`flex gap-px shrink-0 transition-all cursor-pointer ${isSelected ? 'z-10' : ''}`}
+                  style={{ width: duration * pixelsPerSecond }}
+                >
+                  {scene.searchQueries.map((query: string, clipIdx: number) => {
+                    const asset = storyboardAssets[`${sceneIdx}_${clipIdx}`];
+                    
+                    return (
+                      <div 
+                        key={`clip-${sceneIdx}-${clipIdx}`}
+                        className={`relative flex-1 h-full border border-white/5 overflow-hidden transition-all group/clip
+                          ${isSelected ? 'bg-primary/10 border-primary/30' : 'bg-neutral-900/40 hover:bg-neutral-800/60'}`}
+                      >
+                        {asset ? (
+                          <>
+                            <img src={asset.thumbnail} className="w-full h-full object-cover opacity-60 group-hover/clip:opacity-100 transition-opacity" alt="" />
+                            {asset.type === 'video' && <div className="absolute top-1 right-1 px-1 rounded-sm bg-black/60 text-[6px] font-black text-white">MOV</div>}
+                          </>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-black/40">
+                            <Sparkles className="w-3 h-3 text-neutral-800 animate-pulse" />
+                          </div>
+                        )}
+                        <div className="absolute bottom-1 left-1 right-1 flex justify-between items-end">
+                           <span className="text-[5px] font-black text-white/30 uppercase tracking-tighter truncate max-w-[40px]">{query}</span>
+                           <span className="text-[5px] font-black text-primary/60">{clipDuration.toFixed(1)}s</span>
+                        </div>
+                        {isSelected && clipIdx === 0 && <div className="absolute inset-x-0 top-0 h-0.5 bg-primary animate-pulse" />}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* AUDIO TRACK */}
+          <div className="absolute top-40 left-0 right-0 h-16 flex gap-0.5">
+             {scenes.map((scene, idx) => {
+               const { duration } = sceneStarts[idx];
+               const isSelected = selectedIndex === idx;
+
+               return (
+                 <div 
+                   key={`track-aud-${idx}`}
+                   className={`relative shrink-0 border border-white/5 flex flex-col justify-center px-3
+                     ${isSelected ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-neutral-950/60'}`}
+                   style={{ width: duration * pixelsPerSecond }}
+                 >
+                   <div className="h-5 w-full bg-emerald-500/5 rounded-sm relative overflow-hidden group/audio">
+                      <div className="absolute inset-0 flex items-center gap-[1px] px-1">
+                        {Array.from({ length: Math.floor((duration * pixelsPerSecond) / 3) }).map((_, i) => {
+                          const val = Math.sin(i * 0.5) * Math.cos(idx * 2) * Math.sin(i * 0.2);
+                          const height = 20 + Math.abs(val) * 70;
+                          return (
+                            <div 
+                              key={i} 
+                              className={`w-[2px] rounded-full transition-all duration-700
+                                ${isSelected ? 'bg-emerald-500/50' : 'bg-neutral-700'}`} 
+                              style={{ height: `${height}%` }} 
+                            />
+                          );
+                        })}
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+                   </div>
+                   <div className="mt-1.5 flex items-center justify-between">
+                     <p className={`text-[6px] font-black uppercase tracking-widest ${isSelected ? 'text-emerald-500' : 'text-neutral-600'}`}>
+                       {scene.audioUrl ? 'VOICE MASTER' : 'SILENT DRAFT'}
+                     </p>
+                     <p className="text-[5px] font-bold text-neutral-700 uppercase">{duration.toFixed(1)}s</p>
+                   </div>
+                 </div>
+               );
+             })}
+          </div>
+
+          {/* PLAYHEAD */}
+          <div 
+            className="absolute top-0 bottom-0 w-[2px] bg-primary z-50 pointer-events-none shadow-[0_0_15px_rgba(59,130,246,0.8)] transition-all duration-75" 
+            style={{ left: currentTime * pixelsPerSecond }} 
+          >
+            <div className="absolute -top-1 -left-2 w-4 h-4 bg-primary rotate-45 rounded-sm" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TimelineScene({ 
+  scene, 
+  idx, 
+  storyboardAssets, 
+  generatingScenes, 
+  onGenerateVoice, 
+  onCycleAsset, 
+  isSelected,
+  onClick
+}: { 
+  scene: any, 
+  idx: number, 
+  storyboardAssets: any, 
+  generatingScenes: Set<number>, 
+  onGenerateVoice: (idx: number) => void,
+  onCycleAsset: (query: string) => void,
+  isSelected: boolean,
+  onClick: () => void
+}) {
+  const isGenerating = generatingScenes.has(idx);
+  
+  return (
+    <div 
+      onClick={onClick}
+      className={`relative shrink-0 w-[400px] h-full flex flex-col transition-all duration-500 cursor-pointer group/scene
+        ${isSelected ? 'bg-white/5 border-white/20' : 'bg-transparent border-transparent hover:bg-white/[0.02]'}`}
+    >
+      {/* Visual Header */}
+      <div className="relative aspect-video w-full overflow-hidden bg-neutral-900 border-b border-white/5 group-hover/scene:border-primary/30 transition-colors">
+        <div className="flex gap-1 overflow-x-auto p-1 h-full scrollbar-none">
+          {scene.searchQueries.map((query: string, qIdx: number) => {
+            const asset = storyboardAssets[`${idx}_${qIdx}`];
+            return (
+              <div key={`${idx}-${qIdx}`} className="relative h-full aspect-video shrink-0 overflow-hidden rounded-lg border border-white/5 shadow-2xl">
+                {asset ? (
+                  <>
+                    <img src={asset.thumbnail} className="w-full h-full object-cover opacity-60" alt="" />
+                    {asset.type === 'video' && (
+                      <div className="absolute top-1 right-1 p-1 rounded-md bg-black/60 backdrop-blur-md">
+                        <Video size={10} className="text-primary" />
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-neutral-900 animate-pulse">
+                    <Sparkles size={14} className="text-neutral-700" />
+                    <span className="text-[7px] font-black uppercase tracking-tighter text-neutral-600">Scouting...</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        
+        <div className="absolute top-3 left-3 flex items-center gap-2 z-10">
+           <div className={`flex items-center justify-center w-7 h-7 rounded-lg text-[10px] font-black shadow-lg transition-all duration-500
+             ${scene.audioUrl ? 'bg-emerald-500 text-black' : 'bg-neutral-800 text-white border border-white/10'}`}>
+             {idx + 1}
+           </div>
+           {scene.title && (
+             <div className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] font-black text-white/90 uppercase tracking-widest truncate max-w-[150px]">
+               {scene.title}
+             </div>
+           )}
+        </div>
+
+        <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover/scene:opacity-100 transition-opacity z-10">
+          <button 
+            onClick={(e) => { e.stopPropagation(); onGenerateVoice(idx); }}
+            disabled={isGenerating}
+            className="p-2 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 hover:bg-primary hover:text-white transition-all shadow-xl"
+          >
+            {isGenerating ? <Loader2 size={14} className="animate-spin" /> : <Volume2 size={14} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Narrative & Cues Track */}
+      <div className="flex-1 p-5 space-y-4 overflow-hidden flex flex-col">
+        <div className="flex-1 overflow-y-auto custom-scrollbar-thin">
+          <p className="font-script text-[14px] leading-[1.8] text-neutral-300 group-hover/scene:text-white transition-colors">
+            "{scene.narration}"
+          </p>
+        </div>
+
+        <div className="pt-4 border-t border-white/5 space-y-3 shrink-0">
+          <div className="flex items-center gap-2">
+            <Bot size={12} className="text-primary/60" />
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500">Director Note</span>
+          </div>
+          <p className="text-[11px] italic font-medium text-neutral-400 line-clamp-2 leading-relaxed">
+            {scene.visualCue}
+          </p>
+        </div>
+      </div>
+
+      {/* Selected Indicator */}
+      {isSelected && (
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+      )}
+    </div>
+  );
+}
+
+function PipelineProgress({ currentStatus, logs }: { currentStatus: string, logs: string[] }) {
+  const getProgressForNode = (nodeId: string) => {
+    const statusIdx = ["IDLE", ...PIPELINE_NODES.map(n => n.id), "DONE"].indexOf(currentStatus);
+    const nodeIdx = PIPELINE_NODES.findIndex(n => n.id === nodeId) + 1;
+
+    if (statusIdx > nodeIdx) return 100;
+    if (statusIdx < nodeIdx) return 0;
+
+    // Estimate based on logs for active node
+    const lastLog = [...logs].reverse().find(l => l.includes("[Progress:"));
+    if (lastLog) {
+      const match = lastLog.match(/\[Progress: (\d+)\/(\d+)\]/);
+      if (match) {
+        const p = (parseInt(match[1]) / parseInt(match[2])) * 100;
+        return p;
+      }
+    }
+    return 30; // Default active state
+  };
+
+  return (
+    <div className="flex items-center justify-between w-full gap-4 px-6 py-4 mb-6 overflow-x-auto rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
+      {PIPELINE_NODES.map((node, i) => {
+        const progress = getProgressForNode(node.id);
+        const isActive = currentStatus === node.id;
+        const isCompleted = progress === 100;
+        const Icon = node.icon;
+
+        return (
+          <div key={node.id} className="flex flex-col items-center flex-1 min-w-[80px] group relative">
+            <div className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-500 mb-2
+              ${isCompleted ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 
+                isActive ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)] animate-pulse' : 
+                'bg-white/5 text-white/30 border border-white/10'}`}
+            >
+              <Icon size={18} />
+              {isCompleted && (
+                <div className="absolute -top-1 -right-1 bg-emerald-500 text-black rounded-full p-0.5">
+                  <CheckCircle2 size={10} />
+                </div>
+              )}
+            </div>
+            
+            <span className={`text-[10px] font-medium tracking-wider uppercase transition-colors duration-300
+              ${isActive ? 'text-blue-400' : isCompleted ? 'text-emerald-400' : 'text-white/30'}`}>
+              {node.label}
+            </span>
+
+            <div className="w-full h-1 mt-2 overflow-hidden rounded-full bg-white/5">
+              <div 
+                className={`h-full transition-all duration-1000 ease-out
+                  ${isCompleted ? 'bg-emerald-500' : isActive ? 'bg-blue-500' : 'bg-transparent'}`}
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+
+            {i < PIPELINE_NODES.length - 1 && (
+               <div className="absolute top-5 -right-2 w-4 h-[1px] bg-white/10 hidden lg:block" />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 import { useAppContext, DraftCommit } from "@/context/AppContext";
 import { NormalizedVideoAsset } from "@/types/assets";
 import { useRouter } from "next/navigation";
@@ -39,6 +398,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
   const [localViewMode, setLocalViewMode] = useState<"script" | "assets">("script");
   const [assetCycleMap, setAssetCycleMap] = useState<Record<string, number>>({});
   const [isExporting, setIsExporting] = useState(false);
+  const [cinemaProgress, setCinemaProgress] = useState(0);
   
   // RENDER ENGINE
   const { renderVideo, isRendering, progress } = useRender();
@@ -49,10 +409,31 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
   const [generationProgress, setGenerationProgress] = useState(0);
   const [generatingScenes, setGeneratingScenes] = useState<Set<number>>(new Set());
 
-  // CINEMA MODE STATES
+  // TIMELINE STUDIO STATES
+  const [zoomLevel, setZoomLevel] = useState(60); // px per second
+  const [currentTime, setCurrentTime] = useState(0);
+  const [timelineScroll, setTimelineScroll] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Calculate scene start times for global sync
+  const sceneStarts = useMemo(() => {
+    if (!selectedCommit?.production_bundle?.scenes) return [];
+    let current = 0;
+    return selectedCommit.production_bundle.scenes.map(s => {
+      const start = current;
+      const duration = s.duration || estimateDuration(s.narration);
+      current += duration;
+      return { start, duration };
+    });
+  }, [selectedCommit]);
+
   const [isCinemaMode, setIsCinemaMode] = useState(false);
   const [cinemaSceneIdx, setCinemaSceneIdx] = useState(0);
   const [cinemaClipIdx, setCinemaClipIdx] = useState(0);
+
+  // ESTIMATION HELPERS
+  const estimateDuration = (text: string) => Math.max(2, text.split(' ').length / 2.5); // ~150 wpm
 
   const getAudioDuration = (url: string): Promise<number> => {
     return new Promise((resolve) => {
@@ -119,25 +500,31 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
 
   const storyboardAssets = useMemo(() => {
     const mappings: Record<string, any> = {};
-    const seenVideoIds = new Set<string | number>();
+    const seenAssetIds = new Set<string | number>();
     if (!selectedCommit?.production_bundle?.scenes) return mappings;
+
     selectedCommit.production_bundle.scenes.forEach((scene, sIdx) => {
-      scene.searchQueries.forEach((query, qIdx) => {
-        const results = pexelsAssets[query];
-        if (results && results.length > 0) {
-          const skipCount = assetCycleMap[query] || 0;
-          let uniqueVideo = results.find(v => !seenVideoIds.has(v.id));
-          if (!uniqueVideo) {
-            const fallbackIdx = (sIdx + qIdx + skipCount) % results.length;
-            uniqueVideo = results[fallbackIdx];
-          } else if (skipCount > 0) {
-            const matches = results.filter(v => !seenVideoIds.has(v.id));
-            uniqueVideo = matches[skipCount % matches.length] || uniqueVideo;
-          }
-          seenVideoIds.add(uniqueVideo.id);
-          mappings[`${sIdx}_${qIdx}`] = uniqueVideo;
+      const query = scene.searchQueries[0];
+      const type = scene.assetType || 'video';
+      const results = pexelsAssets[query];
+
+      if (results && results.length > 0) {
+        const skipCount = assetCycleMap[query] || 0;
+        
+        // Find a unique asset if possible
+        let selected = results.find(v => !seenAssetIds.has(v.id));
+        
+        if (!selected) {
+          const fallbackIdx = (sIdx + skipCount) % results.length;
+          selected = results[fallbackIdx];
+        } else if (skipCount > 0) {
+          const matches = results.filter(v => !seenAssetIds.has(v.id));
+          selected = matches[skipCount % matches.length] || selected;
         }
-      });
+
+        seenAssetIds.add(selected.id);
+        mappings[`${sIdx}_0`] = selected;
+      }
     });
     return mappings;
   }, [selectedCommit, pexelsAssets, assetCycleMap]);
@@ -155,7 +542,66 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     }
   }, [cinemaSceneIdx, selectedCommit]);
 
-  // Fires on audio timeupdate — derives which clip should play based on story position
+  const prevStatusRef = useRef(status);
+  useEffect(() => {
+    if (status === "DONE" && prevStatusRef.current !== "DONE" && localViewMode !== "assets") {
+      setLocalViewMode("assets");
+    }
+    prevStatusRef.current = status;
+  }, [status, localViewMode]);
+
+  useEffect(() => {
+    if (localViewMode === 'script' && selectedCommit?.production_bundle?.scenes) {
+      const scene = selectedCommit.production_bundle.scenes[cinemaSceneIdx];
+      if (scene?.audioUrl && isPlaying) {
+        if (audioRef.current) {
+          const isNewSrc = audioRef.current.src !== scene.audioUrl;
+          if (isNewSrc) {
+            audioRef.current.src = scene.audioUrl;
+            // Use pendingSeek if it was set by onSeek, otherwise 0
+            audioRef.current.currentTime = (audioRef.current as any).pendingSeek || 0;
+            (audioRef.current as any).pendingSeek = 0; // Clear it
+          }
+          audioRef.current.play().catch(e => console.log("Audio play blocked", e));
+        }
+      } else {
+        audioRef.current?.pause();
+      }
+    } else {
+      audioRef.current?.pause();
+    }
+  }, [cinemaSceneIdx, localViewMode, selectedCommit, isPlaying]);
+
+  // Keyboard Orchestration
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (localViewMode !== 'script') return;
+      if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        setIsPlaying(prev => !prev);
+      }
+      if (e.code === 'KeyL') {
+        if (selectedCommit?.production_bundle?.scenes && cinemaSceneIdx < selectedCommit.production_bundle.scenes.length - 1) {
+          setCinemaSceneIdx(prev => prev + 1);
+        }
+      }
+      if (e.code === 'KeyJ') {
+        if (cinemaSceneIdx > 0) {
+          setCinemaSceneIdx(prev => prev - 1);
+        }
+      }
+      if (e.code === 'KeyZ') {
+        setZoomLevel(prev => Math.min(prev + 10, 200));
+      }
+      if (e.code === 'KeyX') {
+        setZoomLevel(prev => Math.max(prev - 10, 30));
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [localViewMode]);
   const handleAudioTimeUpdate = useCallback((e: React.SyntheticEvent<HTMLAudioElement>) => {
     const audio = e.currentTarget;
     if (!audio.duration || !selectedCommit?.production_bundle?.scenes) return;
@@ -164,16 +610,17 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     // Count how many clips are loaded for this scene
     const totalClips = scene.searchQueries.reduce((count, _, qIdx) =>
       storyboardAssets[`${cinemaSceneIdx}_${qIdx}`] ? count + 1 : count, 0);
-    if (totalClips <= 1) return;
-    // Map audio position [0..1] → clip index
     const progress = audio.currentTime / audio.duration;
-    const desiredClipIdx = Math.min(Math.floor(progress * totalClips), totalClips - 1);
-    // Only update state when clip actually changes (avoid re-render spam)
-    setCinemaClipIdx(prev => prev !== desiredClipIdx ? desiredClipIdx : prev);
+    setCinemaProgress(progress);
+
+    if (totalClips > 1) {
+      const desiredClipIdx = Math.min(Math.floor(progress * totalClips), totalClips - 1);
+      setCinemaClipIdx(prev => prev !== desiredClipIdx ? desiredClipIdx : prev);
+    }
   }, [cinemaSceneIdx, selectedCommit, storyboardAssets]);
 
   const currentCinemaScene = selectedCommit?.production_bundle?.scenes?.[cinemaSceneIdx];
-  const currentCinemaVideo = currentCinemaScene
+  const currentCinemaAsset = currentCinemaScene
     ? (storyboardAssets[`${cinemaSceneIdx}_${cinemaClipIdx}`] || storyboardAssets[`${cinemaSceneIdx}_0`])
     : null;
 
@@ -221,62 +668,73 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
       const videoFolder = zip.folder("4_Broll");
       if (videoFolder) {
         await Promise.all(scenes.map(async (scene, idx) => {
-          const uniqueVideo = storyboardAssets[`${idx}_0`];
-          if (uniqueVideo?.videoUrl) {
+          const uniqueAsset = storyboardAssets[`${idx}_0`];
+          const url = uniqueAsset?.type === 'video' ? uniqueAsset.videoUrl : (uniqueAsset?.url || uniqueAsset?.thumbnail);
+          
+          if (url) {
             try {
-              const res = await fetch(uniqueVideo.videoUrl);
+              const res = await fetch(url);
               const blob = await res.blob();
-              videoFolder.file(`Video_${idx + 1}_V1.mp4`, blob);
-            } catch (err) { console.error(err); }
+              const ext = uniqueAsset.type === 'image' ? 'jpg' : 'mp4';
+              videoFolder.file(`Asset_${idx + 1}_V1.${ext}`, blob);
+            } catch (err) { console.error(`Failed to export asset ${idx}:`, err); }
           }
         }));
       }
 
       const xmlOutput = compileFCPXML(activeProject.name, scenes, storyboardAssets);
-      zip.file(`${activeProject.name.replace(/\s+/g, '_')}_Timeline.xml`, xmlOutput);
+      zip.file(`${activeProject.name}_Sequence.fcpxml`, xmlOutput);
 
-      const content = await zip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: { level: 5 } });
-      const safeName = activeProject.name.replace(/[^a-zA-Z0-9]/g, '_');
-      const filename = `${safeName}_Export.zip`;
-      const url = URL.createObjectURL(content);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
-    } catch (e) { console.error("Export Failed", e); alert("Failed to compile ZIP export."); } finally { setIsExporting(false); }
+      const content = await zip.generateAsync({ type: "blob" });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(content);
+      link.download = `${activeProject.name}_Studio_Bundle.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setLogs(prev => [...prev, "System: Studio Bundle exported successfully."]);
+    } catch (e) {
+      console.error("Export error:", e);
+      setLogs(prev => [...prev, "System Error: Export failed."]);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const reBundleAssets = async () => {
     if (!selectedCommit?.id) return;
     try {
       setPrompt("Re-bundling production assets for better storyboard alignment...");
-      runAgent("Re-align the production bundle. Ensure the storyboard scenes strictly map only to narrator words and visuals are diverse.", projectId);
+      runAgent("VISUALS: Re-align the production bundle. Ensure the storyboard scenes strictly map only to narrator words and visuals are diverse.", projectId);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const VideoPreview = ({ video, query, isCompact = false, onCycle }: { video: NormalizedVideoAsset, query: string, isCompact?: boolean, onCycle?: (q: string) => void }) => {
+  const AssetPreview = ({ asset, query, isCompact = false, onCycle }: { asset: any, query: string, isCompact?: boolean, onCycle?: (q: string) => void }) => {
     const [isHovered, setIsHovered] = useState(false);
-    if (!video) return null;
+    if (!asset) return null;
+    const isVideo = asset.type === 'video';
+
     return (
       <div 
         className={`group relative aspect-video rounded-[1.5rem] bg-neutral-900 border border-white/5 overflow-hidden shadow-2xl transition-all hover:scale-[1.02] ${isCompact ? 'w-[180px] shrink-0' : 'w-full'}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <img src={video.thumbnail} alt={query} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-0' : 'opacity-60'}`} />
-        {isHovered && video.videoUrl && (
-          <video src={video.videoUrl} autoPlay loop muted className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-500" />
+        <img src={asset.thumbnail} alt={query} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered && isVideo ? 'opacity-0' : 'opacity-60'}`} />
+        {isHovered && isVideo && asset.videoUrl && (
+          <video src={asset.videoUrl} autoPlay loop muted className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-500" />
         )}
         <div className={`absolute inset-x-0 bottom-0 ${isCompact ? 'p-3' : 'p-4'} bg-gradient-to-t from-black/80 to-transparent`}>
-           <p className="text-[8px] font-black uppercase tracking-widest text-white/40 mb-0.5 text-left">Stock Match</p>
+           <p className="text-[8px] font-black uppercase tracking-widest text-white/40 mb-0.5 text-left">
+             {asset.type === 'ai_gen' ? 'AI Generated' : asset.type === 'image' ? 'Stock Photo' : 'Stock Video'}
+           </p>
            <p className={`text-white truncate text-left font-bold ${isCompact ? 'text-[9px]' : 'text-[10px]'}`}>{query}</p>
         </div>
         <div className={`absolute top-2 left-2 px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-[7px] font-black uppercase tracking-tighter text-white/70`}>
-           {video.source}
+           {asset.source}
         </div>
         <div className={`absolute top-2 right-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity`}>
            {isCompact && (
@@ -340,20 +798,42 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
       
       {/* 1. Top Navigation Bar */}
       <header className="h-20 px-4 md:px-8 border-b border-white/5 flex items-center justify-between bg-black/40 backdrop-blur-xl shrink-0 z-40">
-        <div className="flex items-center gap-2 md:gap-6 min-w-0">
-          <button onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)} className="lg:hidden p-2 rounded-xl bg-white/5 text-neutral-400 hover:text-white border border-white/5"><Menu className="w-4 h-4" /></button>
-          <button onClick={() => router.back()} className="hidden md:flex p-2 rounded-xl bg-white/5 text-neutral-400 hover:text-white border border-white/5 hover:border-white/10"><ArrowLeft className="w-4 h-4" /></button>
-          <div className="text-left min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] whitespace-nowrap">Project Workspace</span>
-              <div className={`w-2 h-2 rounded-full shrink-0 ${status === "IDLE" ? "bg-neutral-600" : "bg-primary animate-pulse"}`} />
+        <div className="flex items-center gap-3 md:gap-5 min-w-0">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => {
+                if (activeProject?.channel_id) {
+                  router.push(`/channels/${activeProject.channel_id}`);
+                } else {
+                  router.push('/');
+                }
+              }}
+              className="p-2 rounded-xl bg-white/[0.03] border border-white/5 text-neutral-400 hover:text-white hover:bg-white/10 transition-all group"
+              title="Back to Channel"
+            >
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            </button>
+            <div className="p-2 rounded-xl bg-white/[0.03] border border-white/5 md:hidden" onClick={() => setMobileSidebarOpen(true)}>
+              <Menu className="w-5 h-5 text-neutral-400" />
             </div>
-            <h1 className="text-sm md:text-xl font-black text-white tracking-tight truncate max-w-[120px] md:max-w-[400px] lg:max-w-none">{activeProject.name}</h1>
+            <h1 className="text-sm md:text-lg font-black text-white tracking-tight truncate max-w-[150px] md:max-w-[400px]">{activeProject.name}</h1>
           </div>
-          <div className="hidden sm:block h-8 w-px bg-white/10 mx-2" />
-          <div className="flex items-center gap-1 md:gap-2 bg-neutral-900/50 p-1.5 rounded-2xl border border-white/5">
-            <button onClick={() => setLocalViewMode("script")} className={`flex items-center gap-2 px-3 md:px-4 py-1.5 rounded-xl text-[10px] md:text-xs font-bold transition-all ${localViewMode === "script" ? "bg-white/10 text-white shadow-lg" : "text-neutral-500 hover:text-white"}`}><FileText className="w-3.5 h-3.5" /> <span className="hidden xs:inline">Script</span></button>
-            <button onClick={() => setLocalViewMode("assets")} className={`flex items-center gap-2 px-3 md:px-4 py-1.5 rounded-xl text-[10px] md:text-xs font-bold transition-all ${localViewMode === "assets" ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-neutral-500 hover:text-white"}`}><Layers className="w-3.5 h-3.5" /> <span className="hidden xs:inline">Assets</span></button>
+          <div className="hidden sm:block h-6 w-px bg-white/10" />
+          <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/[0.03] backdrop-blur-sm">
+            <button 
+              onClick={() => setLocalViewMode("script")} 
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest transition-all ${localViewMode === "script" ? "bg-white/10 text-white shadow-lg" : "text-neutral-500 hover:text-white"}`}
+            >
+              <FileText className="w-3.5 h-3.5" /> 
+              <span className="hidden xs:inline">Script</span>
+            </button>
+            <button 
+              onClick={() => setLocalViewMode("assets")} 
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest transition-all ${localViewMode === "assets" ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-neutral-500 hover:text-white"}`}
+            >
+              <Layers className="w-3.5 h-3.5" /> 
+              <span className="hidden xs:inline">Assets</span>
+            </button>
           </div>
         </div>
 
@@ -403,25 +883,68 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
               </button>
             </div>
             <div className="w-full max-w-5xl aspect-video relative rounded-[2rem] overflow-hidden shadow-[0_0_100px_rgba(59,130,246,0.3)] bg-black border border-white/5">
-              {currentCinemaVideo ? (
-                <video
-                  key={`cinema-vid-${cinemaSceneIdx}-${cinemaClipIdx}-${currentCinemaVideo.videoUrl}`}
-                  src={currentCinemaVideo.videoUrl}
-                  autoPlay
-                  loop
-                  muted
-                  className="w-full h-full object-cover animate-in fade-in duration-500"
-                />
+              {currentCinemaAsset ? (
+                currentCinemaAsset.type === 'video' ? (
+                  <video
+                    key={`cinema-vid-${cinemaSceneIdx}-${cinemaClipIdx}-${currentCinemaAsset.videoUrl}`}
+                    src={currentCinemaAsset.videoUrl}
+                    autoPlay
+                    loop
+                    muted
+                    className="w-full h-full object-cover animate-in fade-in duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full relative overflow-hidden">
+                    <img
+                      key={`cinema-img-${cinemaSceneIdx}-${cinemaClipIdx}-${currentCinemaAsset.url || currentCinemaAsset.thumbnail}`}
+                      src={currentCinemaAsset.url || currentCinemaAsset.thumbnail}
+                      alt="Cinema Frame"
+                      className={`w-full h-full object-cover animate-in fade-in duration-700 ${cinemaClipIdx % 2 === 0 ? 'animate-ken-burns' : 'animate-pan'}`}
+                    />
+                    <div className="absolute inset-0 asset-overlay" />
+                  </div>
+                )
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-neutral-600 bg-neutral-900 animate-pulse">
                   <Video className="w-12 h-12" />
                   <p className="text-xs font-black uppercase tracking-widest">Hydrating Cinema Frame...</p>
                 </div>
               )}
+
+              {/* VIRAL CAPTION OVERLAY */}
+              <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none p-12">
+                {currentCinemaScene?.captions?.map((cap: any, idx: number) => {
+                  const isActive = cinemaProgress >= cap.startTime && cinemaProgress <= (cap.startTime + (cap.duration || 0.3));
+                  if (!isActive) return null;
+                  
+                  const colorClass = 
+                    cap.color === 'YELLOW' ? 'text-yellow-400' :
+                    cap.color === 'CYAN' ? 'text-cyan-400' :
+                    cap.color === 'RED' ? 'text-red-500' : 'text-white';
+                    
+                  const animClass = 
+                    cap.emphasis === 'SHAKE' ? 'animate-text-shake' :
+                    cap.emphasis === 'GLOW' ? 'animate-text-glow' : 'animate-text-pop';
+
+                  return (
+                    <div 
+                      key={`viral-cap-${idx}`}
+                      className={`viral-caption text-4xl md:text-7xl font-black text-center drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] ${colorClass} ${animClass}`}
+                    >
+                      {cap.text}
+                    </div>
+                  );
+                })}
+              </div>
               <div className="absolute top-8 left-8 flex items-center gap-3">
                  <div className="px-4 py-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-black text-primary uppercase tracking-widest">Scene {cinemaSceneIdx + 1} / {selectedCommit?.production_bundle?.scenes?.length || 0}</div>
                  {totalCinemaClipsForScene > 1 && (
                    <div className="px-3 py-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-black text-white/60 uppercase tracking-widest">Clip {cinemaClipIdx + 1} / {totalCinemaClipsForScene}</div>
+                 )}
+                 {currentCinemaAsset && (
+                   <div className="px-3 py-2 rounded-full bg-primary/20 backdrop-blur-md border border-primary/20 text-[10px] font-black text-primary uppercase tracking-widest">
+                     {currentCinemaAsset.type.replace('_', ' ')}
+                   </div>
                  )}
               </div>
             </div>
@@ -447,177 +970,237 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
         )}
         
         {/* Workspace Surface (Studio Dusk) */}
-        <div className="flex-1 overflow-y-auto bg-[#080808] custom-scrollbar p-6 md:p-12 lg:p-20 relative">
-          <div className="max-w-4xl mx-auto space-y-20">
-            {localViewMode === "script" ? (
-               /* SCRIPT VIEW */
-               <div className="mx-auto max-w-[850px] bg-white shadow-[0_25px_80px_-20px_rgba(0,0,0,0.15)] min-h-[1100px] p-12 md:p-20 relative rounded-sm text-black animate-in fade-in slide-in-from-bottom-4 duration-700 text-left">
-                  <div className="absolute top-20 left-0 right-0 flex justify-center opacity-[0.03] select-none pointer-events-none"><span className="text-[120px] font-black tracking-[0.2em] rotate-[-25deg] uppercase italic truncate">Production Draft</span></div>
-                  {selectedCommit ? (
-                    <div className="relative z-10 space-y-12">
-                        <header className="border-b-2 border-black pb-8 space-y-6">
-                           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                              <div className="text-left">
-                                 <h2 className="text-[10px] font-black uppercase tracking-[0.4em] mb-4 text-neutral-400 text-left">Production Workspace</h2>
-                                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                                    <div className="flex flex-col gap-1.5 text-left">
-                                       <label className="text-[8px] font-black text-neutral-400 uppercase tracking-widest pl-1">Voice Persona</label>
-                                       <select value={selectedVoiceId} onChange={(e) => setSelectedVoiceId(e.target.value)} className="bg-white border-2 border-black rounded-xl px-4 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-neutral-50 transition-all cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none outline-none">
-                                          {AVAILABLE_VOICES.map(v => ( <option key={`voice-${v.id}`} value={v.id}>{v.name} - {v.desc}</option> ))}
-                                       </select>
-                                    </div>
-                                    <div className="flex flex-col gap-1.5 pt-4">
-                                       <button 
-                                          onClick={handleGenerateAllAudio} 
-                                          disabled={isGeneratingAll || !selectedCommit} 
-                                          className={`flex items-center gap-2 px-6 py-2.5 rounded-xl border-2 border-black font-black text-[10px] uppercase tracking-widest transition-all 
-                                            ${isGeneratingAll 
-                                              ? 'bg-neutral-100 text-neutral-400 border-neutral-300' 
-                                              : 'bg-primary text-white hover:scale-105 active:scale-95 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]'}`}
-                                       >
-                                          {isGeneratingAll ? ( <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Batching {Math.round(generationProgress)}%</> ) : ( <><Volume2 className="w-3.5 h-3.5" /> Batch Produce All</> )}
-                                       </button>
-                                    </div>
-                                 </div>
-                              </div>
-                           </div>
-                           <div className="p-6 rounded-2xl bg-blue-50 border border-blue-100 shadow-sm space-y-3 text-left">
-                              <div className="flex items-center gap-2 text-blue-900 text-left"><Sparkles className="w-3.5 h-3.5" /><span className="text-[10px] font-black uppercase tracking-widest">Strategic Mission</span></div>
-                              <p className="font-script text-[14px] leading-relaxed text-blue-900/80 italic text-left">{activeProject.original_idea}</p>
-                           </div>
-                        </header>
-                        <div className="space-y-20 pb-20">
-                           {selectedCommit.production_bundle?.scenes?.map((scene, idx) => (
-                              <div key={`scene-${idx}`} className="group relative grid grid-cols-1 lg:grid-cols-2 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                                 {idx !== selectedCommit.production_bundle!.scenes!.length - 1 && ( <div className="absolute left-6 top-16 bottom-[-40px] w-px bg-neutral-100 hidden lg:block" /> )}
-                                 <div className="space-y-6 text-left">
-                                    <div className="flex items-center justify-between">
-                                       <div className="flex items-center gap-4 text-left">
-                                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-[10px] font-black shadow-lg transition-colors ${scene.audioUrl ? "bg-primary text-white" : "bg-neutral-900 text-white"}`}>SC {idx + 1}</div>
-                                          <div className="text-left">
-                                            <h3 className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                                              {scene.title}
-                                              {scene.audioUrl && <CheckCircle className="w-3 h-3 text-green-500" />}
-                                            </h3>
-                                            <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-widest">NARRATION & FLOW</p>
-                                          </div>
-                                       </div>
-                                       <div className="flex items-center gap-2">
-                                          {scene.audioUrl ? ( 
-                                            <div className="flex items-center gap-2">
-                                              <audio controls src={scene.audioUrl} className="h-8 w-40 opacity-70 hover:opacity-100 transition-opacity invert" />
-                                              <button 
-                                                disabled={generatingScenes.has(idx)}
-                                                onClick={async () => {
-                                                  const rb = JSON.parse(JSON.stringify(selectedCommit.production_bundle));
-                                                  await handleGenerateVoice(scene.narration, idx, rb);
-                                                  await updateDraftBundle(selectedCommit.id!, rb);
-                                                }}
-                                                className="p-2 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-600 transition-all"
-                                                title="Regenerate Voice"
-                                              >
-                                                {generatingScenes.has(idx) ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Radio className="w-3.5 h-3.5" />}
-                                              </button>
-                                            </div>
-                                          ) : (
-                                            <button 
-                                              disabled={generatingScenes.has(idx)}
-                                              onClick={async () => {
-                                                const rb = JSON.parse(JSON.stringify(selectedCommit.production_bundle));
-                                                await handleGenerateVoice(scene.narration, idx, rb);
-                                                await updateDraftBundle(selectedCommit.id!, rb);
-                                              }} 
-                                              className="px-4 py-2 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-2"
-                                            >
-                                              {generatingScenes.has(idx) ? <><Loader2 className="w-3 h-3 animate-spin" /> Producing</> : <><Volume2 className="w-3 h-3" /> Generate Voice</>}
-                                            </button>
-                                          )}
-                                       </div>
-                                    </div>
-                                    <div className="p-8 rounded-[2.5rem] bg-white shadow-xl border border-neutral-100 hover:border-primary/20 transition-all duration-500 text-left">
-                                       <p className="font-script text-[16px] leading-[2.2] text-neutral-800 text-left whitespace-pre-wrap">"{scene.narration}"</p>
-                                    </div>
-                                 </div>
-                                 <div className="space-y-8 text-left lg:border-l lg:border-neutral-100 lg:pl-12">
-                                    <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-500"><Video className="w-4 h-4" /></div><div className="text-left"><h3 className="text-[10px] font-black uppercase tracking-widest text-neutral-600">Visual Direction</h3><p className="text-[9px] text-neutral-400 font-bold uppercase tracking-widest text-left">PRODUCTION CUES</p></div></div>
-                                    <div className="space-y-4">
-                                       <div className="relative p-7 rounded-[2rem] bg-neutral-50 text-neutral-600 text-left border border-neutral-100 shadow-sm overflow-hidden"><div className="absolute top-0 left-0 w-1 h-full bg-orange-400" /><p className="text-[11px] italic font-medium leading-[1.8] text-left">{scene.visualCue}</p></div>
-                                       <div>
-                                         <div className="flex items-center justify-between mb-2">
-                                           <span className="text-[8px] font-black uppercase tracking-widest text-neutral-400">B-Roll — {scene.searchQueries.length} clips</span>
-                                           <span className="text-[8px] font-black uppercase tracking-widest text-primary">Hover to Play ▶</span>
-                                         </div>
-                                         <div className="flex gap-2 overflow-x-auto pb-2" style={{scrollbarWidth: "thin", scrollbarColor: "rgba(0,0,0,0.15) transparent"}}>
-                                           {scene.searchQueries.map((query, qIdx) => {
-                                              const v = storyboardAssets[`${idx}_${qIdx}`];
-                                              return (
-                                                <div key={`storyboard-${idx}-${qIdx}`} className="shrink-0">
-                                                  {v ? (
-                                                    <VideoPreview video={v} query={query} isCompact={true} onCycle={(q) => setAssetCycleMap(p => ({ ...p, [q]: (p[q] || 0) + 1 }))} />
-                                                  ) : (
-                                                    <div className="w-[140px] aspect-video rounded-2xl bg-neutral-100 border border-dashed border-neutral-200 flex flex-col items-center justify-center gap-1.5 animate-pulse shrink-0">
-                                                      <Sparkles className="w-3 h-3 text-neutral-300" />
-                                                      <p className="text-[7px] font-black text-neutral-400 uppercase tracking-widest text-center px-2 leading-tight">{query.slice(0, 28)}</p>
-                                                    </div>
-                                                  )}
-                                                </div>
-                                              );
-                                           })}
-                                         </div>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                           ))}
-                        </div>
-                    </div>
-                   ) : (
-                       <div className="h-[600px] flex flex-col items-center justify-center space-y-8 animate-in fade-in duration-700 w-full">
-                        {activeProject.niche_opportunities && activeProject.niche_opportunities.length > 0 ? (
-                          <div className="w-full">
-                            <NicheExplorer 
-                              opportunities={activeProject.niche_opportunities} 
-                              onSelect={(opp) => {
-                                setPrompt(opp.niche);
-                                runAgent(opp.niche, projectId);
-                              }}
-                            />
-                            <div className="mt-12 flex justify-center">
-                              <button 
-                                onClick={() => { const idea = activeProject.original_idea || activeProject.name; setPrompt(idea); runAgent(idea, projectId); }} 
-                                className="text-[10px] font-black text-neutral-600 uppercase tracking-[0.3em] hover:text-white transition-colors"
-                              >
-                                Skip & use original idea
-                              </button>
+        <div className={`flex-1 overflow-y-auto bg-[#080808] custom-scrollbar relative transition-all duration-500 ${localViewMode === 'script' ? 'p-0' : 'p-6 md:p-8 lg:p-10'}`}>
+          {status !== "IDLE" && status !== "DONE" && (
+            <div className={`max-w-4xl mx-auto mb-10 ${localViewMode === 'script' ? 'mt-10 px-6' : ''}`}>
+              <PipelineProgress currentStatus={status} logs={logs} />
+            </div>
+          )}
+          
+          {localViewMode === "script" ? (
+               /* STUDIO MASTER TIMELINE - Dual Pane */
+               <div className="w-full h-full min-h-[calc(100vh-120px)] flex flex-col bg-[#050505] border-b border-white/5 animate-in fade-in duration-700">
+                  
+                  {/* TOP PANE: STUDIO PREVIEW */}
+                  <div className="flex-1 min-h-0 flex overflow-hidden">
+                    {/* Preview Display */}
+                    <div className="flex-[1.5] bg-black flex flex-col items-center justify-center p-8 border-r border-white/5 relative group/preview">
+                      {selectedCommit?.production_bundle?.scenes && selectedCommit.production_bundle.scenes[cinemaSceneIdx] ? (
+                        <div className="w-full h-full max-w-4xl aspect-video relative rounded-2xl overflow-hidden bg-neutral-900 shadow-2xl border border-white/10">
+                          {/* Render the current scene asset */}
+                          {(() => {
+                             const scene = selectedCommit.production_bundle.scenes[cinemaSceneIdx];
+                             const asset = storyboardAssets[`${cinemaSceneIdx}_0`];
+                             if (asset) {
+                               return asset.type === 'video' ? (
+                                 <video src={asset.videoUrl} autoPlay muted loop className="w-full h-full object-cover" />
+                               ) : (
+                                 <img src={asset.url} className="w-full h-full object-cover" alt="" />
+                               );
+                             }
+                             return (
+                               <div className="w-full h-full flex flex-col items-center justify-center gap-4">
+                                 <Sparkles className="w-12 h-12 text-neutral-800 animate-pulse" />
+                                 <p className="text-[10px] font-black text-neutral-600 uppercase tracking-[0.4em]">Rendering Visuals...</p>
+                               </div>
+                             );
+                          })()}
+                          {/* Playback Controls Overlay */}
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/preview:opacity-100 transition-opacity z-20">
+                            <button 
+                              onClick={() => setIsPlaying(!isPlaying)}
+                              className="w-20 h-20 rounded-full bg-primary/20 backdrop-blur-xl border border-primary/40 flex items-center justify-center text-primary hover:scale-110 active:scale-95 transition-all shadow-[0_0_40px_rgba(59,130,246,0.3)]"
+                            >
+                              {isPlaying ? <MoreVertical className="w-8 h-8 rotate-90" /> : <Play className="w-8 h-8 ml-1" fill="currentColor" />}
+                            </button>
+                          </div>
+
+                          <div className="absolute top-6 left-6 px-4 py-2 bg-black/40 backdrop-blur-xl border border-white/10 rounded-xl flex items-center gap-3 z-20 animate-in fade-in">
+                            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                            <span className="text-[10px] font-black text-white uppercase tracking-widest">
+                              {selectedCommit.production_bundle.scenes[cinemaSceneIdx].audioUrl ? 'Audio Ready' : 'Silent Track'}
+                            </span>
+                            <div className="flex gap-0.5 h-3 items-end ml-1">
+                              {[1, 2, 3, 4].map(i => (
+                                <div 
+                                  key={i} 
+                                  className={`w-0.5 bg-primary rounded-full transition-all duration-150 ${isPlaying ? 'animate-vu-meter' : 'h-1 opacity-30'}`}
+                                  style={{ animationDelay: `${i * 0.1}s` }}
+                                />
+                              ))}
                             </div>
                           </div>
-                        ) : (
-                          <>
-                            <div className="relative">
-                              <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" style={{animationDuration: "2.5s"}} />
-                              <div className="relative w-24 h-24 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-                                <Sparkles className="w-10 h-10 text-primary" />
-                              </div>
-                            </div>
-                            <div className="text-center space-y-3">
-                              <h2 className="text-2xl font-black text-neutral-800 tracking-tight">Studio Ready</h2>
-                              <p className="text-neutral-500 text-sm max-w-xs leading-relaxed">
-                                {activeProject.original_idea || "Your idea is loaded. Trigger the pipeline to generate your first production draft."}
-                              </p>
-                            </div>
-                            <div className="flex flex-col items-center gap-3">
-                              <button onClick={() => { const idea = activeProject.original_idea || activeProject.name; setPrompt(idea); runAgent(idea, projectId); }} disabled={status !== "IDLE" && status !== "DONE"} className="flex items-center gap-3 px-10 py-4 rounded-2xl bg-black text-white font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-2xl disabled:opacity-50 border-2 border-black">
-                                {(status !== "IDLE" && status !== "DONE") ? (<><Loader2 className="w-5 h-5 animate-spin" /> Pipeline Running...</>) : (<><Play className="w-5 h-5" /> Initiate Production Pipeline</>)}
+
+                          <div className="absolute bottom-6 left-6 right-6 p-6 bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl animate-in slide-in-from-bottom-4 z-20">
+                            <p className="font-script text-[18px] leading-relaxed text-white italic">"{selectedCommit.production_bundle.scenes[cinemaSceneIdx].narration}"</p>
+                          </div>
+
+                          {/* Hidden Audio Element */}
+                          <audio 
+                            ref={audioRef} 
+                            onTimeUpdate={(e) => {
+                              const sceneStart = sceneStarts[cinemaSceneIdx]?.start || 0;
+                              setCurrentTime(sceneStart + e.currentTarget.currentTime);
+                            }}
+                            onEnded={() => {
+                              if (cinemaSceneIdx < (selectedCommit.production_bundle?.scenes?.length || 0) - 1) {
+                                setCinemaSceneIdx(prev => prev + 1);
+                              } else {
+                                setIsPlaying(false);
+                              }
+                            }} 
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-6">
+                           <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                              <Play className="w-8 h-8 text-neutral-600" />
+                           </div>
+                           <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.4em]">No Sequence Loaded</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Script & Notes Pane */}
+                    <div className="flex-1 bg-black/40 backdrop-blur-md p-10 overflow-y-auto custom-scrollbar-thin text-left border-l border-white/5">
+                      {selectedCommit?.production_bundle?.scenes && selectedCommit.production_bundle.scenes[cinemaSceneIdx] ? (
+                        <div className="space-y-10 animate-in fade-in slide-in-from-right-4">
+                          <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                              <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Scene {cinemaSceneIdx + 1} Metadata</h3>
+                              <button 
+                                onClick={async () => {
+                                  const rb = JSON.parse(JSON.stringify(selectedCommit.production_bundle));
+                                  await handleGenerateVoice(selectedCommit.production_bundle!.scenes![cinemaSceneIdx].narration, cinemaSceneIdx, rb);
+                                  await updateDraftBundle(selectedCommit.id!, rb);
+                                }}
+                                className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest hover:bg-primary transition-all"
+                              >
+                                {generatingScenes.has(cinemaSceneIdx) ? <Loader2 size={12} className="animate-spin" /> : "Regenerate Voice"}
                               </button>
-                              <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest">Outliner to Drafter to Critic to Visuals to Bundle</p>
                             </div>
-                          </>
-                        )}
-                      </div>
-                   )}
+                            <div className="p-8 rounded-[2rem] bg-white/[0.03] border border-white/5">
+                               <p className="text-sm font-medium leading-relaxed text-neutral-300">
+                                 {selectedCommit.production_bundle.scenes[cinemaSceneIdx].visualCue}
+                               </p>
+                            </div>
+                          </div>
+
+                          <div className="space-y-4">
+                            <span className="text-[9px] font-black text-neutral-500 uppercase tracking-widest">B-Roll Assets</span>
+                            <div className="grid grid-cols-2 gap-4">
+                               {selectedCommit.production_bundle.scenes[cinemaSceneIdx].searchQueries.map((q: string, qIdx: number) => {
+                                  const asset = storyboardAssets[`${cinemaSceneIdx}_${qIdx}`];
+                                  return (
+                                    <div key={qIdx} className="aspect-video rounded-2xl bg-white/[0.02] border border-white/5 overflow-hidden relative group/asset">
+                                       {asset ? (
+                                         <AssetPreview asset={asset} query={q} onCycle={() => cycleAsset(q, 1)} />
+                                       ) : (
+                                         <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                                           <Loader2 size={14} className="text-neutral-800 animate-spin" />
+                                           <span className="text-[7px] font-black text-neutral-700 uppercase">Searching...</span>
+                                         </div>
+                                       )}
+                                    </div>
+                                  );
+                               })}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="h-full flex flex-col items-center justify-center text-center space-y-4 px-12">
+                           <Bot size={40} className="text-neutral-800" />
+                           <h3 className="text-[11px] font-black text-neutral-400 uppercase tracking-widest">Select a scene in the timeline to view details</h3>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* BOTTOM PANE: MASTER TIMELINE CANVAS */}
+                  <div className="h-[320px] shrink-0 flex flex-col">
+                    <div className="px-8 py-3 bg-black/60 border-y border-white/5 flex items-center justify-between">
+                       <div className="flex items-center gap-6">
+                         <div className="flex items-center gap-3">
+                           <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Timeline Zoom</span>
+                           <input 
+                             type="range" min="10" max="200" step="5" 
+                             value={zoomLevel} 
+                             onChange={(e) => setZoomLevel(parseInt(e.target.value))}
+                             className="w-32 accent-primary"
+                           />
+                         </div>
+                         <div className="h-4 w-px bg-white/10" />
+                         <div className="flex items-center gap-4">
+                           <button onClick={() => setIsCinemaMode(true)} className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-black transition-all">
+                             <Play size={10} fill="currentColor" /> Full Preview
+                           </button>
+                         </div>
+                       </div>
+                       <div className="flex items-center gap-4">
+                          <div className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] font-mono text-neutral-400">
+                             Total Length: {selectedCommit?.production_bundle?.scenes?.reduce((acc: number, s: any) => acc + (s.duration || estimateDuration(s.narration)), 0).toFixed(1)}s
+                          </div>
+                       </div>
+                    </div>
+
+                    <MasterTimeline 
+                      scenes={selectedCommit?.production_bundle?.scenes || []}
+                      storyboardAssets={storyboardAssets}
+                      zoomLevel={zoomLevel}
+                      selectedIndex={cinemaSceneIdx}
+                      currentTime={currentTime}
+                      onSelect={(idx, startTime) => {
+                        setCinemaSceneIdx(idx);
+                        if (audioRef.current) {
+                          audioRef.current.currentTime = 0; // Each scene has its own audio file
+                          setCurrentTime(startTime);
+                          setIsPlaying(true);
+                        }
+                      }}
+                      onSeek={(time) => {
+                        // Find which scene this global 'time' belongs to
+                        if (!selectedCommit?.production_bundle?.scenes) return;
+                        
+                        let accumulated = 0;
+                        let targetSceneIdx = 0;
+                        let localTime = 0;
+                        
+                        for (let i = 0; i < selectedCommit.production_bundle.scenes.length; i++) {
+                          const s = selectedCommit.production_bundle.scenes[i];
+                          const d = s.duration || estimateDuration(s.narration);
+                          if (time >= accumulated && time <= accumulated + d) {
+                            targetSceneIdx = i;
+                            localTime = time - accumulated;
+                            break;
+                          }
+                          accumulated += d;
+                        }
+
+                        setCinemaSceneIdx(targetSceneIdx);
+                        setCurrentTime(time);
+                        setIsPlaying(true);
+                        
+                        // We must wait for the audio source to change if it's a different scene
+                        // The useEffect handles the source change, so we just need to ensure 
+                        // the localTime is applied once ready.
+                        // For immediate feedback, we can try to set it if src is already correct.
+                        if (audioRef.current) {
+                           const targetSrc = selectedCommit.production_bundle.scenes[targetSceneIdx].audioUrl;
+                           if (audioRef.current.src === targetSrc) {
+                             audioRef.current.currentTime = localTime;
+                           } else {
+                             // The useEffect will pick this up and we'll lose the localTime offset
+                             // unless we store it.
+                             (audioRef.current as any).pendingSeek = localTime;
+                           }
+                        }
+                      }}
+                      setZoomLevel={setZoomLevel}
+                    />
+                  </div>
                </div>
             ) : (
-               /* ASSETS VIEW */
+               /* ASSETS VIEW - Centered */
                <div className="mx-auto max-w-[1000px] space-y-12 animate-in fade-in slide-in-from-right-8 duration-700 pb-24 text-left">
                   <section className="space-y-6">
                     <div className="flex items-center gap-3 text-left"> <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><Bot className="w-5 h-5" /></div> <div className="text-left"><h2 className="text-sm font-black uppercase tracking-widest text-white">Compliance & SEO</h2><p className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest">Optimized for Viral Discovery</p></div></div>
@@ -629,7 +1212,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                   <section className="space-y-6">
                     <div className="flex items-center justify-between text-left"> <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500"><Video className="w-5 h-5" /></div><div className="text-left"><h2 className="text-sm font-black uppercase tracking-widest text-white">Visual Assets</h2><p className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest">Pexels Gallery</p></div></div> <div className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold text-neutral-400 flex items-center gap-2"><Bot className="w-3 h-3 text-primary" /> HYDRATED BY AI</div></div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                       {selectedCommit?.production_bundle?.brollSearchQueries?.map((q, idx) => ( pexelsAssets[q] ? ( <VideoPreview key={`broll-${idx}`} video={pexelsAssets[q][0]} query={q} /> ) : ( <div key={`search-${idx}`} className="aspect-video rounded-3xl bg-white/[0.02] border border-white/5 border-dashed flex flex-col items-center justify-center gap-3 animate-pulse"> <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center"><Sparkles className="w-4 h-4 text-neutral-600" /></div> <p className="text-[9px] font-bold text-neutral-600 uppercase tracking-widest">Searching...</p></div> ) ))}
+                       {selectedCommit?.production_bundle?.brollSearchQueries?.map((q, idx) => ( pexelsAssets[q] ? ( <AssetPreview key={`broll-${idx}`} asset={pexelsAssets[q][0]} query={q} /> ) : ( <div key={`search-${idx}`} className="aspect-video rounded-3xl bg-white/[0.02] border border-white/5 border-dashed flex flex-col items-center justify-center gap-3 animate-pulse"> <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center"><Sparkles className="w-4 h-4 text-neutral-600" /></div> <p className="text-[9px] font-bold text-neutral-600 uppercase tracking-widest">Searching...</p></div> ) ))}
                     </div>
                   </section>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 text-left">
@@ -655,7 +1238,6 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                   </div>
                </div>
             )}
-          </div>
         </div>
 
         {/* 3. Agent Sidebar */}

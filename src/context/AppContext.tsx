@@ -298,32 +298,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 setStatus("DRAFTER");
               }
               if (parsed.nicheArchitect) {
-                setLogs(prev => [...prev, "Niche Architect: Discovered a rich list of high-value opportunities."]);
+                setLogs(prev => [...prev, "Niche Architect: [Progress: 1/8] Discovered a rich list of high-value opportunities."]);
                 setStatus("INTEL");
                 const opps = parsed.nicheArchitect.opportunities || [];
                 setProjects(prev => prev.map(p => p.id === currentProject!.id ? { ...p, niche_opportunities: opps } : p));
               }
-              if (parsed.drafter) {
-                const it = parsed.iterations || parsed.drafter.iterations || 1;
-                const newCommit: DraftCommit = {
-                  iteration: it,
-                  content: parsed.drafter.draftInfo,
-                };
-                setCommits(prev => {
-                   const existing = prev.find(c => c.iteration === it);
-                   if (existing) return prev.map(c => c.iteration === it ? newCommit : c);
-                   return [...prev, newCommit];
-                });
-                setSelectedCommit(newCommit);
-                setStatus("CRITIC");
-              }
               if (parsed.intel) {
-                setLogs(prev => [...prev, "Intel: Identified viral niche angle and competitor gaps."]);
+                setLogs(prev => [...prev, "Intel: [Progress: 2/8] Identified viral niche angle and competitor gaps."]);
                 setStatus("HOOKS");
               }
               if (parsed.hookScientist) {
-                setLogs(prev => [...prev, "Hooks: Finished engineering retention-focused script."]);
-                setStatus("RETENTION"); // Corrected status mapping
+                setLogs(prev => [...prev, "Hooks: [Progress: 3/8] Finished engineering retention-focused script."]);
+                setStatus("RETENTION");
                 const it = parsed.iterations || 1;
                 const newCommit: DraftCommit = {
                   iteration: it,
@@ -342,29 +328,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 const it = parsed.iterations || 1;
                 
                 if (score !== undefined) {
-                  setLogs(prev => [...prev, `Retention: Evaluated hook. Score: ${score}/10.`]);
+                  setLogs(prev => [...prev, `Retention: [Progress: 4/8] Evaluated hook. Score: ${score}/10.`]);
                 }
+                setStatus("VISUALS");
                 setCommits(prev => prev.map(c => c.iteration === it ? { ...c, critic_score: score, critic_notes: feedback } : c));
               }
               if (parsed.visualist) {
                 const it = parsed.iterations || 1;
-                setLogs(prev => [...prev, "Visualist: Mapped B-Roll and visual cues across the script."]);
+                setLogs(prev => [...prev, "Visualist: [Progress: 5/8] Mapped B-Roll and visual cues across the script."]);
                 setStatus("PRODUCTION");
-                setCommits(prev => prev.map(c => c.iteration === it ? { ...c, visual_cues: parsed.visualist.content || parsed.visualist } : c));
+                // IMPORTANT: Visualist now returns a preliminary production bundle
+                const bundle = parsed.visualist.productionBundle || parsed.visualist.bundle;
+                setCommits(prev => prev.map(c => c.iteration === it ? { 
+                  ...c, 
+                  visual_cues: parsed.visualist.content || parsed.visualist.visualCues,
+                  production_bundle: bundle || c.production_bundle
+                } : c));
               }
               if (parsed.production) {
-                 const it = parsed.iterations || 1;
-                 setLogs(prev => [...prev, "Production: Asset bundle and thumbnail concepts ready."]);
-                 setStatus("SEO");
-                 setCommits(prev => prev.map(c => c.iteration === it ? { ...c, production_bundle: parsed.production.bundle || parsed.production } : c));
+                  const it = parsed.iterations || 1;
+                  setLogs(prev => [...prev, "Production: [Progress: 6/8] Asset bundle and thumbnail concepts ready."]);
+                  setStatus("SEO");
+                  setCommits(prev => prev.map(c => c.iteration === it ? { ...c, production_bundle: parsed.production.productionBundle || parsed.production.bundle || parsed.production } : c));
               }
               if (parsed.compliance) {
-                 const it = parsed.iterations || 1;
-                 setLogs(prev => [...prev, "Compliance: SEO metadata and tags optimized."]);
-                 setCommits(prev => prev.map(c => c.iteration === it ? { ...c, yt_metadata: parsed.compliance.ytMetadata || parsed.compliance } : c));
-                 setStatus("DONE");
-                 // Final sync to ensure everything is in the DB and local state
-                 setTimeout(() => fetchDrafts(currentProject!.id), 1000);
+                  const it = parsed.iterations || 1;
+                  setLogs(prev => [...prev, "Compliance: [Progress: 7/8] SEO metadata and tags optimized."]);
+                  setCommits(prev => prev.map(c => c.iteration === it ? { ...c, yt_metadata: parsed.compliance.ytMetadata || parsed.compliance } : c));
+                  setStatus("DONE");
+                  // Final sync
+                  setTimeout(() => fetchDrafts(currentProject!.id), 1000);
               }
             } catch (e) {
               console.error("Stream parse error:", e);
@@ -511,44 +504,49 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const fetchPexelsAssets = useCallback(async (queries: string[]) => {
+  const fetchHybridAssets = useCallback(async (queries: { query: string, type: 'video' | 'image' | 'ai_gen' }[]) => {
     if (!queries || queries.length === 0) return;
-    console.log("LOG: [AppCtx] Fetching Multi-Source assets for queries:", queries);
+    console.log("LOG: [AppCtx] Fetching Hybrid assets for queries:", queries.length);
     try {
       const orientation = contentMode === "YOUTUBE" ? "landscape" : "portrait";
       
-      const fetchPromises = queries.map(async (q) => {
-        // We check current state inside the promise to skip existing ones
-        // This is safe even without the hook dependency because we'll check against 'prev' in the setter
+      const results = await Promise.all(queries.map(async ({ query: q, type: t }) => {
         try {
-          const res = await fetch(`/api/assets/merged?query=${encodeURIComponent(q)}&orientation=${orientation}`);
-          const data = await res.json();
-          if (data.videos) {
-            return { query: q, videos: data.videos };
+          if (t === 'ai_gen') {
+            const res = await fetch('/api/assets/generate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt: q, width: orientation === 'landscape' ? 1280 : 720, height: orientation === 'landscape' ? 720 : 1280 })
+            });
+            const data = await res.json();
+            return { query: q, type: t, asset: data.asset };
+          } else {
+            const apiType = t === 'video' ? 'video' : 'image';
+            const res = await fetch(`/api/assets/merged?query=${encodeURIComponent(q)}&orientation=${orientation}&type=${apiType}`);
+            const data = await res.json();
+            return { query: q, type: t, assets: t === 'video' ? data.videos : data.images };
           }
         } catch (err) {
-          console.error(`Error fetching merged assets for ${q}:`, err);
+          console.error(`Error fetching hybrid asset for ${q}:`, err);
         }
         return null;
-      });
-
-      const results = await Promise.all(fetchPromises);
+      }));
       
       setPexelsAssets(prev => {
         const next = { ...prev };
         let changed = false;
         results.forEach(res => {
           if (res && !next[res.query]) {
-            next[res.query] = res.videos;
+            next[res.query] = res.type === 'ai_gen' ? [res.asset] : res.assets;
             changed = true;
           }
         });
         return changed ? next : prev;
       });
     } catch (e) {
-      console.error("Global fetchMultiSourceAssets error:", e);
+      console.error("Global fetchHybridAssets error:", e);
     }
-  }, [contentMode]); // Removed pexelsAssets to break infinite loop!
+  }, [contentMode]);
 
   useEffect(() => {
     fetchChannels();
@@ -562,19 +560,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [activeProject, commits, selectedCommit]);
 
-  // ORCHESTRATE PEXELS FETCH ON COMMIT SELECT
+  // ORCHESTRATE HYBRID FETCH ON COMMIT SELECT
   useEffect(() => {
     const bundle = selectedCommit?.production_bundle;
-    const globalQueries = bundle?.brollSearchQueries || [];
-    const sceneQueries = bundle?.scenes?.flatMap(s => s.searchQueries) || [];
+    if (!bundle?.scenes) return;
+
+    const hybridQueries = bundle.scenes.map(s => ({
+      query: s.searchQueries[0], // Use primary query
+      type: s.assetType || 'video'
+    }));
     
-    // Merge into unique set
-    const allQueries = Array.from(new Set([...globalQueries, ...sceneQueries]));
+    // Filter out already fetched
+    const needed = hybridQueries.filter(q => !pexelsAssets[q.query]);
     
-    if (allQueries.length > 0) {
-      fetchPexelsAssets(allQueries);
+    if (needed.length > 0) {
+      fetchHybridAssets(needed);
     }
-  }, [selectedCommit, fetchPexelsAssets]);
+  }, [selectedCommit, fetchHybridAssets, pexelsAssets]);
 
   return (
     <AppContext.Provider value={{
@@ -582,7 +584,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setProjects, setChannels, setActiveProject, setActiveChannel,
       status, setStatus, logs, setLogs, prompt, setPrompt,
       commits, setCommits, selectedCommit, setSelectedCommit,
-      suggestions, setSuggestions, pexelsAssets, fetchPexelsAssets,
+      suggestions, setSuggestions, pexelsAssets, fetchPexelsAssets: fetchHybridAssets,
       fetchProjects, fetchChannels, fetchDrafts,
       runAgent, fetchStrategy, fetchSuggestions, deleteSuggestion,
       isCreatingChannel, setIsCreatingChannel,

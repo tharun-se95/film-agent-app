@@ -28,28 +28,29 @@ export const compileFCPXML = (projectTitle: string, scenes: any[], videoMap: Rec
   // We pseudo-estimate timing. Audio length = approx 1 sec per 15 characters.
   // In a true perfect XML we'd decode the audio buffer to get exact ms, 
   // but Premiere auto-re-links and snaps if timecode is loose.
-  let currentTime = 0;
-
-  scenes.forEach((scene, idx) => {
+    currentTime = 0;
+    scenes.forEach((scene, idx) => {
     // 1. Use actual duration if stored, fallback to estimation
-    const durationSeconds = scene.duration || Math.max(3, scene.narration.length / 18);
+    const durationSeconds = scene.duration || Math.max(3, (scene.narration || '').length / 18);
     const durationFrames = Math.floor(durationSeconds * fps);
 
-    // Get mapped video
-    const videoData = videoMap[`${idx}_0`]; // first query match
-    const videoFilename = videoData ? `Video_${idx + 1}_V1.mp4` : '';
+    // Get mapped asset
+    const assetData = videoMap[`${idx}_0`]; 
+    const isImage = assetData?.type === 'image';
+    const extension = isImage ? 'jpg' : 'mp4';
+    const assetFilename = assetData ? `Asset_${idx + 1}_V1.${extension}` : '';
 
-    if (videoFilename) {
+    if (assetFilename) {
       xml += `
           <clipitem id="clip-v-${idx}">
-            <name>${videoFilename}</name>
+            <name>${assetFilename}</name>
             <file id="file-v-${idx}">
-              <name>${videoFilename}</name>
-              <pathurl>./4_Broll/${videoFilename}</pathurl>
+              <name>${assetFilename}</name>
+              <pathurl>./4_Broll/${assetFilename}</pathurl>
               <rate><timebase>${fps}</timebase></rate>
-              <duration>${durationFrames}</duration>
+              <duration>${isImage ? 3600 : durationFrames}</duration>
               <media>
-                <video><duration>${durationFrames}</duration></video>
+                <video><duration>${isImage ? 3600 : durationFrames}</duration></video>
               </media>
             </file>
             <start>${currentTime}</start>
@@ -68,7 +69,7 @@ export const compileFCPXML = (projectTitle: string, scenes: any[], videoMap: Rec
         
   currentTime = 0;
   scenes.forEach((scene, idx) => {
-    const durationSeconds = scene.duration || Math.max(3, scene.narration.length / 18);
+    const durationSeconds = scene.duration || Math.max(3, (scene.narration || '').length / 18);
     const durationFrames = Math.floor(durationSeconds * fps);
     
     if (scene.audioUrl) {

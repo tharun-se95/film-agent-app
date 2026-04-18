@@ -104,35 +104,54 @@ export function useRender() {
 
         for (let i = 0; i < availableClips.length; i++) {
             const clip = availableClips[i];
-            let vidData = await safeFetchFile(clip.video.videoUrl, `Scene ${sIdx + 1} Clip ${i + 1}`);
-            const inName = `in_${i}.mp4`;
+            const isImage = clip.video.type === 'image';
+            const assetUrl = isImage ? (clip.video.url || clip.video.thumbnail) : clip.video.videoUrl;
+            
+            let assetData = await safeFetchFile(assetUrl, `Scene ${sIdx + 1} Asset ${i + 1}`);
+            const inName = isImage ? `in_${i}.jpg` : `in_${i}.mp4`;
             const outName = `norm_${i}.mp4`;
-            await ffmpeg.writeFile(inName, vidData);
-            (vidData as any) = null; // GC hint
+            await ffmpeg.writeFile(inName, assetData);
+            (assetData as any) = null;
 
             const isOverlay = clip.query.toLowerCase().includes('subscribe') || clip.query.toLowerCase().includes('overlay');
             
-            // Industrial Filter Chain: 
-            // 1. Scale/Crop to 720p 
-            // 2. Chroma Key if it's an overlay
-            // 3. Draw Captions (Bouncy Yellow style)
-            // 4. Force 30fps
+            // Industrial Filter Chain
             const filters = [
                 'scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720,fps=30',
             ];
 
-            if (isOverlay) {
-                filters.push(`colorkey=0x00ff00:0.1:0.1`); // strip green background
+            if (isImage) {
+                // Apply subtle Ken Burns in FFmpeg
+                filters.push(`zoompan=z='min(zoom+0.001,1.5)':d=${Math.ceil(clipDuration * 30)}:s=1280x720:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`);
             }
 
-            // Add Subtitles (Sentence level for this clip)
-            const cleanText = scene.narration.replace(/'/g, "\\'").replace(/:/g, "\\:").substring(0, 80);
-            filters.push(`drawtext=text='${cleanText}':fontfile='/font.ttf':fontsize=42:fontcolor=white:borderw=3:bordercolor=black:x=(w-text_w)/2:y=(h-text_h)-80:enable='between(t,0,${clipDuration})'`);
+            if (isOverlay) {
+                filters.push(`colorkey=0x00ff00:0.1:0.1`); 
+            }
+
+            // ADD VIRAL CAPTIONS
+            const sceneCaptions = scene.captions || [];
+            if (sceneCaptions.length > 0) {
+                sceneCaptions.forEach((cap: any) => {
+                    const cleanText = cap.text.replace(/'/g, "\\'").replace(/:/g, "\\:").toUpperCase();
+                    const color = cap.color === 'YELLOW' ? 'yellow' : cap.color === 'RED' ? 'red' : cap.color === 'CYAN' ? 'cyan' : 'white';
+                    const start = cap.startTime * audDuration;
+                    const end = start + ((cap.duration || 0.3) * audDuration);
+                    
+                    filters.push(`drawtext=text='${cleanText}':fontfile='/font.ttf':fontsize=72:fontcolor=${color}:borderw=4:bordercolor=black:x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,${start},${end})'`);
+                });
+            } else {
+                // Fallback to simple narration subtitle
+                const cleanText = scene.narration.replace(/'/g, "\\'").replace(/:/g, "\\:").substring(0, 60);
+                filters.push(`drawtext=text='${cleanText}':fontfile='/font.ttf':fontsize=42:fontcolor=white:borderw=3:bordercolor=black:x=(w-text_w)/2:y=(h-text_h)-80:enable='between(t,0,${clipDuration})'`);
+            }
+
+            const inputArgs = isImage ? ['-loop', '1', '-i', inName] : ['-i', inName];
 
             await ffmpeg.exec([
                 '-threads', '1', 
-                '-i', inName,
-                '-t', (clipDuration + (i === 0 ? J_CUT_OFFSET : 0)).toString(), // J-Cut lead-in for first clip
+                ...inputArgs,
+                '-t', (clipDuration + (i === 0 ? J_CUT_OFFSET : 0)).toString(),
                 '-vf', filters.join(','),
                 '-c:v', 'libx264',
                 '-profile:v', 'baseline',

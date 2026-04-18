@@ -18,15 +18,14 @@ export default function DashboardHome() {
   return (
     <div className="p-12 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-700">
       
-      {/* Header */}
-      <header className="flex items-center justify-between">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-black tracking-tightest mb-2 text-white">Your Studio</h1>
-          <p className="text-neutral-500 font-medium">Manage your content channels and agentic strategies.</p>
+          <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 text-white">Your Studio</h1>
+          <p className="text-neutral-500 font-medium text-lg">Manage your content channels and agentic strategies with precision.</p>
         </div>
         <button 
           onClick={() => setIsCreatingChannel(true)}
-          className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-bold hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20"
+          className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[11px] hover:brightness-110 active:scale-95 transition-all shadow-2xl shadow-primary/20 shrink-0"
         >
           <Plus className="w-5 h-5" />
           Establish Channel
@@ -45,7 +44,7 @@ export default function DashboardHome() {
               onClick={() => {
                 if (!openDropdown) router.push(`/channels/${channel.id}`);
               }}
-              className="group relative p-8 rounded-[2.5rem] bg-[#0c0c0c] border border-white/5 hover:border-primary/40 transition-all hover:shadow-2xl hover:shadow-primary/5 overflow-hidden flex flex-col min-h-[320px] cursor-pointer"
+              className="group relative p-8 rounded-[2.5rem] bg-[#0c0c0c] border border-white/[0.03] hover:border-primary/40 transition-all hover:shadow-[0_0_50px_rgba(59,130,246,0.1)] overflow-hidden flex flex-col min-h-[340px] cursor-pointer"
             >
               {/* Design Accents */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[80px] group-hover:bg-primary/10 transition-colors" />
