@@ -17,3 +17,28 @@ export async function GET(req: NextRequest) {
   if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   return new Response(JSON.stringify(data), { status: 200 });
 }
+
+export async function PUT(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { id, production_bundle } = body;
+
+    if (!id) return new Response(JSON.stringify({ error: "Missing Draft ID" }), { status: 400 });
+
+    const supabase = getSupabaseAdminClient();
+    if (!supabase) return new Response(JSON.stringify({ error: "Storage disabled" }), { status: 500 });
+
+    const { data, error } = await supabase
+      .from("drafts")
+      .update({ production_bundle })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return new Response(JSON.stringify(data), { status: 200 });
+  } catch (e: any) {
+    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+  }
+}

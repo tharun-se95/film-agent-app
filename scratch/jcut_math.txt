@@ -1,0 +1,18 @@
+J-Cut Logic for useRender.ts:
+
+Current:
+[Scene 1 Audio (0-5s)] [Scene 1 Video (0-5s)]
+[Scene 2 Audio (5-10s)] [Scene 2 Video (5-10s)]
+
+Target:
+[Scene 1 Audio (0-5s)] [Scene 1 Video (0-4.7s)]
+[Scene 2 Audio (5-10s)] [Scene 2 Video (4.7-10s)]
+
+Implementation:
+1. Scene N-1 video trim: -t (duration - 0.3)
+2. Scene N video lead: prepend 0.3s of the first clip from Scene N to Scene N-1, or just start Scene N visual 0.3s early.
+Actually, in a sequential concat world:
+Scene 1 ends at 4.7s.
+Scene 2 starts at 4.7s.
+But Scene 2 audio starts at 5.0s.
+Result: The viewer SEES the new topic 0.3s BEFORE they hear it. This is the "anticipatory" edit.

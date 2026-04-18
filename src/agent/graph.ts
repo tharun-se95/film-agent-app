@@ -11,32 +11,41 @@ import { logAgentExecution } from "../utils/logger";
 
 const API_KEY = process.env.GROQ_API_KEY;
 const BASE_URL = "https://api.groq.com/openai/v1";
-const MODEL_NAME = "llama-3.3-70b-versatile";
+const MODEL_NAME = "llama-3.1-8b-instant"; // GHOST BRAIN MODE: Temporarily using 8b with advanced prompting
 
-// CREATIVE LLM: High temperature for brainstorming and script writing
-const creativeLlm = new ChatOpenAI({
+// 1. SURGEON (8B - Simulating 70B): Forced pedantry for narrative logic
+const surgeonLlm = new ChatOpenAI({
   modelName: MODEL_NAME,
-  temperature: 0.8,
+  temperature: 0.8, // Slightly higher to force creative leaps in smaller model
   apiKey: API_KEY,
   configuration: { baseURL: BASE_URL },
-  timeout: 15000 // Prevent perpetual hangs
+  timeout: 30000 
 });
 
-// EVALUATOR LLM: Zero temperature for strict, deterministic logic and grading
+// 2. EVALUATOR (70B): Zero-temp for deterministic grading
 const evaluatorLlm = new ChatOpenAI({
   modelName: MODEL_NAME,
   temperature: 0.0,
   apiKey: API_KEY,
   configuration: { baseURL: BASE_URL },
-  timeout: 15000 // Strict enforcement for logic steps
+  timeout: 20000
 });
 
-// UTILITY LLM: 8b model for low-complexity, high-volume generation (visuals, bundling)
-const utilityLlm = new ChatOpenAI({
+// 3. NURSE (8B): High-speed, high-volume for technical checklists and queries
+const nurseLlm = new ChatOpenAI({
   modelName: "llama-3.1-8b-instant",
-  temperature: 0.7,
+  temperature: 0.5,
   apiKey: API_KEY,
   configuration: { baseURL: BASE_URL }
+});
+
+// 4. THE BOSS (70B): High-Fidelity Strategic Brain for Viral Architecting
+const bossLlm = new ChatOpenAI({
+  modelName: "llama-3.3-70b-versatile",
+  temperature: 0.7,
+  apiKey: API_KEY,
+  configuration: { baseURL: BASE_URL },
+  timeout: 45000
 });
 
 // Zod Schema for Strategic Suggestions
@@ -47,6 +56,21 @@ const StrategicSchema = z.object({
     hook: z.string().describe("The suggested pattern interrupt for the first 3 seconds.")
   })).describe("A list of 5 high-potential video concepts.")
 });
+
+// Zod Schema for Niche Opportunities (Hardened for 8B hallucinations)
+const NicheOpportunitySchema = z.object({
+  name: z.string().describe("The specific micro-niche name."),
+  cpm: z.string().describe("Estimated CPM range."),
+  competition: z.enum(["LOW", "MEDIUM", "HIGH"]).describe("Level of creator saturation."),
+  hook: z.string().describe("A 3-second pattern interrupt concept."),
+  reasoning: z.string().describe("Why this niche is a gap.")
+}).passthrough(); // Allow extra model-specific keys
+
+const NicheClusterSchema = z.object({
+  niches: z.array(NicheOpportunitySchema).optional(),
+  opportunities: z.array(NicheOpportunitySchema).optional(),
+  niche_opportunities: z.array(NicheOpportunitySchema).optional(),
+}).describe("A list of 5-10 high-value niche opportunities.");
 
 // Zod Schema for the Critic's Structured JSON Output
 const CriticSchema = z.object({
@@ -144,6 +168,7 @@ export const AgentState = Annotation.Root({
       searchQueries: string[];
     }[];
     voiceGuidance: string;
+    cleanNarratorScript?: string;
   }>({
     reducer: (current, update) => ({ ...current, ...update }),
     default: () => ({
@@ -152,7 +177,8 @@ export const AgentState = Annotation.Root({
       sfxChecklist: [],
       vfxRequirements: [],
       musicInspiration: "",
-      voiceGuidance: ""
+      voiceGuidance: "",
+      cleanNarratorScript: ""
     }),
   }),
   ytCriticIterations: Annotation<number>({
@@ -166,6 +192,17 @@ export const AgentState = Annotation.Root({
   }),
   // Strategic Suggestions (Industrial Mode)
   suggestions: Annotation<{ title: string; reasoning: string; hook: string }[]>({
+    reducer: (current, update) => update,
+    default: () => [],
+  }),
+  // Niche Architecture (Discovery Mode)
+  nicheOpportunities: Annotation<{
+    name: string;
+    cpm: string;
+    competition: "LOW" | "MEDIUM" | "HIGH";
+    hook: string;
+    reasoning: string;
+  }[]>({
     reducer: (current, update) => update,
     default: () => [],
   }),
@@ -184,7 +221,7 @@ async function outlinerAgent(state: typeof AgentState.State) {
     // REFINEMENT MODE: If we have an existing outline, we evolve it
     if (state.iterations > 0 && state.outline) {
       console.log("Outliner: Refining existing plot beats...");
-      const response = await creativeLlm.invoke([
+      const response = await surgeonLlm.invoke([
         new SystemMessage("You are an expert Hollywood Script Doctor. You are refining an existing BEAT SHEET based on new user instructions. Keep the core narrative structure where possible, but integrate the new changes seamslessly. Be concise and punchy."),
         new HumanMessage(`EXISTING BEAT SHEET:\n${state.outline}\n\nNEW INSTRUCTIONS:\n${latestMessage}`)
       ]);
@@ -197,7 +234,7 @@ async function outlinerAgent(state: typeof AgentState.State) {
 
     // INITIAL PLOT MODE
     console.log("Outliner: Plotting initial script structure...");
-    const response = await creativeLlm.invoke([
+    const response = await surgeonLlm.invoke([
       new SystemMessage("You are an expert Hollywood Outliner. Write a detailed, rich 3-act beat sheet based on the user's idea. Provide deep character motivations and cinematic pacing. Focus on the core emotional arc."),
       new HumanMessage(latestMessage)
     ]);
@@ -232,7 +269,11 @@ async function drafterAgent(state: typeof AgentState.State) {
 
     let finalPrompt = `Write a comprehensive screenplay scene based on this plot outline:\n\n${state.outline}\n\nInitial Ideas: ${latestUserMessage}\n\nFocus on vivid scene descriptions and nuanced dialogue. Keep the scene tight and cinematic.`;
 
-    let sysPrompt = "You are an award-winning Screenwriter. Write visually stunning, emotionally rich scenes. Do not use asterisks or markdown bolding, just pure text caps for names. Ensure your output is substantial but stays focused on the key scene beats.";
+    let sysPrompt = `You are an AI simulating a 70B parameter Screenwriter. 
+    Your goal is SUBTEXT. Do not be literal. 
+    If a character is sad, do not have them cry; have them clean a mirror until it streaks.
+    Write visually stunning, emotionally rich scenes. 
+    Do not use asterisks or markdown bolding, just pure text caps for names.`;
 
     if (state.iterations > 0 && state.draftInfo) {
       console.log("LOG: [Drafter] Transitioning to Refinement Mode...");
@@ -240,7 +281,7 @@ async function drafterAgent(state: typeof AgentState.State) {
       sysPrompt = "You are an expert Script Doctor. Perform surgical precision edits. Preserve the existing script's voice and only modify what is necessary to fulfill the request.";
     }
 
-    const response = await utilityLlm.invoke([
+    const response = await surgeonLlm.invoke([
       new SystemMessage(sysPrompt),
       new HumanMessage(finalPrompt)
     ]);
@@ -286,34 +327,35 @@ async function drafterAgent(state: typeof AgentState.State) {
 async function criticAgent(state: typeof AgentState.State) {
   try {
     console.log("HEARTBEAT: [Critic] Entry");
-    console.log("LOG: [Critic] Starting evaluation...");
+    console.log("LOG: [Critic] Starting AGGRESSIVE evaluation...");
 
-    // Use .withStructuredOutput() to force LLM to return JSON validated by our Zod schema
-    const analyzer = evaluatorLlm.withStructuredOutput(CriticSchema, { name: "evaluate_script", method: "functionCalling" });
+    const evaluator = evaluatorLlm.withStructuredOutput(CriticSchema, { name: "evaluate_script", method: "jsonMode" });
 
-    const prompt = `You are a harsh but fair Hollywood Script Critic. Critique this screenplay draft carefully. Focus on pacing, character voice, and action.\n\nDraft:\n${state.draftInfo}`;
+    const prompt = `You are a Hostile, Brutal, and High-Expectation Hollywood Executive. 
+    You are evaluating a YouTube script that needs to capture millions of views.
+    
+    === CRITICAL EVALUATION RULES ===
+    1. **KILL THE CLICHÉ**: If the script uses patterns like "In a world where...", "Have you ever wondered...", or generic motivational tropes, TRASH IT.
+    2. **CONFLICT OR DEATH**: Every high-revenue script MUST have a clearly defined conflict (Man vs Self, Man vs Nature, or a specific antagonist). If it feels like a Wikipedia entry, give it a score of 3 and demand a rewrite.
+    3. **RETENTION AUDIT**: Look for "boring" sections where the pacing sags. Demand "Pattern Interrupts".
+    
+    Draft to Audit:\n${state.draftInfo}`;
 
-    const result = await analyzer.invoke([
-      new SystemMessage("Analyze the text strictly. You are interacting via an API so you MUST return only valid JSON matching the exact schema provided."),
+    const result = await evaluator.invoke([
+      new SystemMessage("You are an aggressive Studio Head. You return ONLY valid JSON and you NEVER give a score higher than 7 unless the script is truly revolutionary."),
       new HumanMessage(prompt)
     ]);
 
-    // Update the existing Supabase row with critic data
     const supabase = getSupabaseAdminClient();
     if (supabase) {
-      const { error } = await supabase.from('drafts')
+      await supabase.from('drafts')
         .update({ critic_score: result.score, critic_notes: result.feedback })
         .eq('project_id', state.projectId)
         .eq('iteration', state.iterations);
-
-      if (error) {
-        console.error("Supabase critic update error:", error.message);
-        throw new Error(`Critic Persistence Error: ${error.message}`);
-      }
     }
 
     return {
-      messages: [`Critic Agent evaluated draft. Score: ${result.score}/10.`],
+      messages: [`Shadow Critic: [Audit Result: ${result.score}/10] Recommendation: ${result.score < 6 ? 'REJECTED' : 'CONDITIONALLY ACCEPTED'}`],
       criticScore: result.score,
       criticNotes: result.feedback,
       historicalFeedback: [result.feedback]
@@ -321,8 +363,8 @@ async function criticAgent(state: typeof AgentState.State) {
   } catch (e) {
     console.error("Critic Error:", e);
     return {
-      messages: [`System Error (Critic): ${e instanceof Error ? e.message : "Failed to evaluate script"}`],
-      criticScore: 5 // Default middle score on error to allow flow to continue if needed
+      messages: [`Shadow Critic: Error in auditing cycle. Defaulting to safe score.`],
+      criticScore: 5
     };
   }
 }
@@ -331,16 +373,87 @@ async function criticAgent(state: typeof AgentState.State) {
 // 3b. New YouTube Strategist Nodes
 // ==========================================
 
+async function nicheArchitectAgent(state: typeof AgentState.State) {
+  try {
+    console.log("HEARTBEAT: [Niche Architect] Entry");
+    console.log("LOG: [Niche Architect] Brainstorming viral sub-niches...");
+    const latestMessage = state.messages[state.messages.length - 1] || "general interest";
+
+    const analyzer = nurseLlm.withStructuredOutput(NicheClusterSchema, { name: "generate_niches", method: "jsonMode" });
+    
+    const systemPrompt = `You are a World-Class YouTube Niche Architect. 
+    Your goal is to identify 5-7 HIGH-VALUE, HIGH-CPM micro-niches based on the user's core interest.
+    Use the 'Combinatorial Method': Combine the core topic with a high-intent domain (e.g. Wellness + SaaS, Engineering + Finance).
+    
+    Categorize opportunities by:
+    1. THE GOLD MINE: Highest CPM potential ($30+).
+    2. THE TRENDING WAVE: High search velocity, rising interest.
+    3. THE BLUE OCEAN: Low competition, unique gap.
+    
+    === JSON FORMAT (STRICT) ===
+    You MUST return a JSON object with a key 'niches'. Each niche object must have exactly these keys: 'name', 'cpm', 'competition', 'hook', 'reasoning'.
+    
+    EXAMPLE:
+    {
+      "niches": [
+        {
+          "name": "Bio-Hacking for Elite Athletes",
+          "cpm": "$50-$70",
+          "competition": "LOW",
+          "hook": "A professional athlete collapses on field...",
+          "reasoning": "High-net-worth audience, specific bio-metric data focus."
+        }
+      ]
+    }`;
+
+    const result = await analyzer.invoke([
+      new SystemMessage(systemPrompt),
+      new HumanMessage(`Core Topic/Interest: ${latestMessage}`)
+    ]);
+
+    // NORMALIZATION LAYER: Map whatever the model returned to our standard keys
+    const rawNiches = result.niches || result.opportunities || result.niche_opportunities || [];
+    const normalizedNiches = rawNiches.map((n: any) => ({
+      name: n.name || n.niche || n['Micro-Niche'] || "Unknown Opportunity",
+      cpm: n.cpm || n.cpmPotential || n['CPM Potential'] || "$0-$0",
+      competition: n.competition || "MEDIUM",
+      hook: n.hook || n.viralHook || "Coming soon...",
+      reasoning: n.reasoning || "Discovery phase."
+    }));
+
+    // Save to Supabase (Niche Cluster)
+    const supabase = getSupabaseAdminClient();
+    if (supabase) {
+      await supabase.from('projects')
+        .update({ niche_opportunities: normalizedNiches })
+        .eq('id', state.projectId);
+    }
+
+    return {
+      messages: ["Niche Architect: Discovery complete. I've identified a rich list of high-value opportunities."],
+      nicheOpportunities: normalizedNiches
+    };
+  } catch (e) {
+    console.error("Niche Architect Error:", e);
+    return { messages: [`System Error (Niche Architect): ${e instanceof Error ? e.message : "Failed"}`] };
+  }
+}
+
 async function intelAgent(state: typeof AgentState.State) {
   try {
     console.log("HEARTBEAT: [Intel] Entry");
-    console.log("LOG: [Intel] Analyzing niche using Utility Model (8b)...");
-    const latestMessage = state.messages[state.messages.length - 1];
+    
+    // If we have niche opportunities, we focus on the first/best one
+    const targetNiche = state.nicheOpportunities.length > 0 
+      ? state.nicheOpportunities[0].name 
+      : state.messages[state.messages.length - 1];
+
+    console.log(`LOG: [Intel] Deep-diving into niche: ${targetNiche}`);
 
     // Switch to utilityLlm (8b) to save premium tokens and bypass 70b rate limits
-    const response = await utilityLlm.invoke([
+    const response = await nurseLlm.invoke([
       new SystemMessage("You are a YouTube Market Intelligence Agent. Analyze the niche, CPM potential, and competitor metrics. Identify a 'Viral Angle' for the provided topic."),
-      new HumanMessage(`Topic: ${latestMessage}\n\nProvide Niche Intel, estimated CPM, and competitor gaps.`)
+      new HumanMessage(`Topic: ${targetNiche}\n\nProvide Niche Intel, estimated CPM, and competitor gaps.`)
     ]);
 
     // Persist niche data to Supabase (Initial insert for this iteration)
@@ -352,7 +465,7 @@ async function intelAgent(state: typeof AgentState.State) {
         project_id: state.projectId,
         niche_data: response.content as string,
         iteration: nextIteration,
-        prompt_context: latestMessage
+        prompt_context: targetNiche
       }, { onConflict: 'project_id, iteration' });
 
       if (error) {
@@ -365,7 +478,7 @@ async function intelAgent(state: typeof AgentState.State) {
     logAgentExecution(state.projectId, `[INTEL RESPONSE]\n${response.content}`);
 
     return {
-      messages: ["Intel: [Progress: 1/6] Niche intelligence and viral angle identified."],
+      messages: ["Intel: [Progress: 1/6] Deep-dive market analysis complete."],
       nicheData: response.content as string,
       iterations: 1,
     };
@@ -389,7 +502,7 @@ async function hookScientistAgent(state: typeof AgentState.State) {
       humPrompt = `--- EXISTING SCRIPT ---\n${state.draftInfo}\n\n--- REFINEMENT REQUEST ---\n${state.messages[state.messages.length - 1]}\n\nINSTRUCTION: ONLY change the specific sections mentioned in the request. If the user asks for a better hook, keep the rest of the body exactly the same. Return the FULL updated script.`;
     }
 
-    const response = await creativeLlm.invoke([
+    const response = await surgeonLlm.invoke([
       new SystemMessage(sysPrompt),
       new HumanMessage(humPrompt)
     ]);
@@ -414,7 +527,6 @@ async function hookScientistAgent(state: typeof AgentState.State) {
     return {
       messages: ["Hooks: [Progress: 2/6] Logic-cloned and engineered script."],
       draftInfo: response.content as string,
-      hooks: [response.content.toString().substring(0, 500)], // Store start of script as hook sample
     };
   } catch (e) {
     console.error("Hook Scientist Error:", e);
@@ -425,44 +537,54 @@ async function hookScientistAgent(state: typeof AgentState.State) {
 async function visualistAgent(state: typeof AgentState.State) {
   try {
     console.log("HEARTBEAT: [Visualist] Entry");
-    console.log("LOG: [Visualist] Mapping B-roll and visual cues...");
-    const response = await utilityLlm.invoke([
-      new SystemMessage("You are a Video Editor & Visual Designer. Read the script and add detailed visual cues, B-Roll notes, and Stock footage prompts to every paragraph. Format as [Visual: <Description>]"),
+    console.log("LOG: [Visualist] Mapping B-roll with Concept Logic...");
+    
+    const FORBIDDEN_LIST = "Technology, AI, Innovation, Future, Digital, Success, Growth, Data, Medicine, Health, Science";
+    
+    // SURGEON LAYER: High-intelligence concept mapping
+    const conceptMapper = await surgeonLlm.invoke([
+      new SystemMessage(`You are a Professional Cinematographer and Visual Concept Designer.
+      
+      === THE FORBIDDEN LIST ===
+      NEVER search for the following generic keywords: ${FORBIDDEN_LIST}. 
+      If the topic is "Innovation", search for "Steam escaping a brass machine" or "Macro shot of a seed sprouting". 
+      
+      === CONCEPT MAPPING RULES ===
+      1. Map keywords to TEXTURES and MOODS. 
+      2. If the text is SAD, search for "Rain on a window", "Shadows on a brick wall". 
+      3. If the text is ENERGETIC, search for "Fast shutter speed water splash", "City lights moving".`),
       new HumanMessage(`Script:\n${state.draftInfo}`)
     ]);
 
-    // Update draft with visual cues
     const supabase = getSupabaseAdminClient();
     if (supabase) {
-      const { error } = await supabase.from('drafts')
-        .update({ visual_cues: response.content as string })
+      await supabase.from('drafts')
+        .update({ visual_cues: conceptMapper.content as string })
         .eq('project_id', state.projectId)
         .eq('iteration', state.iterations);
-
-      if (error) {
-        console.error("Supabase visualist storage error:", error.message);
-        throw new Error(`Visualist Persistence Error: ${error.message}`);
-      }
     }
 
-    // AUDIT: Log raw AI response
-    logAgentExecution(state.projectId, `[VISUALIST RESPONSE]\n${response.content}`);
+    logAgentExecution(state.projectId, `[VISUALIST CONCEPTS]\n${conceptMapper.content}`);
 
-    // SECOND PASS: Extract structured scenes mapping
     const STORYBOARD_SCHEMA = z.object({
       scenes: z.array(z.object({
-        title: z.string().describe("Scene title (e.g. 'Intro', 'Innovation #1')"),
-        narration: z.string().describe("The spoken narrator text for this scene."),
-        visualCue: z.string().describe("The visual description for this scene."),
-        searchQueries: z.array(z.string()).describe("3-5 precise, 3-5 word search terms for stock footage for this specific scene.")
-      })).describe("A list of vibrant, structured scenes that map the script to visuals."),
-      allSearchQueries: z.array(z.string()).describe("A master list of ALL search queries for the entire video to ensure the global gallery is full.")
+        title: z.string().describe("Scene title."),
+        narration: z.string().describe("Verbatim narrator spoken text."),
+        visualCue: z.string().describe("Concise mood description."),
+        searchQueries: z.array(z.string()).min(2).max(15).describe("Highly specific Pexels-ready queries.")
+      })),
+      allSearchQueries: z.array(z.string())
     });
     
-    const searchAgent = utilityLlm.withStructuredOutput(STORYBOARD_SCHEMA, { name: "generate_storyboard", method: "functionCalling" });
-    const storyboardResult = await searchAgent.invoke([
-      new SystemMessage("You are a Cinematographic Search Expert and Storyboard Artist. Convert the visual cues into a structured storyboard. Each scene must map directly to its narration and specific searchable keywords."),
-      new HumanMessage(`Visual Cues:\n${response.content}`)
+    // NURSE LAYER: High-volume query generation using 8b
+    const queryGen = nurseLlm.withStructuredOutput(STORYBOARD_SCHEMA, { name: "generate_storyboard", method: "jsonMode" });
+    const storyboardResult = await queryGen.invoke([
+      new SystemMessage(`You are a Search Specialist. 
+      FORBIDDEN WORDS: ${FORBIDDEN_LIST}. 
+      Use highly descriptive textures (e.g., 'rusty metal', 'macro eye iris', 'cracked soil').
+      Every query MUST be English and MUST describe a SPECIFIC cinematic shot.
+      Return the results in JSON format.`),
+      new HumanMessage(`=== SOURCE SCRIPT ===\n${state.draftInfo}\n=== ANNOTATED CUES ===\n${conceptMapper.content}\n\nSTRICT INSTRUCTION: Return the above analysis in valid JSON format.`)
     ]);
 
     const updatedBundle = { 
@@ -472,7 +594,6 @@ async function visualistAgent(state: typeof AgentState.State) {
       brollChecklist: storyboardResult.scenes.map(s => s.visualCue)
     };
 
-    // Update production bundle with these queries (we merge with existing if needed)
     if (supabase) {
       await supabase.from('drafts')
         .update({ production_bundle: updatedBundle })
@@ -481,13 +602,13 @@ async function visualistAgent(state: typeof AgentState.State) {
     }
 
     return {
-      messages: ["Visualist: [Progress: 3/6] Cinematic B-Roll mapped & search queries generated."],
-      visualCues: response.content as string,
+      messages: ["Visualist: Hybrid logic applied. Surgeon mapped the textures, Nurse generated the queries."],
+      visualCues: conceptMapper.content as string,
       productionBundle: updatedBundle
     };
   } catch (e) {
     console.error("Visualist Error:", e);
-    return { messages: [`System Error (Visualist): ${e instanceof Error ? e.message : "Failed"}`] };
+    return { messages: [`Visualist Failed: ${e instanceof Error ? e.message : "Internal Error"}`] };
   }
 }
 
@@ -496,16 +617,16 @@ async function complianceAgent(state: typeof AgentState.State) {
     console.log("HEARTBEAT: [Compliance] Entry");
     console.log("LOG: [Compliance] Generating SEO & Metadata...");
     const SEO_SCHEMA = z.object({
-      title: z.string(),
-      description: z.string(),
-      tags: z.array(z.string())
+      title: z.string().default("UNTITLED MASTERPIECE"),
+      description: z.string().optional(),
+      tags: z.array(z.string()).default([])
     });
 
-    // Use a simpler system prompt and clear schema to avoid 400 errors with the 8b model
-    const analyzer = utilityLlm.withStructuredOutput(SEO_SCHEMA, { name: "generate_seo", method: "functionCalling" });
+    // Use evaluatorLlm (8b in ghost mode) with jsonMode for structured SEO
+    const analyzer = evaluatorLlm.withStructuredOutput(SEO_SCHEMA, { name: "generate_seo", method: "jsonMode" });
     const result = await analyzer.invoke([
-      new SystemMessage("You are a YouTube SEO Expert. Generate a viral title, descriptive meta description, and 10 high-performance tags for the following video script."),
-      new HumanMessage(`VIDEO CONTENT:\n${state.draftInfo}\nVISUAL STYLE:\n${state.visualCues}`)
+      new SystemMessage("You are a YouTube SEO Expert. Generate a viral title, descriptive meta description, and 10 high-performance tags for the following video script in JSON format."),
+      new HumanMessage(`VIDEO CONTENT:\n${state.draftInfo}\nVISUAL STYLE:\n${state.visualCues}\n\nReturn ONLY a JSON object.`)
     ]);
 
     // Update draft with SEO metadata
@@ -538,44 +659,50 @@ async function complianceAgent(state: typeof AgentState.State) {
 async function retentionCriticAgent(state: typeof AgentState.State) {
   try {
     console.log("HEARTBEAT: [Retention Critic] Entry");
-    console.log("LOG: [Retention Critic] Evaluating drop-off risk...");
-    const RETENTION_SCHEMA = z.object({
-      score: z.number().min(1).max(10).describe("Retention and Hook score."),
-      feedback: z.string().describe("Specific notes for the hook scientist.")
-    });
+    console.log("LOG: [Retention Critic] Auditing for Viral Retention...");
 
-    const analyzer = utilityLlm.withStructuredOutput(RETENTION_SCHEMA, { name: "evaluate_retention", method: "functionCalling" });
+    const analyzer = evaluatorLlm.withStructuredOutput(CriticSchema, { name: "evaluate_retention", method: "jsonMode" });
+
+    const prompt = `You are a World-Class YouTube Retention Strategist who manages channels with 10M+ subscribers.
+    
+    === BRUTAL RETENTION RULES ===
+    1. **THE 3-SECOND RULE**: If the opening doesn't have a massive pattern interrupt, FAIL IT.
+    2. **STORYTELLING TENSION**: YouTube is about tension. If this script feels like a lecture or a summary, give it a score of 4.
+    3. **CLICHÉ PURGE**: Any use of "Have you ever wondered...", "Welcome back to the channel", or "Let's dive in" must be flagged as a critical error.
+    
+    Current Draft:\n${state.draftInfo}`;
+
     const result = await analyzer.invoke([
-      new SystemMessage("You are a YouTube Retention Expert. Evaluate if the script has a strong 3s hook and pattern interrupts every 30s. Be extremely critical."),
-      new HumanMessage(`Script:\n${state.draftInfo || "No script provided"}`)
+      new SystemMessage(`You are a Hostile Retention Guru. You NEVER give a passing score (8+) to generic content.
+      
+      IMPORTANT: You MUST return a VALID JSON object with:
+      {
+        "score": number (1-10),
+        "feedback": "string"
+      }`),
+      new HumanMessage(prompt)
     ]);
 
-    // AUDIT: Log raw AI response
-    logAgentExecution(state.projectId, `[RETENTION CRITIC RESPONSE]\n${JSON.stringify(result, null, 2)}`);
-
-    // Persist to Supabase
     const supabase = getSupabaseAdminClient();
     if (supabase) {
       await supabase.from('drafts')
-        .update({
-          critic_score: result.score,
-          critic_notes: result.feedback
-        })
+        .update({ critic_score: result.score, critic_notes: result.feedback })
         .eq('project_id', state.projectId)
         .eq('iteration', state.iterations);
     }
 
     return {
-      messages: [`Retention: [Progress: 6/6] Final audit complete. Score: ${result.score}/10.`],
+      messages: [`Shadow Retention Critic: [Result: ${result.score}/10] Note: ${result.feedback}`],
       retentionScore: result.score,
-      retentionNotes: result.feedback,
-      score: result.score,      // STANDARD FIELD FOR UI
-      feedback: result.feedback, // STANDARD FIELD FOR UI
-      ytCriticIterations: 1
+      criticNotes: result.feedback,
+      ytCriticIterations: state.ytCriticIterations + 1
     };
   } catch (e) {
     console.error("Retention Critic Error:", e);
-    return { messages: [`System Error (Retention Critic): ${e instanceof Error ? e.message : "Failed"}`] };
+    return {
+      messages: [`Shadow Retention Critic: System Error. Defaulting to safe score.`],
+      retentionScore: 5
+    };
   }
 }
 
@@ -585,31 +712,40 @@ async function productionBundlerAgent(state: typeof AgentState.State) {
     console.log("LOG: [Production Bundler] Generating asset package...");
     
     const PROD_SCHEMA = z.object({
-      thumbnailConcepts: z.array(z.object({ title: z.string(), prompt: z.string() })),
-      brollChecklist: z.array(z.string()),
-      sfxChecklist: z.array(z.string()),
-      vfxRequirements: z.array(z.string()),
-      musicInspiration: z.string(),
-      voiceGuidance: z.string()
+      thumbnailConcepts: z.array(z.object({ title: z.string(), prompt: z.string() })).default([]),
+      brollChecklist: z.array(z.string()).default([]),
+      sfxChecklist: z.array(z.string()).optional(),
+      vfxRequirements: z.array(z.string()).optional(),
+      musicInspiration: z.string().optional(),
+      voiceGuidance: z.string().optional()
     });
 
-    const bundler = utilityLlm.withStructuredOutput(PROD_SCHEMA, { name: "generate_production_bundle", method: "functionCalling" });
-    const result = await bundler.invoke([
+    // Use evaluatorLlm (70b) for production bundle to ensure zero-failure extraction
+    // Use nurseLlm (8b) for production organization
+    const generator = nurseLlm.withStructuredOutput(PROD_SCHEMA, { name: "generate_production_bundle", method: "jsonMode" });
+    const result = await generator.invoke([
       new SystemMessage(`You are a Professional Production Director. 
-Your goal is to extract every technical requirement needed for the final video edit.
+Your goal is to extract every technical requirement needed for the final video edit in JSON FORMAT.
 1. Thumbnail Concepts: 3 viral, high-contrast ideas.
 2. B-Roll Checklist: 5-8 descriptive shots for an editor.
 3. SFX Checklist: Identify where impact sounds, whooshes, or ambient loops are needed.
 4. VFX/MGFX: Identify text overlays, callouts, or data visualizations.
 5. Music: Describe the BPM, mood, and genre.
 6. Voiceover: Direct the narrator on tone (e.g. "Hyper-enthusiastic" vs "Grave and serious").`),
-      new HumanMessage(`SCRIPT:\n${state.draftInfo}\nVISUAL CUES:\n${state.visualCues}`)
+      new HumanMessage(`SCRIPT:\n${state.draftInfo}\nVISUAL CUES:\n${state.visualCues}\n\nReturn ONLY a JSON object.`)
     ]);
 
-    // Merge with existing bundle (preserving brollSearchQueries from Visualist)
+    // THIRD PASS: Final Sanitization for Teleprompter
+    const cleanerRes = await nurseLlm.invoke([
+       new SystemMessage("You are a Teleprompter Editor. Extract ONLY the narrator's spoken lines from the script. Remove all SFX tags, visual descriptions, timing markers (e.g. 0:00), and headers. Return a clean, flowing narrative script."),
+       new HumanMessage(`Source Script:\n${state.draftInfo}`)
+    ]);
+
+    // Merge with existing bundle
     const updatedBundle = {
       ...state.productionBundle,
-      ...result
+      ...result,
+      cleanNarratorScript: cleanerRes.content as string
     };
 
     // Save bundle to Supabase
@@ -644,22 +780,27 @@ export async function strategicIntelAgent(state: typeof AgentState.State) {
     console.log("LOG: [Strategic Intel] Brainstorming viral concepts...");
     const latestMessage = state.messages[state.messages.length - 1] || "general niche";
 
-    const systemPrompt = `You are a World-Class YouTube Strategist. 
-Your goal is to identify 5 VIRAL video concepts based on the provided niche and channel DNA.
-Focus on "Conflict", "Curiosity Gaps", and "High-Value Entertainment". 
+    const systemPrompt = `You are a World-Class YouTube Strategist for High-Revenue Channels (10M+ subs). 
+Your goal is to identify 5 VIRAL, HIGH-CONFLICT video concepts based on the provided niche.
+
+=== STRATEGIC MANDATES ===
+1. **CONFLICT AS CURRENCY**: Every video must have an antagonist, a struggle, or a high-stakes failure. No "explaining" things. Every concept must be a "Battle".
+2. **PATTERN INTERRUPTS**: The hook must be visceral. If it's a "mysterious lab", it's failing or being deleted.
+3. **CURIOSITY GAPS**: Use "The [Subject] That [Action] Everything" or "I [Action] For [Time] And [Outcome]" frameworks if appropriate, but avoid AI clichés.
+4. **KIDS SPACE SPECIFIC**: Kids love "The vs That", "Giant versions", and "Solving the impossible".
 
 IMPORTANT: You MUST return ONLY a valid JSON object with the following structure:
 {
   "suggestions": [
     {
-      "title": "Viral Video Title",
-      "reasoning": "Strategy reasoning",
-      "hook": "3-second pattern interrupt"
+      "title": "Viral, High-Conflict Title",
+      "reasoning": "Industrial strategy reasoning",
+      "hook": "Visceral, 3-second pattern interrupt"
     }
   ]
 }`;
 
-    const response = await utilityLlm.invoke([
+    const response = await bossLlm.invoke([
       new SystemMessage(systemPrompt),
       new HumanMessage(`Channel Niche Context: ${state.nicheData}
       Current Strategy Request: ${latestMessage}`)
@@ -687,8 +828,15 @@ IMPORTANT: You MUST return ONLY a valid JSON object with the following structure
 // ==========================================
 async function intentClassifierAgent(state: typeof AgentState.State) {
   try {
+    const latestMessage = state.messages[state.messages.length - 1] || "";
+    
+    // GUARD: If intent is already pre-set (e.g. from UI or Test), respect it
+    if (state.intent !== "NONE") {
+      console.log(`LOG: [Intent Classifier] Respecting Pre-set Intent: ${state.intent}`);
+      return { intent: state.intent };
+    }
+
     console.log("LOG: [Intent Classifier] Parsing user command...");
-    const latestMessage = (state as any).latestCommand || state.messages[state.messages.length - 1] || "";
 
     // If it's the very first message and looks like a generic idea, it's FULL production
     if (state.iterations === 0 && latestMessage.length > 20) {
@@ -705,7 +853,7 @@ Analyze the user's request and categorize it into ONE of these intents:
 
 IMPORTANT: Return ONLY the category name.`;
 
-    const response = await utilityLlm.invoke([
+    const response = await nurseLlm.invoke([
       new SystemMessage(systemPrompt),
       new HumanMessage(latestMessage)
     ]);
@@ -732,13 +880,13 @@ IMPORTANT: Return ONLY the category name.`;
 
 function modeRouter(state: typeof AgentState.State) {
   // If we have a specific intent from the classifier, use it
-  if (state.intent === "INTEL") return "intel";
+  if (state.intent === "INTEL") return "nicheArchitect";
   if (state.intent === "DRAFT") return "hookScientist";
   if (state.intent === "CRITIC") return "retentionCritic";
   if (state.intent === "VISUALS") return "visualist";
 
   // Default legacy behavior
-  return state.contentMode === "YOUTUBE" ? "intel" : "outliner";
+  return state.contentMode === "YOUTUBE" ? "nicheArchitect" : "outliner";
 }
 
 function retentionRouting(state: typeof AgentState.State) {
@@ -770,6 +918,7 @@ export const graph = new StateGraph(AgentState)
   .addNode("drafter", drafterAgent)
   .addNode("critic", criticAgent)
   // YOUTUBE NODES
+  .addNode("nicheArchitect", nicheArchitectAgent)
   .addNode("intel", intelAgent)
   .addNode("hookScientist", hookScientistAgent)
   .addNode("retentionCritic", retentionCriticAgent)
@@ -785,6 +934,7 @@ export const graph = new StateGraph(AgentState)
   .addEdge("drafter", "critic")
   .addConditionalEdges("critic", reviewRouting)
   // YOUTUBE FLOW
+  .addEdge("nicheArchitect", "intel")
   .addEdge("intel", "hookScientist")
   .addEdge("hookScientist", "retentionCritic")
   .addConditionalEdges("retentionCritic", retentionRouting)

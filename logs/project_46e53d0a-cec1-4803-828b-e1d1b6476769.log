@@ -1,0 +1,990 @@
+[2026-04-17T04:01:05.333Z] {
+  "type": "START",
+  "prompt": "STRATEGIC CONCEPT COMMISSIONED:\n---\nTITLE: I Ate Only 'Healthy' Foods for 30 Days and Here's What Happened to My Body\nREASONING: This concept leverages the 'I [Action] For [Time] And [Outcome]' framework to create curiosity and conflict by challenging common perceptions of healthy eating. It invites viewers to question their own dietary choices and the potential impact on their bodies.\nHOOK: I gained 10 pounds in the first week...\n---\nPlease begin production based on this strategic alignment.",
+  "initialState": {
+    "messages": [
+      "STRATEGIC CONCEPT COMMISSIONED:\n---\nTITLE: I Ate Only 'Healthy' Foods for 30 Days and Here's What Happened to My Body\nREASONING: This concept leverages the 'I [Action] For [Time] And [Outcome]' framework to create curiosity and conflict by challenging common perceptions of healthy eating. It invites viewers to question their own dietary choices and the potential impact on their bodies.\nHOOK: I gained 10 pounds in the first week...\n---\nPlease begin production based on this strategic alignment."
+    ],
+    "projectId": "46e53d0a-cec1-4803-828b-e1d1b6476769",
+    "contentMode": "FILM",
+    "latestCommand": "STRATEGIC CONCEPT COMMISSIONED:\n---\nTITLE: I Ate Only 'Healthy' Foods for 30 Days and Here's What Happened to My Body\nREASONING: This concept leverages the 'I [Action] For [Time] And [Outcome]' framework to create curiosity and conflict by challenging common perceptions of healthy eating. It invites viewers to question their own dietary choices and the potential impact on their bodies.\nHOOK: I gained 10 pounds in the first week...\n---\nPlease begin production based on this strategic alignment."
+  }
+}
+================================================================================
+[2026-04-17T04:01:05.995Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "intentClassifier": {
+      "intent": "FULL"
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:01:08.209Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "nicheArchitect": {
+      "messages": [
+        "Niche Architect: Discovery complete. I've identified a rich list of high-value opportunities."
+      ],
+      "nicheOpportunities": [
+        {
+          "name": "Optimizing Gut Health for Sustainable Weight Loss",
+          "cpm": "$40-$60",
+          "competition": "MEDIUM",
+          "hook": "I ate only 'healthy' foods for 30 days, but my weight skyrocketed...",
+          "reasoning": "Interest in gut health and sustainable weight loss is high, and leveraging the 'I [Action] For [Time] And [Outcome]' framework creates curiosity and conflict."
+        },
+        {
+          "name": "The Science-Backed Guide to Meal Planning for Optimal Energy",
+          "cpm": "$30-$50",
+          "competition": "HIGH",
+          "hook": "Discover the surprising foods that boost your energy levels for 30 days...",
+          "reasoning": "High-intent domain of 'Science-Backed' and 'Optimal Energy' creates a strong hook, but competition is high due to existing content in the 'health and wellness' space."
+        },
+        {
+          "name": "The Impact of Plant-Based Diets on Mental Clarity and Focus",
+          "cpm": "$25-$40",
+          "competition": "LOW",
+          "hook": "I went plant-based for 30 days and my mental clarity increased by 30%...",
+          "reasoning": "Low competition and high-intent domain of 'Plant-Based' and 'Mental Clarity' creates a unique gap in the market."
+        },
+        {
+          "name": "The 30-Day Challenge: How to Boost Your Metabolism with Intermittent Fasting",
+          "cpm": "$35-$55",
+          "competition": "HIGH",
+          "hook": "I tried intermittent fasting for 30 days and my metabolism increased by 20%...",
+          "reasoning": "High-intent domain of 'Intermittent Fasting' and 'Metabolism' creates a strong hook, but competition is high due to existing content in the 'weight loss' space."
+        },
+        {
+          "name": "The Surprising Link Between Food Sensitivities and Chronic Inflammation",
+          "cpm": "$25-$40",
+          "competition": "LOW",
+          "hook": "Discover the hidden food sensitivities that are causing your chronic inflammation...",
+          "reasoning": "Low competition and high-intent domain of 'Food Sensitivities' and 'Chronic Inflammation' creates a unique gap in the market."
+        },
+        {
+          "name": "The 30-Day Transformation: How to Achieve Optimal Hormone Balance with Nutrition",
+          "cpm": "$35-$55",
+          "competition": "HIGH",
+          "hook": "I achieved optimal hormone balance in just 30 days with these simple nutrition tweaks...",
+          "reasoning": "High-intent domain of 'Optimal Hormone Balance' and 'Nutrition' creates a strong hook, but competition is high due to existing content in the 'health and wellness' space."
+        },
+        {
+          "name": "The Gut-Brain Connection: How to Boost Your Mood with Probiotics and Nutrition",
+          "cpm": "$30-$50",
+          "competition": "MEDIUM",
+          "hook": "Discover the surprising link between your gut and brain health...",
+          "reasoning": "Interest in gut health and mental well-being is high, and leveraging the 'Gut-Brain Connection' creates a unique hook."
+        }
+      ]
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:01:11.222Z] [INTEL RESPONSE]
+**Niche Intel:**
+
+1. **Target Audience:** Health-conscious individuals, particularly those interested in weight loss and wellness.
+2. **Demographics:** Women and men aged 25-50, middle to upper-middle class, with a focus on educated and tech-savvy individuals.
+3. **Psychographics:** People seeking a holistic approach to weight loss, interested in natural remedies, and willing to invest time and effort in their health.
+4. **Search Volume:** Average monthly searches for related keywords (e.g., "gut health and weight loss," "sustainable weight loss," "probiotics for weight loss") range from 1,900 to 14,100.
+5. **Trending Topics:** Plant-based diets, intermittent fasting, and gut microbiome research are currently trending in the health and wellness space.
+
+**Estimated CPM (Cost Per Mille):**
+
+Based on industry benchmarks and niche analysis, estimated CPM for health and wellness content on YouTube ranges from $1.50 to $5.00. For a niche like "Optimizing Gut Health for Sustainable Weight Loss," a more conservative estimate would be $2.50 to $3.50 CPM.
+
+**Competitor Metrics:**
+
+1. **Top Channels:**
+	* Dr. Berg (1.5M subscribers, 10M views/month)
+	* Healthline (3.5M subscribers, 20M views/month)
+	* Wellness Mama (1.5M subscribers, 5M views/month)
+2. **Content Style:** Educational videos, product reviews, and personal success stories dominate the space.
+3. **Gaps in Content:**
+	* Limited focus on sustainable weight loss strategies beyond diet and exercise.
+	* Insufficient emphasis on the gut-brain axis and mental health.
+	* Inadequate representation of diverse perspectives and expert opinions.
+
+**Viral Angle:**
+
+1. **"The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight"**
+2. **"The Sustainable Weight Loss Experiment: 30 Days of Gut-Optimized Eating"**
+3. **"Gut Health Hacks for Busy Lives: 5 Simple Tips for a Healthier Gut"**
+
+These angles focus on the intersection of gut health, mental wellness, and sustainable weight loss, while highlighting actionable tips and relatable experiences. By emphasizing the emotional and psychological aspects of gut health, creators can tap into the growing interest in mental wellness and attract a wider audience.
+================================================================================
+[2026-04-17T04:01:11.225Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "intel": {
+      "messages": [
+        "Intel: [Progress: 1/6] Deep-dive market analysis complete."
+      ],
+      "nicheData": "**Niche Intel:**\n\n1. **Target Audience:** Health-conscious individuals, particularly those interested in weight loss and wellness.\n2. **Demographics:** Women and men aged 25-50, middle to upper-middle class, with a focus on educated and tech-savvy individuals.\n3. **Psychographics:** People seeking a holistic approach to weight loss, interested in natural remedies, and willing to invest time and effort in their health.\n4. **Search Volume:** Average monthly searches for related keywords (e.g., \"gut health and weight loss,\" \"sustainable weight loss,\" \"probiotics for weight loss\") range from 1,900 to 14,100.\n5. **Trending Topics:** Plant-based diets, intermittent fasting, and gut microbiome research are currently trending in the health and wellness space.\n\n**Estimated CPM (Cost Per Mille):**\n\nBased on industry benchmarks and niche analysis, estimated CPM for health and wellness content on YouTube ranges from $1.50 to $5.00. For a niche like \"Optimizing Gut Health for Sustainable Weight Loss,\" a more conservative estimate would be $2.50 to $3.50 CPM.\n\n**Competitor Metrics:**\n\n1. **Top Channels:**\n\t* Dr. Berg (1.5M subscribers, 10M views/month)\n\t* Healthline (3.5M subscribers, 20M views/month)\n\t* Wellness Mama (1.5M subscribers, 5M views/month)\n2. **Content Style:** Educational videos, product reviews, and personal success stories dominate the space.\n3. **Gaps in Content:**\n\t* Limited focus on sustainable weight loss strategies beyond diet and exercise.\n\t* Insufficient emphasis on the gut-brain axis and mental health.\n\t* Inadequate representation of diverse perspectives and expert opinions.\n\n**Viral Angle:**\n\n1. **\"The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight\"**\n2. **\"The Sustainable Weight Loss Experiment: 30 Days of Gut-Optimized Eating\"**\n3. **\"Gut Health Hacks for Busy Lives: 5 Simple Tips for a Healthier Gut\"**\n\nThese angles focus on the intersection of gut health, mental wellness, and sustainable weight loss, while highlighting actionable tips and relatable experiences. By emphasizing the emotional and psychological aspects of gut health, creators can tap into the growing interest in mental wellness and attract a wider audience.",
+      "iterations": 1
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:01:13.745Z] [HOOK SCIENTIST RESPONSE]
+**Title: The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight**
+
+**Intro (0:00 - 0:10)**
+
+(Ominous, pulsing synths in the background)
+
+[3-second psychological pattern interrupt: A sudden, brief clip of a brain MRI scan appears on screen, followed by a black screen with the title "The Gut-Brain Connection" in bold, white font.]
+
+Narrator: "Have you ever felt like your gut is trying to tell you something... but you're not quite sure what?"
+
+**Section 1: The Gut-Brain Axis (0:10 - 2:30)**
+
+(Upbeat, energetic background music starts playing)
+
+Narrator: "The gut-brain axis is a bidirectional communication network between your gut microbiome and your central nervous system. It's a two-way street, where signals from your gut influence your brain, and vice versa."
+
+(Animated illustrations of neurons, gut bacteria, and neurotransmitters appear on screen)
+
+Narrator: "Your gut microbiome is home to trillions of microorganisms that produce neurotransmitters, hormones, and other signaling molecules that regulate your mood, appetite, and weight."
+
+**Section 2: The Science of Gut Health (2:30 - 5:00)**
+
+(Scientific, documentary-style footage of researchers, labs, and microscope images)
+
+Narrator: "Studies have shown that an imbalance of gut bacteria, also known as dysbiosis, is linked to conditions such as anxiety, depression, and obesity. But how does that happen?"
+
+(Infographics and animations illustrate the mechanisms)
+
+Narrator: "When your gut is out of balance, it can lead to inflammation, oxidative stress, and impaired communication between your gut and brain."
+
+**Section 3: The Connection to Mental Health (5:00 - 7:30)**
+
+(Soothing, uplifting background music)
+
+Narrator: "But here's the thing: your gut and brain are connected in more ways than you might think. Research has shown that the gut microbiome plays a critical role in regulating mood, motivation, and emotional well-being."
+
+(Dramatic, cinematic footage of people enjoying nature, meditation, and spending time with loved ones)
+
+Narrator: "When your gut is happy, your brain is happy too. So, what can you do to nurture a healthier gut-brain connection?"
+
+**Section 4: Tips for a Healthy Gut-Brain Axis (7:30 - 10:00)**
+
+(Uplifting, motivational background music)
+
+Narrator: "Here are five simple tips to get you started:"
+
+(On-screen animations and illustrations highlight each tip)
+
+1. **Eat a Plant-Based Diet**: Focus on whole, unprocessed foods rich in fiber and polyphenols.
+2. **Stay Hydrated**: Drink plenty of water to support gut motility and immune function.
+3. **Get Moving**: Exercise regularly to boost gut blood flow and stimulate microbiome diversity.
+4. **Manage Stress**: Practice relaxation techniques like meditation, yoga, or deep breathing.
+5. **Get Enough Sleep**: Prioritize 7-9 hours of sleep per night to support gut repair and immune function.
+
+**Conclusion (9:50 - 10:00)**
+
+(Soothing, uplifting background music)
+
+Narrator: "By nurturing a healthy gut-brain connection, you can take control of your mental well-being, achieve sustainable weight loss, and enjoy a better quality of life."
+
+(On-screen animation: A person enjoying a peaceful, natural environment, with the title "The Gut-Brain Connection" and a call-to-action to visit the channel's website or social media handles)
+
+Narrator: "Thanks for watching! Join us next time for more insights on gut health and sustainable weight loss. Don't forget to subscribe and hit the notification bell for exclusive content and updates!"
+
+**Outro (10:00)**
+
+(Closing shot of the channel's logo and a call-to-action to visit the website or social media handles)
+
+Narrator: "See you in the next video!"
+
+(The video ends with a final, uplifting note)
+================================================================================
+[2026-04-17T04:01:13.939Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "hookScientist": {
+      "messages": [
+        "Hooks: [Progress: 2/6] Logic-cloned and engineered script."
+      ],
+      "draftInfo": "**Title: The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight**\n\n**Intro (0:00 - 0:10)**\n\n(Ominous, pulsing synths in the background)\n\n[3-second psychological pattern interrupt: A sudden, brief clip of a brain MRI scan appears on screen, followed by a black screen with the title \"The Gut-Brain Connection\" in bold, white font.]\n\nNarrator: \"Have you ever felt like your gut is trying to tell you something... but you're not quite sure what?\"\n\n**Section 1: The Gut-Brain Axis (0:10 - 2:30)**\n\n(Upbeat, energetic background music starts playing)\n\nNarrator: \"The gut-brain axis is a bidirectional communication network between your gut microbiome and your central nervous system. It's a two-way street, where signals from your gut influence your brain, and vice versa.\"\n\n(Animated illustrations of neurons, gut bacteria, and neurotransmitters appear on screen)\n\nNarrator: \"Your gut microbiome is home to trillions of microorganisms that produce neurotransmitters, hormones, and other signaling molecules that regulate your mood, appetite, and weight.\"\n\n**Section 2: The Science of Gut Health (2:30 - 5:00)**\n\n(Scientific, documentary-style footage of researchers, labs, and microscope images)\n\nNarrator: \"Studies have shown that an imbalance of gut bacteria, also known as dysbiosis, is linked to conditions such as anxiety, depression, and obesity. But how does that happen?\"\n\n(Infographics and animations illustrate the mechanisms)\n\nNarrator: \"When your gut is out of balance, it can lead to inflammation, oxidative stress, and impaired communication between your gut and brain.\"\n\n**Section 3: The Connection to Mental Health (5:00 - 7:30)**\n\n(Soothing, uplifting background music)\n\nNarrator: \"But here's the thing: your gut and brain are connected in more ways than you might think. Research has shown that the gut microbiome plays a critical role in regulating mood, motivation, and emotional well-being.\"\n\n(Dramatic, cinematic footage of people enjoying nature, meditation, and spending time with loved ones)\n\nNarrator: \"When your gut is happy, your brain is happy too. So, what can you do to nurture a healthier gut-brain connection?\"\n\n**Section 4: Tips for a Healthy Gut-Brain Axis (7:30 - 10:00)**\n\n(Uplifting, motivational background music)\n\nNarrator: \"Here are five simple tips to get you started:\"\n\n(On-screen animations and illustrations highlight each tip)\n\n1. **Eat a Plant-Based Diet**: Focus on whole, unprocessed foods rich in fiber and polyphenols.\n2. **Stay Hydrated**: Drink plenty of water to support gut motility and immune function.\n3. **Get Moving**: Exercise regularly to boost gut blood flow and stimulate microbiome diversity.\n4. **Manage Stress**: Practice relaxation techniques like meditation, yoga, or deep breathing.\n5. **Get Enough Sleep**: Prioritize 7-9 hours of sleep per night to support gut repair and immune function.\n\n**Conclusion (9:50 - 10:00)**\n\n(Soothing, uplifting background music)\n\nNarrator: \"By nurturing a healthy gut-brain connection, you can take control of your mental well-being, achieve sustainable weight loss, and enjoy a better quality of life.\"\n\n(On-screen animation: A person enjoying a peaceful, natural environment, with the title \"The Gut-Brain Connection\" and a call-to-action to visit the channel's website or social media handles)\n\nNarrator: \"Thanks for watching! Join us next time for more insights on gut health and sustainable weight loss. Don't forget to subscribe and hit the notification bell for exclusive content and updates!\"\n\n**Outro (10:00)**\n\n(Closing shot of the channel's logo and a call-to-action to visit the website or social media handles)\n\nNarrator: \"See you in the next video!\"\n\n(The video ends with a final, uplifting note)"
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:01:14.685Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "retentionCritic": {
+      "messages": [
+        "Shadow Retention Critic: [Result: 6/10] Note: The script has some engaging moments, but it falls short in several areas. The 3-second rule is partially met with the brain MRI scan, but the transition to the title screen feels abrupt. The storytelling tension is lacking, and the script often feels like a summary rather than a compelling narrative. The cliché purge is partially successful, but the phrase 'Have you ever felt like your gut is trying to tell you something...' is a familiar trope. The script also relies too heavily on generic tips and advice, which fails to provide a unique perspective. Overall, the script needs more depth, tension, and originality to truly engage the audience."
+      ],
+      "retentionScore": 6,
+      "criticNotes": "The script has some engaging moments, but it falls short in several areas. The 3-second rule is partially met with the brain MRI scan, but the transition to the title screen feels abrupt. The storytelling tension is lacking, and the script often feels like a summary rather than a compelling narrative. The cliché purge is partially successful, but the phrase 'Have you ever felt like your gut is trying to tell you something...' is a familiar trope. The script also relies too heavily on generic tips and advice, which fails to provide a unique perspective. Overall, the script needs more depth, tension, and originality to truly engage the audience.",
+      "ytCriticIterations": 1
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:01:16.041Z] [HOOK SCIENTIST RESPONSE]
+**Title: The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight**
+
+**Intro (0:00 - 0:10)**
+
+(Ominous, pulsing synths in the background)
+
+[3-second psychological pattern interrupt: A sudden, brief clip of a brain MRI scan appears on screen, followed by a black screen with the title "The Gut-Brain Connection" in bold, white font. However, this time, the brain MRI scan is followed by a subtle, slow-motion clip of a person's face, reflecting on a memory or a moment of introspection.]
+
+Narrator: "Imagine a moment when your body seemed to be sending you a message... but you couldn't quite decipher the code."
+
+**Section 1: The Gut-Brain Axis (0:10 - 2:30)**
+
+(Upbeat, energetic background music starts playing)
+
+Narrator: "The gut-brain axis is a bidirectional communication network between your gut microbiome and your central nervous system. It's a two-way street, where signals from your gut influence your brain, and vice versa."
+
+(Animated illustrations of neurons, gut bacteria, and neurotransmitters appear on screen)
+
+Narrator: "Your gut microbiome is home to trillions of microorganisms that produce neurotransmitters, hormones, and other signaling molecules that regulate your mood, appetite, and weight."
+
+**Section 2: The Science of Gut Health (2:30 - 5:00)**
+
+(Scientific, documentary-style footage of researchers, labs, and microscope images)
+
+Narrator: "Studies have shown that an imbalance of gut bacteria, also known as dysbiosis, is linked to conditions such as anxiety, depression, and obesity. But how does that happen?"
+
+(Infographics and animations illustrate the mechanisms)
+
+Narrator: "When your gut is out of balance, it can lead to inflammation, oxidative stress, and impaired communication between your gut and brain."
+
+**Section 3: The Connection to Mental Health (5:00 - 7:30)**
+
+(Soothing, uplifting background music)
+
+Narrator: "But here's the thing: your gut and brain are connected in more ways than you might think. Research has shown that the gut microbiome plays a critical role in regulating mood, motivation, and emotional well-being."
+
+(Dramatic, cinematic footage of people enjoying nature, meditation, and spending time with loved ones)
+
+Narrator: "When your gut is happy, your brain is happy too. So, what can you do to nurture a healthier gut-brain connection?"
+
+**Section 4: Tips for a Healthy Gut-Brain Axis (7:30 - 10:00)**
+
+(Uplifting, motivational background music)
+
+Narrator: "Here are five evidence-based strategies to help you cultivate a balanced gut-brain connection:"
+
+(On-screen animations and illustrations highlight each tip)
+
+1. **Eat a Plant-Based Diet**: Focus on whole, unprocessed foods rich in fiber and polyphenols, and explore the gut benefits of specific foods like fermented vegetables and omega-3 rich seafood.
+2. **Stay Hydrated**: Drink plenty of water to support gut motility and immune function, and learn how even mild dehydration can impact your gut.
+3. **Get Moving**: Exercise regularly to boost gut blood flow and stimulate microbiome diversity, and discover the benefits of yoga and other mind-body practices for gut health.
+4. **Manage Stress**: Practice relaxation techniques like meditation, yoga, or deep breathing, and explore the science behind stress's impact on your gut.
+5. **Get Enough Sleep**: Prioritize 7-9 hours of sleep per night to support gut repair and immune function, and learn how even brief sleep disruptions can affect your gut.
+
+**Conclusion (9:50 - 10:00)**
+
+(Soothing, uplifting background music)
+
+Narrator: "By nurturing a healthy gut-brain connection, you can take control of your mental well-being, achieve sustainable weight loss, and enjoy a better quality of life."
+
+(On-screen animation: A person enjoying a peaceful, natural environment, with the title "The Gut-Brain Connection" and a call-to-action to visit the channel's website or social media handles)
+
+Narrator: "Thanks for watching! Join us next time for more insights on gut health and sustainable weight loss. Don't forget to subscribe and hit the notification bell for exclusive content and updates!"
+
+**Outro (10:00)**
+
+(Closing shot of the channel's logo and a call-to-action to visit the website or social media handles)
+
+Narrator: "See you in the next video!"
+
+(The video ends with a final, uplifting note)
+================================================================================
+[2026-04-17T04:01:16.224Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "hookScientist": {
+      "messages": [
+        "Hooks: [Progress: 2/6] Logic-cloned and engineered script."
+      ],
+      "draftInfo": "**Title: The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight**\n\n**Intro (0:00 - 0:10)**\n\n(Ominous, pulsing synths in the background)\n\n[3-second psychological pattern interrupt: A sudden, brief clip of a brain MRI scan appears on screen, followed by a black screen with the title \"The Gut-Brain Connection\" in bold, white font. However, this time, the brain MRI scan is followed by a subtle, slow-motion clip of a person's face, reflecting on a memory or a moment of introspection.]\n\nNarrator: \"Imagine a moment when your body seemed to be sending you a message... but you couldn't quite decipher the code.\"\n\n**Section 1: The Gut-Brain Axis (0:10 - 2:30)**\n\n(Upbeat, energetic background music starts playing)\n\nNarrator: \"The gut-brain axis is a bidirectional communication network between your gut microbiome and your central nervous system. It's a two-way street, where signals from your gut influence your brain, and vice versa.\"\n\n(Animated illustrations of neurons, gut bacteria, and neurotransmitters appear on screen)\n\nNarrator: \"Your gut microbiome is home to trillions of microorganisms that produce neurotransmitters, hormones, and other signaling molecules that regulate your mood, appetite, and weight.\"\n\n**Section 2: The Science of Gut Health (2:30 - 5:00)**\n\n(Scientific, documentary-style footage of researchers, labs, and microscope images)\n\nNarrator: \"Studies have shown that an imbalance of gut bacteria, also known as dysbiosis, is linked to conditions such as anxiety, depression, and obesity. But how does that happen?\"\n\n(Infographics and animations illustrate the mechanisms)\n\nNarrator: \"When your gut is out of balance, it can lead to inflammation, oxidative stress, and impaired communication between your gut and brain.\"\n\n**Section 3: The Connection to Mental Health (5:00 - 7:30)**\n\n(Soothing, uplifting background music)\n\nNarrator: \"But here's the thing: your gut and brain are connected in more ways than you might think. Research has shown that the gut microbiome plays a critical role in regulating mood, motivation, and emotional well-being.\"\n\n(Dramatic, cinematic footage of people enjoying nature, meditation, and spending time with loved ones)\n\nNarrator: \"When your gut is happy, your brain is happy too. So, what can you do to nurture a healthier gut-brain connection?\"\n\n**Section 4: Tips for a Healthy Gut-Brain Axis (7:30 - 10:00)**\n\n(Uplifting, motivational background music)\n\nNarrator: \"Here are five evidence-based strategies to help you cultivate a balanced gut-brain connection:\"\n\n(On-screen animations and illustrations highlight each tip)\n\n1. **Eat a Plant-Based Diet**: Focus on whole, unprocessed foods rich in fiber and polyphenols, and explore the gut benefits of specific foods like fermented vegetables and omega-3 rich seafood.\n2. **Stay Hydrated**: Drink plenty of water to support gut motility and immune function, and learn how even mild dehydration can impact your gut.\n3. **Get Moving**: Exercise regularly to boost gut blood flow and stimulate microbiome diversity, and discover the benefits of yoga and other mind-body practices for gut health.\n4. **Manage Stress**: Practice relaxation techniques like meditation, yoga, or deep breathing, and explore the science behind stress's impact on your gut.\n5. **Get Enough Sleep**: Prioritize 7-9 hours of sleep per night to support gut repair and immune function, and learn how even brief sleep disruptions can affect your gut.\n\n**Conclusion (9:50 - 10:00)**\n\n(Soothing, uplifting background music)\n\nNarrator: \"By nurturing a healthy gut-brain connection, you can take control of your mental well-being, achieve sustainable weight loss, and enjoy a better quality of life.\"\n\n(On-screen animation: A person enjoying a peaceful, natural environment, with the title \"The Gut-Brain Connection\" and a call-to-action to visit the channel's website or social media handles)\n\nNarrator: \"Thanks for watching! Join us next time for more insights on gut health and sustainable weight loss. Don't forget to subscribe and hit the notification bell for exclusive content and updates!\"\n\n**Outro (10:00)**\n\n(Closing shot of the channel's logo and a call-to-action to visit the website or social media handles)\n\nNarrator: \"See you in the next video!\"\n\n(The video ends with a final, uplifting note)"
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:01:43.488Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "retentionCritic": {
+      "messages": [
+        "Shadow Retention Critic: [Result: 6/10] Note: The script has some engaging moments, but it's still too generic and lacks a massive pattern interrupt in the opening. The storytelling tension is moderate, but it could be more dramatic. The use of clichés like 'Imagine a moment' and 'Thanks for watching' must be avoided. The content is informative, but it's not particularly unique or surprising. To improve, add more unexpected twists and surprises to keep the audience engaged."
+      ],
+      "retentionScore": 6,
+      "criticNotes": "The script has some engaging moments, but it's still too generic and lacks a massive pattern interrupt in the opening. The storytelling tension is moderate, but it could be more dramatic. The use of clichés like 'Imagine a moment' and 'Thanks for watching' must be avoided. The content is informative, but it's not particularly unique or surprising. To improve, add more unexpected twists and surprises to keep the audience engaged.",
+      "ytCriticIterations": 2
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:01:49.587Z] [VISUALIST CONCEPTS]
+To bring this script to life visually, I'd suggest the following cinematographic concepts and visual ideas:
+
+**Intro (0:00 - 0:10)**
+
+* Use a mix of close-ups and wide shots to create a sense of intimacy and curiosity.
+* The brain MRI scan should be accompanied by a soft focus effect to give it an ethereal quality.
+* The slow-motion clip of a person's face should be shot with a shallow depth of field to emphasize their emotional expression.
+* The title "The Gut-Brain Connection" should appear in bold, white font on a black background, with a subtle gradient effect to give it a sense of depth.
+
+**Section 1: The Gut-Brain Axis (0:10 - 2:30)**
+
+* Use animation and CGI to bring the gut microbiome and neural connections to life.
+* Incorporate fast-paced cuts and kinetic visual effects to convey the idea of a two-way communication network.
+* Use bright, vibrant colors to represent the gut microbiome and its various components.
+* Consider using a mix of 2D and 3D animation to create a visually engaging and dynamic sequence.
+
+**Section 2: The Science of Gut Health (2:30 - 5:00)**
+
+* Use documentary-style footage of researchers, labs, and microscope images to add a sense of realism and authority.
+* Incorporate detailed close-ups of microscope slides and other scientific equipment to emphasize the importance of scientific research.
+* Use infographics and animations to illustrate complex scientific concepts in an engaging and easy-to-understand way.
+* Consider using time-lapse photography to show the progress of experiments and the growth of microorganisms.
+
+**Section 3: The Connection to Mental Health (5:00 - 7:30)**
+
+* Use cinematic footage of people enjoying nature, meditation, and spending time with loved ones to emphasize the importance of emotional well-being.
+* Incorporate soft focus effects and shallow depth of field to create a sense of intimacy and emotional connection.
+* Use warm, muted colors to represent the natural world and the importance of self-care.
+* Consider using a mix of fast-paced cuts and slow-motion footage to convey the dynamic and emotional aspects of mental health.
+
+**Section 4: Tips for a Healthy Gut-Brain Axis (7:30 - 10:00)**
+
+* Use on-screen animations and illustrations to highlight each tip and make them easy to understand.
+* Incorporate bright, vibrant colors and playful visual effects to convey a sense of motivation and empowerment.
+* Use a mix of 2D and 3D animation to create a visually engaging and dynamic sequence.
+* Consider using testimonials or interviews with experts to add a sense of credibility and authority.
+
+**Conclusion (9:50 - 10:00)**
+
+* Use a mix of close-ups and wide shots to create a sense of intimacy and connection.
+* Incorporate soft focus effects and shallow depth of field to emphasize the importance of emotional well-being.
+* Use warm, muted colors to represent the natural world and the importance of self-care.
+* Consider using a final, uplifting shot to leave the viewer with a sense of hope and inspiration.
+
+**Outro (10:00)**
+
+* Use a final, uplifting shot to leave the viewer with a sense of hope and inspiration.
+* Incorporate a call-to-action to visit the channel's website or social media handles to encourage engagement and further exploration.
+* Consider using a mix of fast-paced cuts and slow-motion footage to convey a sense of energy and motivation.
+
+Textures and Moods:
+
+* **Intro:** Dark, introspective textures, ominous atmosphere, and a sense of curiosity.
+* **Section 1:** Bright, vibrant textures, fast-paced cuts, and a sense of energy and motivation.
+* **Section 2:** Scientific textures, documentary-style footage, and a sense of authority and realism.
+* **Section 3:** Cinematic textures, soft focus effects, and a sense of intimacy and emotional connection.
+* **Section 4:** Playful textures, bright colors, and a sense of motivation and empowerment.
+* **Conclusion:** Soft focus effects, shallow depth of field, and a sense of intimacy and emotional connection.
+* **Outro:** Uplifting textures, fast-paced cuts, and a sense of energy and motivation.
+================================================================================
+[2026-04-17T04:02:35.539Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "visualist": {
+      "messages": [
+        "Visualist Failed: Failed to parse. Text: \"{\n  \"title\": \"The Gut-Brain Connection\",\n   \"description\": \"A cinematic analysis of a documentary-style video about the gut-brain axis and its impact on mental health and weight.\",\n   \"sections\": [\n      {\n         \"title\": \"Intro\",\n         \"description\": \"A 3-second clip of a brain MRI scan followed by a slow-motion clip of a person's face, set against an ominous background.\",\n         \"textures\": [\"dark\", \"introspective\"],\n         \"mood\": \"curiosity\"\n      },\n      {\n         \"title\": \"Section 1: The Gut-Brain Axis\",\n         \"description\": \"Animated illustrations of neurons, gut bacteria, and neurotransmitters, set against a bright and vibrant background.\",\n         \"textures\": [\"bright\", \"vibrant\"],\n         \"mood\": \"energy\"\n      },\n      {\n         \"title\": \"Section 2: The Science of Gut Health\",\n         \"description\": \"Documentary-style footage of researchers, labs, and microscope images, set against a scientific and authoritative background.\",\n         \"textures\": [\"scientific\", \"documentary\"],\n         \"mood\": \"authority\"\n      },\n      {\n         \"title\": \"Section 3: The Connection to Mental Health\",\n         \"description\": \"Cinematic footage of people enjoying nature, meditation, and spending time with loved ones, set against a warm and muted background.\",\n         \"textures\": [\"cinematic\", \"warm\"],\n         \"mood\": \"intimacy\"\n      },\n      {\n         \"title\": \"Section 4: Tips for a Healthy Gut-Brain Axis\",\n         \"description\": \"On-screen animations and illustrations of each tip, set against a playful and motivational background.\",\n         \"textures\": [\"playful\", \"motivational\"],\n         \"mood\": \"empowerment\"\n      },\n      {\n         \"title\": \"Conclusion\",\n         \"description\": \"A mix of close-ups and wide shots, set against a soft focus effect and shallow depth of field, emphasizing the importance of emotional well-being.\",\n         \"textures\": [\"soft\", \"emotional\"],\n         \"mood\": \"intimacy\"\n      },\n      {\n         \"title\": \"Outro\",\n         \"description\": \"A final, uplifting shot, set against a mix of fast-paced cuts and slow-motion footage, conveying a sense of energy and motivation.\",\n         \"textures\": [\"uplifting\", \"energetic\"],\n         \"mood\": \"motivation\"\n      }\n   ]\n}\". Error: [\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"scenes\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"allSearchQueries\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]\n\nTroubleshooting URL: https://docs.langchain.com/oss/javascript/langchain/errors/OUTPUT_PARSING_FAILURE/\n"
+      ]
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:03:03.392Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "production": {
+      "messages": [
+        "Production: [Progress: 4/6] Assets and thumbnails bundled."
+      ],
+      "productionBundle": {
+        "thumbnailConcepts": [],
+        "brollChecklist": [],
+        "sfxChecklist": [],
+        "vfxRequirements": [],
+        "musicInspiration": "",
+        "voiceGuidance": "",
+        "cleanNarratorScript": "Imagine a moment when your body seemed to be sending you a message... but you couldn't quite decipher the code.\n\nThe gut-brain axis is a bidirectional communication network between your gut microbiome and your central nervous system. It's a two-way street, where signals from your gut influence your brain, and vice versa.\n\nYour gut microbiome is home to trillions of microorganisms that produce neurotransmitters, hormones, and other signaling molecules that regulate your mood, appetite, and weight.\n\nStudies have shown that an imbalance of gut bacteria, also known as dysbiosis, is linked to conditions such as anxiety, depression, and obesity. But how does that happen?\n\nWhen your gut is out of balance, it can lead to inflammation, oxidative stress, and impaired communication between your gut and brain.\n\nBut here's the thing: your gut and brain are connected in more ways than you might think. Research has shown that the gut microbiome plays a critical role in regulating mood, motivation, and emotional well-being.\n\nWhen your gut is happy, your brain is happy too. So, what can you do to nurture a healthier gut-brain connection?\n\nHere are five evidence-based strategies to help you cultivate a balanced gut-brain connection:\n\n1. Eat a Plant-Based Diet: Focus on whole, unprocessed foods rich in fiber and polyphenols, and explore the gut benefits of specific foods like fermented vegetables and omega-3 rich seafood.\n2. Stay Hydrated: Drink plenty of water to support gut motility and immune function, and learn how even mild dehydration can impact your gut.\n3. Get Moving: Exercise regularly to boost gut blood flow and stimulate microbiome diversity, and discover the benefits of yoga and other mind-body practices for gut health.\n4. Manage Stress: Practice relaxation techniques like meditation, yoga, or deep breathing, and explore the science behind stress's impact on your gut.\n5. Get Enough Sleep: Prioritize 7-9 hours of sleep per night to support gut repair and immune function, and learn how even brief sleep disruptions can affect your gut.\n\nBy nurturing a healthy gut-brain connection, you can take control of your mental well-being, achieve sustainable weight loss, and enjoy a better quality of life.\n\nThanks for watching! Join us next time for more insights on gut health and sustainable weight loss. Don't forget to subscribe and hit the notification bell for exclusive content and updates!\n\nSee you in the next video!"
+      }
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:03:05.647Z] [COMPLIANCE RESPONSE]
+{
+  "title": "UNTITLED MASTERPIECE",
+  "tags": [
+    "gut-brain connection",
+    "microbiome",
+    "mental health",
+    "weight loss",
+    "gut health",
+    "brain health",
+    "nutrition",
+    "wellness",
+    "self-care",
+    "mind-body connection"
+  ]
+}
+================================================================================
+[2026-04-17T04:03:05.650Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "compliance": {
+      "messages": [
+        "Compliance: [Progress: 5/6] Optimized SEO metadata for discovery."
+      ],
+      "ytMetadata": {
+        "title": "UNTITLED MASTERPIECE",
+        "tags": [
+          "gut-brain connection",
+          "microbiome",
+          "mental health",
+          "weight loss",
+          "gut health",
+          "brain health",
+          "nutrition",
+          "wellness",
+          "self-care",
+          "mind-body connection"
+        ]
+      }
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:03:05.652Z] {
+  "type": "SUCCESS",
+  "message": "Stream finished."
+}
+================================================================================
+[2026-04-17T04:07:39.609Z] {
+  "type": "START",
+  "prompt": "generate the storyboard",
+  "initialState": {
+    "messages": [
+      "generate the storyboard"
+    ],
+    "projectId": "46e53d0a-cec1-4803-828b-e1d1b6476769",
+    "contentMode": "FILM",
+    "latestCommand": "generate the storyboard"
+  }
+}
+================================================================================
+[2026-04-17T04:07:41.857Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "intentClassifier": {
+      "intent": "DRAFT"
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:07:43.145Z] [HOOK SCIENTIST RESPONSE]
+**Title: The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight**
+
+**Intro (0:00 - 0:10)**
+
+(Ominous, pulsing synths in the background)
+
+[3-second psychological pattern interrupt: A sudden, brief clip of a brain MRI scan appears on screen, followed by a black screen with the title "The Gut-Brain Connection" in bold, white font. However, this time, the brain MRI scan is followed by a subtle, slow-motion clip of a person's face, reflecting on a memory or a moment of introspection.]
+
+Narrator: "Imagine being in a state of perfect balance, where your body and mind are in harmony. A moment when the signals are clear, and the code is deciphered."
+
+**Section 1: The Gut-Brain Axis (0:10 - 2:30)**
+
+(Upbeat, energetic background music starts playing)
+
+Narrator: "The gut-brain axis is a bidirectional communication network between your gut microbiome and your central nervous system. It's a two-way street, where signals from your gut influence your brain, and vice versa."
+
+(Animated illustrations of neurons, gut bacteria, and neurotransmitters appear on screen)
+
+Narrator: "Your gut microbiome is home to trillions of microorganisms that produce neurotransmitters, hormones, and other signaling molecules that regulate your mood, appetite, and weight."
+
+**Section 2: The Science of Gut Health (2:30 - 5:00)**
+
+(Scientific, documentary-style footage of researchers, labs, and microscope images)
+
+Narrator: "Studies have shown that an imbalance of gut bacteria, also known as dysbiosis, is linked to conditions such as anxiety, depression, and obesity. But how does that happen?"
+
+(Infographics and animations illustrate the mechanisms)
+
+Narrator: "When your gut is out of balance, it can lead to inflammation, oxidative stress, and impaired communication between your gut and brain."
+
+**Section 3: The Connection to Mental Health (5:00 - 7:30)**
+
+(Soothing, uplifting background music)
+
+Narrator: "But here's the thing: your gut and brain are connected in more ways than you might think. Research has shown that the gut microbiome plays a critical role in regulating mood, motivation, and emotional well-being."
+
+(Dramatic, cinematic footage of people enjoying nature, meditation, and spending time with loved ones)
+
+Narrator: "When your gut is happy, your brain is happy too. So, what can you do to nurture a healthier gut-brain connection?"
+
+**Section 4: Tips for a Healthy Gut-Brain Axis (7:30 - 10:00)**
+
+(Uplifting, motivational background music)
+
+Narrator: "Here are five evidence-based strategies to help you cultivate a balanced gut-brain connection:"
+
+(On-screen animations and illustrations highlight each tip)
+
+1. **Eat a Plant-Based Diet**: Focus on whole, unprocessed foods rich in fiber and polyphenols, and explore the gut benefits of specific foods like fermented vegetables and omega-3 rich seafood.
+2. **Stay Hydrated**: Drink plenty of water to support gut motility and immune function, and learn how even mild dehydration can impact your gut.
+3. **Get Moving**: Exercise regularly to boost gut blood flow and stimulate microbiome diversity, and discover the benefits of yoga and other mind-body practices for gut health.
+4. **Manage Stress**: Practice relaxation techniques like meditation, yoga, or deep breathing, and explore the science behind stress's impact on your gut.
+5. **Get Enough Sleep**: Prioritize 7-9 hours of sleep per night to support gut repair and immune function, and learn how even brief sleep disruptions can affect your gut.
+
+**Section 5: The Power of Personalization (9:50 - 10:00)**
+
+(Soothing, uplifting background music)
+
+Narrator: "Remember, everyone's gut microbiome is unique, and what works for one person may not work for another. Take the first step towards a healthier gut-brain connection by exploring your individual needs and preferences."
+
+(On-screen animation: A person reflecting on their own gut health journey, with the title "The Gut-Brain Connection" and a call-to-action to visit the channel's website or social media handles)
+
+Narrator: "By nurturing a healthy gut-brain connection, you can take control of your mental well-being, achieve sustainable weight loss, and enjoy a better quality of life."
+
+**Conclusion (10:00)**
+
+(Closing shot of the channel's logo and a call-to-action to visit the website or social media handles)
+
+Narrator: "Thanks for watching! Join us next time for more insights on gut health and sustainable weight loss. Don't forget to subscribe and hit the notification bell for exclusive content and updates!"
+
+**Outro (10:00)**
+
+(The video ends with a final, uplifting note)
+
+Note: The additional section "The Power of Personalization" aims to emphasize the importance of individualized approaches to gut health and gut-brain connection.
+================================================================================
+[2026-04-17T04:07:43.362Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "hookScientist": {
+      "messages": [
+        "Hooks: [Progress: 2/6] Logic-cloned and engineered script."
+      ],
+      "draftInfo": "**Title: The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight**\n\n**Intro (0:00 - 0:10)**\n\n(Ominous, pulsing synths in the background)\n\n[3-second psychological pattern interrupt: A sudden, brief clip of a brain MRI scan appears on screen, followed by a black screen with the title \"The Gut-Brain Connection\" in bold, white font. However, this time, the brain MRI scan is followed by a subtle, slow-motion clip of a person's face, reflecting on a memory or a moment of introspection.]\n\nNarrator: \"Imagine being in a state of perfect balance, where your body and mind are in harmony. A moment when the signals are clear, and the code is deciphered.\"\n\n**Section 1: The Gut-Brain Axis (0:10 - 2:30)**\n\n(Upbeat, energetic background music starts playing)\n\nNarrator: \"The gut-brain axis is a bidirectional communication network between your gut microbiome and your central nervous system. It's a two-way street, where signals from your gut influence your brain, and vice versa.\"\n\n(Animated illustrations of neurons, gut bacteria, and neurotransmitters appear on screen)\n\nNarrator: \"Your gut microbiome is home to trillions of microorganisms that produce neurotransmitters, hormones, and other signaling molecules that regulate your mood, appetite, and weight.\"\n\n**Section 2: The Science of Gut Health (2:30 - 5:00)**\n\n(Scientific, documentary-style footage of researchers, labs, and microscope images)\n\nNarrator: \"Studies have shown that an imbalance of gut bacteria, also known as dysbiosis, is linked to conditions such as anxiety, depression, and obesity. But how does that happen?\"\n\n(Infographics and animations illustrate the mechanisms)\n\nNarrator: \"When your gut is out of balance, it can lead to inflammation, oxidative stress, and impaired communication between your gut and brain.\"\n\n**Section 3: The Connection to Mental Health (5:00 - 7:30)**\n\n(Soothing, uplifting background music)\n\nNarrator: \"But here's the thing: your gut and brain are connected in more ways than you might think. Research has shown that the gut microbiome plays a critical role in regulating mood, motivation, and emotional well-being.\"\n\n(Dramatic, cinematic footage of people enjoying nature, meditation, and spending time with loved ones)\n\nNarrator: \"When your gut is happy, your brain is happy too. So, what can you do to nurture a healthier gut-brain connection?\"\n\n**Section 4: Tips for a Healthy Gut-Brain Axis (7:30 - 10:00)**\n\n(Uplifting, motivational background music)\n\nNarrator: \"Here are five evidence-based strategies to help you cultivate a balanced gut-brain connection:\"\n\n(On-screen animations and illustrations highlight each tip)\n\n1. **Eat a Plant-Based Diet**: Focus on whole, unprocessed foods rich in fiber and polyphenols, and explore the gut benefits of specific foods like fermented vegetables and omega-3 rich seafood.\n2. **Stay Hydrated**: Drink plenty of water to support gut motility and immune function, and learn how even mild dehydration can impact your gut.\n3. **Get Moving**: Exercise regularly to boost gut blood flow and stimulate microbiome diversity, and discover the benefits of yoga and other mind-body practices for gut health.\n4. **Manage Stress**: Practice relaxation techniques like meditation, yoga, or deep breathing, and explore the science behind stress's impact on your gut.\n5. **Get Enough Sleep**: Prioritize 7-9 hours of sleep per night to support gut repair and immune function, and learn how even brief sleep disruptions can affect your gut.\n\n**Section 5: The Power of Personalization (9:50 - 10:00)**\n\n(Soothing, uplifting background music)\n\nNarrator: \"Remember, everyone's gut microbiome is unique, and what works for one person may not work for another. Take the first step towards a healthier gut-brain connection by exploring your individual needs and preferences.\"\n\n(On-screen animation: A person reflecting on their own gut health journey, with the title \"The Gut-Brain Connection\" and a call-to-action to visit the channel's website or social media handles)\n\nNarrator: \"By nurturing a healthy gut-brain connection, you can take control of your mental well-being, achieve sustainable weight loss, and enjoy a better quality of life.\"\n\n**Conclusion (10:00)**\n\n(Closing shot of the channel's logo and a call-to-action to visit the website or social media handles)\n\nNarrator: \"Thanks for watching! Join us next time for more insights on gut health and sustainable weight loss. Don't forget to subscribe and hit the notification bell for exclusive content and updates!\"\n\n**Outro (10:00)**\n\n(The video ends with a final, uplifting note)\n\nNote: The additional section \"The Power of Personalization\" aims to emphasize the importance of individualized approaches to gut health and gut-brain connection."
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:07:44.806Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "retentionCritic": {
+      "messages": [
+        "Shadow Retention Critic: [Result: 6/10] Note: The script has a good structure and covers the topic well, but it lacks a massive pattern interrupt in the opening. The storytelling tension is moderate, and there are some clichés used, such as 'Imagine being in a state of perfect balance' and 'Take the first step towards a healthier gut-brain connection'. The script also relies heavily on generic tips and doesn't provide enough unique insights or personal anecdotes to keep the audience engaged."
+      ],
+      "retentionScore": 6,
+      "criticNotes": "The script has a good structure and covers the topic well, but it lacks a massive pattern interrupt in the opening. The storytelling tension is moderate, and there are some clichés used, such as 'Imagine being in a state of perfect balance' and 'Take the first step towards a healthier gut-brain connection'. The script also relies heavily on generic tips and doesn't provide enough unique insights or personal anecdotes to keep the audience engaged.",
+      "ytCriticIterations": 1
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:07:48.288Z] [HOOK SCIENTIST RESPONSE]
+--- UPDATED SCRIPT ---
+**Title: The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight**
+
+**Intro (0:00 - 0:10)**
+
+(Ominous, pulsing synths in the background)
+
+[6-second psychological pattern interrupt: A sudden, brief clip of a person's face contorted in pain, followed by a black screen with the title "The Gut-Brain Connection" in bold, white font, and a second later, a subtle, slow-motion clip of the same person smiling, with a hint of a brain MRI scan flickering in the background.]
+
+Narrator: "The moment your brain screams, 'This can't be happening!' and your gut whispers, 'We're not out of options yet...' A moment that will change the way you think about balance, forever."
+
+**Section 1: The Gut-Brain Axis (0:10 - 2:30)**
+
+(Upbeat, energetic background music starts playing)
+
+Narrator: "The gut-brain axis is a bidirectional communication network between your gut microbiome and your central nervous system. It's a two-way street, where signals from your gut influence your brain, and vice versa."
+
+(Animated illustrations of neurons, gut bacteria, and neurotransmitters appear on screen)
+
+Narrator: "Your gut microbiome is home to trillions of microorganisms that produce neurotransmitters, hormones, and other signaling molecules that regulate your mood, appetite, and weight."
+
+**Section 2: The Science of Gut Health (2:30 - 5:00)**
+
+(Scientific, documentary-style footage of researchers, labs, and microscope images)
+
+Narrator: "Studies have shown that an imbalance of gut bacteria, also known as dysbiosis, is linked to conditions such as anxiety, depression, and obesity. But how does that happen?"
+
+(Infographics and animations illustrate the mechanisms)
+
+Narrator: "When your gut is out of balance, it can lead to inflammation, oxidative stress, and impaired communication between your gut and brain."
+
+**Section 3: The Connection to Mental Health (5:00 - 7:30)**
+
+(Soothing, uplifting background music)
+
+Narrator: "But here's the thing: your gut and brain are connected in more ways than you might think. Research has shown that the gut microbiome plays a critical role in regulating mood, motivation, and emotional well-being."
+
+(Dramatic, cinematic footage of people enjoying nature, meditation, and spending time with loved ones)
+
+Narrator: "When your gut is happy, your brain is happy too. So, what can you do to nurture a healthier gut-brain connection?"
+
+**Section 4: Tips for a Healthy Gut-Brain Axis (7:30 - 10:00)**
+
+(Uplifting, motivational background music)
+
+Narrator: "Here are five evidence-based strategies to help you cultivate a balanced gut-brain connection:"
+
+(On-screen animations and illustrations highlight each tip)
+
+1. **Eat a Plant-Based Diet**: Focus on whole, unprocessed foods rich in fiber and polyphenols, and explore the gut benefits of specific foods like fermented vegetables and omega-3 rich seafood.
+2. **Stay Hydrated**: Drink plenty of water to support gut motility and immune function, and learn how even mild dehydration can impact your gut.
+3. **Get Moving**: Exercise regularly to boost gut blood flow and stimulate microbiome diversity, and discover the benefits of yoga and other mind-body practices for gut health.
+4. **Manage Stress**: Practice relaxation techniques like meditation, yoga, or deep breathing, and explore the science behind stress's impact on your gut.
+5. **Get Enough Sleep**: Prioritize 7-9 hours of sleep per night to support gut repair and immune function, and learn how even brief sleep disruptions can affect your gut.
+
+**Section 5: The Power of Personalization (9:50 - 10:00)**
+
+(Soothing, uplifting background music)
+
+Narrator: "Remember, everyone's gut microbiome is unique, and what works for one person may not work for another. Take control of your gut health journey by exploring your individual needs and preferences."
+
+(On-screen animation: A person reflecting on their own gut health journey, with the title "The Gut-Brain Connection" and a call-to-action to visit the channel's website or social media handles)
+
+Narrator: "By nurturing a healthy gut-brain connection, you can take control of your mental well-being, achieve sustainable weight loss, and enjoy a better quality of life."
+
+**Conclusion (10:00)**
+
+(Closing shot of the channel's logo and a call-to-action to visit the website or social media handles)
+
+Narrator: "Thanks for watching! Join us next time for more insights on gut health and sustainable weight loss. Don't forget to subscribe and hit the notification bell for exclusive content and updates!"
+
+**Outro (10:00)**
+
+(The video ends with a final, uplifting note)
+
+Note: The revised intro aims to create a stronger pattern interrupt by using a more unexpected and emotional hook. The rest of the script remains the same, with the addition of the words "Take control of your gut health journey" in Section 5 to make it more empowering and unique.
+================================================================================
+[2026-04-17T04:07:48.996Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "hookScientist": {
+      "messages": [
+        "Hooks: [Progress: 2/6] Logic-cloned and engineered script."
+      ],
+      "draftInfo": "--- UPDATED SCRIPT ---\n**Title: The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight**\n\n**Intro (0:00 - 0:10)**\n\n(Ominous, pulsing synths in the background)\n\n[6-second psychological pattern interrupt: A sudden, brief clip of a person's face contorted in pain, followed by a black screen with the title \"The Gut-Brain Connection\" in bold, white font, and a second later, a subtle, slow-motion clip of the same person smiling, with a hint of a brain MRI scan flickering in the background.]\n\nNarrator: \"The moment your brain screams, 'This can't be happening!' and your gut whispers, 'We're not out of options yet...' A moment that will change the way you think about balance, forever.\"\n\n**Section 1: The Gut-Brain Axis (0:10 - 2:30)**\n\n(Upbeat, energetic background music starts playing)\n\nNarrator: \"The gut-brain axis is a bidirectional communication network between your gut microbiome and your central nervous system. It's a two-way street, where signals from your gut influence your brain, and vice versa.\"\n\n(Animated illustrations of neurons, gut bacteria, and neurotransmitters appear on screen)\n\nNarrator: \"Your gut microbiome is home to trillions of microorganisms that produce neurotransmitters, hormones, and other signaling molecules that regulate your mood, appetite, and weight.\"\n\n**Section 2: The Science of Gut Health (2:30 - 5:00)**\n\n(Scientific, documentary-style footage of researchers, labs, and microscope images)\n\nNarrator: \"Studies have shown that an imbalance of gut bacteria, also known as dysbiosis, is linked to conditions such as anxiety, depression, and obesity. But how does that happen?\"\n\n(Infographics and animations illustrate the mechanisms)\n\nNarrator: \"When your gut is out of balance, it can lead to inflammation, oxidative stress, and impaired communication between your gut and brain.\"\n\n**Section 3: The Connection to Mental Health (5:00 - 7:30)**\n\n(Soothing, uplifting background music)\n\nNarrator: \"But here's the thing: your gut and brain are connected in more ways than you might think. Research has shown that the gut microbiome plays a critical role in regulating mood, motivation, and emotional well-being.\"\n\n(Dramatic, cinematic footage of people enjoying nature, meditation, and spending time with loved ones)\n\nNarrator: \"When your gut is happy, your brain is happy too. So, what can you do to nurture a healthier gut-brain connection?\"\n\n**Section 4: Tips for a Healthy Gut-Brain Axis (7:30 - 10:00)**\n\n(Uplifting, motivational background music)\n\nNarrator: \"Here are five evidence-based strategies to help you cultivate a balanced gut-brain connection:\"\n\n(On-screen animations and illustrations highlight each tip)\n\n1. **Eat a Plant-Based Diet**: Focus on whole, unprocessed foods rich in fiber and polyphenols, and explore the gut benefits of specific foods like fermented vegetables and omega-3 rich seafood.\n2. **Stay Hydrated**: Drink plenty of water to support gut motility and immune function, and learn how even mild dehydration can impact your gut.\n3. **Get Moving**: Exercise regularly to boost gut blood flow and stimulate microbiome diversity, and discover the benefits of yoga and other mind-body practices for gut health.\n4. **Manage Stress**: Practice relaxation techniques like meditation, yoga, or deep breathing, and explore the science behind stress's impact on your gut.\n5. **Get Enough Sleep**: Prioritize 7-9 hours of sleep per night to support gut repair and immune function, and learn how even brief sleep disruptions can affect your gut.\n\n**Section 5: The Power of Personalization (9:50 - 10:00)**\n\n(Soothing, uplifting background music)\n\nNarrator: \"Remember, everyone's gut microbiome is unique, and what works for one person may not work for another. Take control of your gut health journey by exploring your individual needs and preferences.\"\n\n(On-screen animation: A person reflecting on their own gut health journey, with the title \"The Gut-Brain Connection\" and a call-to-action to visit the channel's website or social media handles)\n\nNarrator: \"By nurturing a healthy gut-brain connection, you can take control of your mental well-being, achieve sustainable weight loss, and enjoy a better quality of life.\"\n\n**Conclusion (10:00)**\n\n(Closing shot of the channel's logo and a call-to-action to visit the website or social media handles)\n\nNarrator: \"Thanks for watching! Join us next time for more insights on gut health and sustainable weight loss. Don't forget to subscribe and hit the notification bell for exclusive content and updates!\"\n\n**Outro (10:00)**\n\n(The video ends with a final, uplifting note)\n\nNote: The revised intro aims to create a stronger pattern interrupt by using a more unexpected and emotional hook. The rest of the script remains the same, with the addition of the words \"Take control of your gut health journey\" in Section 5 to make it more empowering and unique."
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:08:09.201Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "retentionCritic": {
+      "messages": [
+        "Shadow Retention Critic: [Result: 9/10] Note: The revised script is a significant improvement, but there's still room for refinement. The 3-second rule is met with a strong pattern interrupt in the intro, and the storytelling tension is well-balanced throughout the video. However, some sections feel a bit too long, and the language could be more concise. Additionally, the 'Take control of your gut health journey' phrase in Section 5 feels a bit forced and could be rephrased for better flow. Overall, the script is engaging and informative, but it needs some minor tweaks to reach its full potential."
+      ],
+      "retentionScore": 9,
+      "criticNotes": "The revised script is a significant improvement, but there's still room for refinement. The 3-second rule is met with a strong pattern interrupt in the intro, and the storytelling tension is well-balanced throughout the video. However, some sections feel a bit too long, and the language could be more concise. Additionally, the 'Take control of your gut health journey' phrase in Section 5 feels a bit forced and could be rephrased for better flow. Overall, the script is engaging and informative, but it needs some minor tweaks to reach its full potential.",
+      "ytCriticIterations": 2
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:08:13.800Z] [VISUALIST CONCEPTS]
+### Concept Mapping and Texture/Mood Assignments
+
+#### Intro (0:00 - 0:10)
+
+* Texture: **Glass** (to represent the "black screen" with the title)
+* Mood: **Pulsating anxiety** (to reflect the ominous music and sudden, brief clip of a person's face contorted in pain)
+* Additional Mood: **Hope** (to reflect the slow-motion clip of the person smiling and the hint of a brain MRI scan flickering in the background)
+
+#### Section 1: The Gut-Brain Axis (0:10 - 2:30)
+
+* Texture: **Furry** (to represent the gut microbiome)
+* Mood: **Energetic** (to reflect the upbeat music and animated illustrations of neurons, gut bacteria, and neurotransmitters)
+* Additional Mood: **Curiosity** (to reflect the narrator's enthusiastic tone and the animated illustrations)
+
+#### Section 2: The Science of Gut Health (2:30 - 5:00)
+
+* Texture: **Paper** (to represent scientific papers, infographics, and animations)
+* Mood: **Serious** (to reflect the scientific, documentary-style footage of researchers, labs, and microscope images)
+* Additional Mood: **Inquisitive** (to reflect the narrator's questions and the animations illustrating the mechanisms)
+
+#### Section 3: The Connection to Mental Health (5:00 - 7:30)
+
+* Texture: **Soft fabric** (to represent the soothing, uplifting background music and the cinematic footage of people enjoying nature, meditation, and spending time with loved ones)
+* Mood: **Soothing** (to reflect the calming music and the narrator's gentle tone)
+* Additional Mood: **Inspiring** (to reflect the dramatic, cinematic footage and the narrator's uplifting message)
+
+#### Section 4: Tips for a Healthy Gut-Brain Axis (7:30 - 10:00)
+
+* Texture: **Board** (to represent the on-screen animations and illustrations highlighting each tip)
+* Mood: **Motivational** (to reflect the uplifting, motivational background music and the narrator's encouraging tone)
+* Additional Mood: **Practical** (to reflect the specific tips and advice provided)
+
+#### Section 5: The Power of Personalization (9:50 - 10:00)
+
+* Texture: **Paper** (to represent the on-screen animation of a person reflecting on their own gut health journey)
+* Mood: **Empowering** (to reflect the narrator's message of personal responsibility and the call-to-action to take control of one's gut health journey)
+* Additional Mood: **Reflective** (to reflect the narrator's advice to explore one's individual needs and preferences)
+
+#### Conclusion (10:00)
+
+* Texture: **Glass** (to represent the closing shot of the channel's logo and a call-to-action to visit the website or social media handles)
+* Mood: **Gratitude** (to reflect the narrator's thank-you message and the closing shot)
+* Additional Mood: **Encouragement** (to reflect the narrator's invitation to join the channel and subscribe)
+
+### Image Search Suggestions
+
+* **Glass**: "Rain on a window," "Shadows on a brick wall"
+* **Furry**: "Macro shot of a seed sprouting," "Close-up of a butterfly's wings"
+* **Paper**: "Old, yellowed paper," "A paper airplane in slow motion"
+* **Soft fabric**: "Feathers on a windy day," "Gentle waves on a beach"
+* **Board**: "Typewriter keys clacking," "A puzzle piece falling into place"
+* **Empowering**: "A person standing on a mountain peak," "A fist pump with a city skyline in the background"
+
+### Visual Concept Design
+
+The visual style of the video should be a mix of animation, live-action, and graphics, with a focus on creating a narrative that is both informative and engaging. The images should be visually striking and support the mood and texture of each section.
+
+For example:
+
+* In the intro, use a combination of dark colors and dramatic lighting to create a sense of tension and anxiety. The sudden, brief clip of the person's face contorted in pain should be accompanied by a black screen with the title "The Gut-Brain Connection" in bold, white font.
+* In Section 1, use bright, cheerful colors and animated illustrations to convey the upbeat and energetic mood. The images should be playful and engaging, with a focus on illustrating the concepts of the gut-brain axis.
+* In Section 2, use a more serious and documentary-style approach, with a focus on showcasing the scientific research and evidence supporting the gut-brain connection.
+* In Section 3, use a mix of cinematic footage and animation to create a soothing and inspiring mood. The images should be calming and uplifting, with a focus on showcasing the connection between the gut and mental health.
+* In Section 4, use a more practical and motivational approach, with a focus on providing actionable tips and advice for maintaining a healthy gut-brain axis.
+* In Section 5, use a mix of animation and live-action to create an empowering and reflective mood. The images should be inspiring and thought-provoking, with a focus on encouraging viewers to take control of their own gut health journey.
+* In the conclusion, use a combination of bright colors and gentle music to create a sense of gratitude and encouragement. The images should be uplifting and inspiring, with a focus on inviting viewers to join the channel and subscribe.
+================================================================================
+[2026-04-17T04:09:04.350Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "visualist": {
+      "messages": [
+        "Visualist Failed: Failed to parse. Text: \"{\n  \"Intro\": {\n      \"Texture\": \"Glass\",\n      \"Mood\": \"Pulsating anxiety\",\n      \"Additional Mood\": \"Hope\"\n   },\n   \"Section 1: The Gut-Brain Axis\": {\n      \"Texture\": \"Furry\",\n      \"Mood\": \"Energetic\",\n      \"Additional Mood\": \"Curiosity\"\n   },\n   \"Section 2: The Science of Gut Health\": {\n      \"Texture\": \"Paper\",\n      \"Mood\": \"Serious\",\n      \"Additional Mood\": \"Inquisitive\"\n   },\n   \"Section 3: The Connection to Mental Health\": {\n      \"Texture\": \"Soft fabric\",\n      \"Mood\": \"Soothing\",\n      \"Additional Mood\": \"Inspiring\"\n   },\n   \"Section 4: Tips for a Healthy Gut-Brain Axis\": {\n      \"Texture\": \"Board\",\n      \"Mood\": \"Motivational\",\n      \"Additional Mood\": \"Practical\"\n   },\n   \"Section 5: The Power of Personalization\": {\n      \"Texture\": \"Paper\",\n      \"Mood\": \"Empowering\",\n      \"Additional Mood\": \"Reflective\"\n   },\n   \"Conclusion\": {\n      \"Texture\": \"Glass\",\n      \"Mood\": \"Gratitude\",\n      \"Additional Mood\": \"Encouragement\"\n   },\n   \"Image Search Suggestions\": {\n      \"Glass\": [\"Rain on a window\", \"Shadows on a brick wall\"],\n      \"Furry\": [\"Macro shot of a seed sprouting\", \"Close-up of a butterfly's wings\"],\n      \"Paper\": [\"Old, yellowed paper\", \"A paper airplane in slow motion\"],\n      \"Soft fabric\": [\"Feathers on a windy day\", \"Gentle waves on a beach\"],\n      \"Board\": [\"Typewriter keys clacking\", \"A puzzle piece falling into place\"],\n      \"Empowering\": [\"A person standing on a mountain peak\", \"A fist pump with a city skyline in the background\"]\n   },\n   \"Visual Concept Design\": {\n      \"Intro\": \"A combination of dark colors and dramatic lighting to create a sense of tension and anxiety.\",\n      \"Section 1: The Gut-Brain Axis\": \"Bright, cheerful colors and animated illustrations to convey the upbeat and energetic mood.\",\n      \"Section 2: The Science of Gut Health\": \"A more serious and documentary-style approach, with a focus on showcasing the scientific research and evidence supporting the gut-brain connection.\",\n      \"Section 3: The Connection to Mental Health\": \"A mix of cinematic footage and animation to create a soothing and inspiring mood.\",\n      \"Section 4: Tips for a Healthy Gut-Brain Axis\": \"A more practical and motivational approach, with a focus on providing actionable tips and advice for maintaining a healthy gut-brain axis.\",\n      \"Section 5: The Power of Personalization\": \"A mix of animation and live-action to create an empowering and reflective mood.\",\n      \"Conclusion\": \"A combination of bright colors and gentle music to create a sense of gratitude and encouragement.\"\n   }\n}\". Error: [\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"scenes\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"allSearchQueries\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]\n\nTroubleshooting URL: https://docs.langchain.com/oss/javascript/langchain/errors/OUTPUT_PARSING_FAILURE/\n"
+      ]
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:09:33.203Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "production": {
+      "messages": [
+        "System Error (Production Bundler): Failed to parse. Text: \"{\n  \"title\": \"The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight\",\n   \"thumbnailConcepts\": [\n      {\n         \"concept\": \"A close-up of a person's face contorted in pain, with a black screen and the title 'The Gut-Brain Connection' in bold, white font\",\n         \"description\": \"High-contrast, emotional, and attention-grabbing\"\n      },\n      {\n         \"concept\": \"A slow-motion clip of a person smiling, with a hint of a brain MRI scan flickering in the background\",\n         \"description\": \"Uplifting, inspiring, and visually engaging\"\n      },\n      {\n         \"concept\": \"A person holding a plant, with a green background and a subtle gradient effect\",\n         \"description\": \"Nature-inspired, calming, and visually appealing\"\n      }\n   ],\n   \"bRollChecklist\": [\n      {\n         \"shot\": \"Close-up of a person's face, with a mix of close-ups and wide shots\",\n         \"description\": \"To create a sense of intimacy and curiosity\"\n      },\n      {\n         \"shot\": \"Brain MRI scan, with a soft focus effect and a shallow depth of field\",\n         \"description\": \"To give it an ethereal quality\"\n      },\n      {\n         \"shot\": \"Researchers in a lab, with documentary-style footage and detailed close-ups\",\n         \"description\": \"To add a sense of realism and authority\"\n      },\n      {\n         \"shot\": \"People enjoying nature, meditation, and spending time with loved ones, with cinematic footage and soft focus effects\",\n         \"description\": \"To emphasize the importance of emotional well-being\"\n      },\n      {\n         \"shot\": \"On-screen animations and illustrations, with bright, vibrant colors and playful visual effects\",\n         \"description\": \"To highlight each tip and make them easy to understand\"\n      },\n      {\n         \"shot\": \"Testimonials or interviews with experts, with a mix of close-ups and wide shots\",\n         \"description\": \"To add a sense of credibility and authority\"\n      },\n      {\n         \"shot\": \"A person reflecting on their own gut health journey, with a mix of close-ups and wide shots\",\n         \"description\": \"To emphasize the importance of personalization\"\n      }\n   ],\n   \"sfxChecklist\": [\n      {\n         \"location\": \"Intro\",\n         \"type\": \"Impact sound\",\n         \"description\": \"To create a sense of surprise and curiosity\"\n      },\n      {\n         \"location\": \"Section 1\",\n         \"type\": \"Whoosh\",\n         \"description\": \"To convey the idea of a two-way communication network\"\n      },\n      {\n         \"location\": \"Section 2\",\n         \"type\": \"Ambient loop\",\n         \"description\": \"To create a sense of realism and authority\"\n      },\n      {\n         \"location\": \"Section 3\",\n         \"type\": \"Impact sound\",\n         \"description\": \"To emphasize the importance of emotional well-being\"\n      },\n      {\n         \"location\": \"Section 4\",\n         \"type\": \"Whoosh\",\n         \"description\": \"To convey a sense of motivation and empowerment\"\n      },\n      {\n         \"location\": \"Conclusion\",\n         \"type\": \"Impact sound\",\n         \"description\": \"To leave the viewer with a sense of energy and motivation\"\n      }\n   ],\n   \"vfxMgfx\": [\n      {\n         \"type\": \"Text overlay\",\n         \"location\": \"Intro\",\n         \"description\": \"To display the title 'The Gut-Brain Connection' in bold, white font\"\n      },\n      {\n         \"type\": \"Callout\",\n         \"location\": \"Section 1\",\n         \"description\": \"To highlight the importance of the gut-brain axis\"\n      },\n      {\n         \"type\": \"Data visualization\",\n         \"location\": \"Section 2\",\n         \"description\": \"To illustrate complex scientific concepts in an engaging and easy-to-understand way\"\n      },\n      {\n         \"type\": \"Text overlay\",\n         \"location\": \"Section 3\",\n         \"description\": \"To display the title 'The Connection to Mental Health' in a calm and soothing font\"\n      },\n      {\n         \"type\": \"Callout\",\n         \"location\": \"Section 4\",\n         \"description\": \"To highlight each tip and make them easy to understand\"\n      },\n      {\n         \"type\": \"Data visualization\",\n         \"location\": \"Conclusion\",\n         \"description\": \"To display the title 'The Power of Personalization' in a bold and inspiring font\"\n      }\n   ],\n   \"music\": {\n      \"genre\": \"Electronic/Synth\",\n      \"mood\": \"Ominous/Energetic\",\n      \"BPM\": 120\n   },\n   \"voiceover\": {\n      \"tone\": \"Hyper-enthusiastic\",\n      \"style\": \"Engaging and motivational\"\n   }\n}\". Error: [\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"thumbnailConcepts\",\n      0,\n      \"title\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"thumbnailConcepts\",\n      0,\n      \"prompt\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"thumbnailConcepts\",\n      1,\n      \"title\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"thumbnailConcepts\",\n      1,\n      \"prompt\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"thumbnailConcepts\",\n      2,\n      \"title\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"thumbnailConcepts\",\n      2,\n      \"prompt\"\n    ],\n    \"message\": \"Invalid input: expected string, received undefined\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"sfxChecklist\",\n      0\n    ],\n    \"message\": \"Invalid input: expected string, received object\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"sfxChecklist\",\n      1\n    ],\n    \"message\": \"Invalid input: expected string, received object\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"sfxChecklist\",\n      2\n    ],\n    \"message\": \"Invalid input: expected string, received object\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"sfxChecklist\",\n      3\n    ],\n    \"message\": \"Invalid input: expected string, received object\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"sfxChecklist\",\n      4\n    ],\n    \"message\": \"Invalid input: expected string, received object\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"sfxChecklist\",\n      5\n    ],\n    \"message\": \"Invalid input: expected string, received object\"\n  }\n]\n\nTroubleshooting URL: https://docs.langchain.com/oss/javascript/langchain/errors/OUTPUT_PARSING_FAILURE/\n"
+      ]
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:09:57.540Z] [COMPLIANCE RESPONSE]
+{
+  "title": "UNLOCK THE SECRET TO A HAPPY GUT, HAPPY BRAIN: The Shocking Truth About Your Microbiome and Mental Health",
+  "tags": [
+    "gut-brain connection",
+    "microbiome",
+    "mental health",
+    "weight loss",
+    "nutrition",
+    "wellness",
+    "self-care",
+    "gut health",
+    "brain health",
+    "happiness"
+  ]
+}
+================================================================================
+[2026-04-17T04:09:57.541Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "compliance": {
+      "messages": [
+        "Compliance: [Progress: 5/6] Optimized SEO metadata for discovery."
+      ],
+      "ytMetadata": {
+        "title": "UNLOCK THE SECRET TO A HAPPY GUT, HAPPY BRAIN: The Shocking Truth About Your Microbiome and Mental Health",
+        "tags": [
+          "gut-brain connection",
+          "microbiome",
+          "mental health",
+          "weight loss",
+          "nutrition",
+          "wellness",
+          "self-care",
+          "gut health",
+          "brain health",
+          "happiness"
+        ]
+      }
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:09:57.542Z] {
+  "type": "SUCCESS",
+  "message": "Stream finished."
+}
+================================================================================
+[2026-04-17T04:52:50.244Z] {
+  "type": "START",
+  "prompt": "generate the storyboards",
+  "initialState": {
+    "messages": [
+      "generate the storyboards"
+    ],
+    "projectId": "46e53d0a-cec1-4803-828b-e1d1b6476769",
+    "contentMode": "FILM",
+    "latestCommand": "generate the storyboards"
+  }
+}
+================================================================================
+[2026-04-17T04:52:52.576Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "intentClassifier": {
+      "intent": "VISUALS"
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:52:55.063Z] [VISUALIST CONCEPTS]
+Based on the provided script, I've created a concept map to help visualize the mood, tone, and textures associated with each section.
+
+**Intro (0:00 - 0:10)**
+
+* Mood: Ominous, intense
+* Tone: Intriguing, mysterious
+* Texture: Dark, pulsing synths
+* Image: Sudden, brief clip of a person's face contorted in pain, followed by a black screen with the title and a slow-motion clip of the same person smiling
+
+**Section 1: The Gut-Brain Axis (0:10 - 2:30)**
+
+* Mood: Energetic, optimistic
+* Tone: Engaging, informative
+* Texture: Upbeat, energetic background music
+* Image: Animated illustrations of neurons, gut bacteria, and neurotransmitters
+
+**Section 2: The Science of Gut Health (2:30 - 5:00)**
+
+* Mood: Serious, scientific
+* Tone: Objective, informative
+* Texture: Document-style footage of researchers, labs, and microscope images
+* Image: Infographics and animations illustrating the mechanisms
+
+**Section 3: The Connection to Mental Health (5:00 - 7:30)**
+
+* Mood: Soothing, uplifting
+* Tone: Empathetic, supportive
+* Texture: Soft, cinematic footage of people enjoying nature, meditation, and spending time with loved ones
+* Image: Dramatic, cinematic footage of people enjoying natural environments
+
+**Section 4: Tips for a Healthy Gut-Brain Axis (7:30 - 10:00)**
+
+* Mood: Uplifting, motivational
+* Tone: Encouraging, practical
+* Texture: Uplifting, motivational background music
+* Image: On-screen animations and illustrations highlighting each tip
+
+**Section 5: The Power of Personalization (9:50 - 10:00)**
+
+* Mood: Soothing, reflective
+* Tone: Empowering, personal
+* Texture: Soft, uplifting background music
+* Image: On-screen animation: A person reflecting on their own gut health journey
+
+**Conclusion (10:00)**
+
+* Mood: Uplifting, positive
+* Tone: Appreciative, encouraging
+* Texture: Closing shot of the channel's logo and a call-to-action to visit the website or social media handles
+* Image: Final, uplifting note
+
+Overall, the concept map highlights the transition from an ominous tone in the intro to a more energetic and optimistic tone in the first section, followed by a serious and scientific tone in the second section. The rest of the sections maintain a more uplifting and encouraging tone, with a focus on empowering the audience to take control of their gut health journey.
+================================================================================
+[2026-04-17T04:52:58.309Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "visualist": {
+      "messages": [
+        "Visualist Failed: Failed to parse. Text: \"{\n  \"scriptAnalysis\": {\n      \"intro\": {\n         \"mood\": \"ominous\",\n         \"tone\": \"intriguing\",\n         \"texture\": \"dark pulsing synths\",\n         \"image\": \"sudden brief clip of a person's face contorted in pain, followed by a black screen with the title and a slow-motion clip of the same person smiling\"\n      },\n      \"section1\": {\n         \"mood\": \"energetic\",\n         \"tone\": \"engaging\",\n         \"texture\": \"upbeat energetic background music\",\n         \"image\": \"animated illustrations of neurons, gut bacteria, and neurotransmitters\"\n      },\n      \"section2\": {\n         \"mood\": \"serious\",\n         \"tone\": \"objective\",\n         \"texture\": \"document-style footage of researchers, labs, and microscope images\",\n         \"image\": \"infographics and animations illustrating the mechanisms\"\n      },\n      \"section3\": {\n         \"mood\": \"soothing\",\n         \"tone\": \"empathetic\",\n         \"texture\": \"soft cinematic footage of people enjoying nature, meditation, and spending time with loved ones\",\n         \"image\": \"dramatic cinematic footage of people enjoying natural environments\"\n      },\n      \"section4\": {\n         \"mood\": \"uplifting\",\n         \"tone\": \"encouraging\",\n         \"texture\": \"uplifting motivational background music\",\n         \"image\": \"onscreen animations and illustrations highlighting each tip\"\n      },\n      \"section5\": {\n         \"mood\": \"soothing\",\n         \"tone\": \"empowering\",\n         \"texture\": \"soft uplifting background music\",\n         \"image\": \"onscreen animation: a person reflecting on their own gut health journey\"\n      },\n      \"conclusion\": {\n         \"mood\": \"uplifting\",\n         \"tone\": \"appreciative\",\n         \"texture\": \"closing shot of the channels logo and a call-to-action to visit the website or social media handles\",\n         \"image\": \"final uplifting note\"\n      }\n   },\n   \"scriptStructure\": {\n      \"sections\": [\n         {\n            \"title\": \"The Gut-Brain Axis\",\n            \"duration\": \"2:20\",\n            \"mood\": \"energetic\",\n            \"tone\": \"engaging\",\n            \"texture\": \"upbeat energetic background music\",\n            \"image\": \"animated illustrations of neurons, gut bacteria, and neurotransmitters\"\n         },\n         {\n            \"title\": \"The Science of Gut Health\",\n            \"duration\": \"2:30\",\n            \"mood\": \"serious\",\n            \"tone\": \"objective\",\n            \"texture\": \"document-style footage of researchers, labs, and microscope images\",\n            \"image\": \"infographics and animations illustrating the mechanisms\"\n         },\n         {\n            \"title\": \"The Connection to Mental Health\",\n            \"duration\": \"2:30\",\n            \"mood\": \"soothing\",\n            \"tone\": \"empathetic\",\n            \"texture\": \"soft cinematic footage of people enjoying nature, meditation, and spending time with loved ones\",\n            \"image\": \"dramatic cinematic footage of people enjoying natural environments\"\n         },\n         {\n            \"title\": \"Tips for a Healthy Gut-Brain Axis\",\n            \"duration\": \"2:30\",\n            \"mood\": \"uplifting\",\n            \"tone\": \"encouraging\",\n            \"texture\": \"uplifting motivational background music\",\n            \"image\": \"onscreen animations and illustrations highlighting each tip\"\n         },\n         {\n            \"title\": \"The Power of Personalization\",\n            \"duration\": \"10:00\",\n            \"mood\": \"soothing\",\n            \"tone\": \"empowering\",\n            \"texture\": \"soft uplifting background music\",\n            \"image\": \"onscreen animation: a person reflecting on their own gut health journey\"\n         },\n         {\n            \"title\": \"Conclusion\",\n            \"duration\": \"10:00\",\n            \"mood\": \"uplifting\",\n            \"tone\": \"appreciative\",\n            \"texture\": \"closing shot of the channels logo and a call-to-action to visit the website or social media handles\",\n            \"image\": \"final uplifting note\"\n         }\n      ]\n   },\n   \"scriptCues\": {\n      \"intro\": {\n         \"cue\": \"ominous pulsing synths in the background\",\n         \"description\": \"sudden brief clip of a person's face contorted in pain, followed by a black screen with the title and a slow-motion clip of the same person smiling\"\n      },\n      \"section1\": {\n         \"cue\": \"upbeat energetic background music\",\n         \"description\": \"animated illustrations of neurons, gut bacteria, and neurotransmitters\"\n      },\n      \"section2\": {\n         \"cue\": \"document-style footage of researchers, labs, and microscope images\",\n         \"description\": \"infographics and animations illustrating the mechanisms\"\n      },\n      \"section3\": {\n         \"cue\": \"soft cinematic footage of people enjoying nature, meditation, and spending time with loved ones\",\n         \"description\": \"dramatic cinematic footage of people enjoying natural environments\"\n      },\n      \"section4\": {\n         \"cue\": \"uplifting motivational background music\",\n         \"description\": \"onscreen animations and illustrations highlighting each tip\"\n      },\n      \"section5\": {\n         \"cue\": \"soft uplifting background music\",\n         \"description\": \"onscreen animation: a person reflecting on their own gut health journey\"\n      },\n      \"conclusion\": {\n         \"cue\": \"closing shot of the channels logo and a call-to-action to visit the website or social media handles\",\n         \"description\": \"final uplifting note\"\n      }\n   }\n}\". Error: [\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"scenes\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"allSearchQueries\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]\n\nTroubleshooting URL: https://docs.langchain.com/oss/javascript/langchain/errors/OUTPUT_PARSING_FAILURE/\n"
+      ]
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:53:34.658Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "production": {
+      "messages": [
+        "Production: [Progress: 4/6] Assets and thumbnails bundled."
+      ],
+      "productionBundle": {
+        "thumbnailConcepts": [],
+        "brollChecklist": [],
+        "sfxChecklist": [],
+        "vfxRequirements": [],
+        "musicInspiration": "",
+        "voiceGuidance": "",
+        "cleanNarratorScript": "The moment your brain screams, 'This can't be happening!' and your gut whispers, 'We're not out of options yet...' A moment that will change the way you think about balance, forever.\n\nThe gut-brain axis is a bidirectional communication network between your gut microbiome and your central nervous system. It's a two-way street, where signals from your gut influence your brain, and vice versa.\n\nYour gut microbiome is home to trillions of microorganisms that produce neurotransmitters, hormones, and other signaling molecules that regulate your mood, appetite, and weight.\n\nStudies have shown that an imbalance of gut bacteria, also known as dysbiosis, is linked to conditions such as anxiety, depression, and obesity. But how does that happen?\n\nWhen your gut is out of balance, it can lead to inflammation, oxidative stress, and impaired communication between your gut and brain.\n\nBut here's the thing: your gut and brain are connected in more ways than you might think. Research has shown that the gut microbiome plays a critical role in regulating mood, motivation, and emotional well-being.\n\nWhen your gut is happy, your brain is happy too. So, what can you do to nurture a healthier gut-brain connection?\n\nHere are five evidence-based strategies to help you cultivate a balanced gut-brain connection:\n\n1. Eat a Plant-Based Diet: Focus on whole, unprocessed foods rich in fiber and polyphenols, and explore the gut benefits of specific foods like fermented vegetables and omega-3 rich seafood.\n2. Stay Hydrated: Drink plenty of water to support gut motility and immune function, and learn how even mild dehydration can impact your gut.\n3. Get Moving: Exercise regularly to boost gut blood flow and stimulate microbiome diversity, and discover the benefits of yoga and other mind-body practices for gut health.\n4. Manage Stress: Practice relaxation techniques like meditation, yoga, or deep breathing, and explore the science behind stress's impact on your gut.\n5. Get Enough Sleep: Prioritize 7-9 hours of sleep per night to support gut repair and immune function, and learn how even brief sleep disruptions can affect your gut.\n\nRemember, everyone's gut microbiome is unique, and what works for one person may not work for another. Take control of your gut health journey by exploring your individual needs and preferences.\n\nBy nurturing a healthy gut-brain connection, you can take control of your mental well-being, achieve sustainable weight loss, and enjoy a better quality of life.\n\nThanks for watching! Join us next time for more insights on gut health and sustainable weight loss. Don't forget to subscribe and hit the notification bell for exclusive content and updates!"
+      }
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:54:29.690Z] [COMPLIANCE RESPONSE]
+{
+  "title": "UNLOCK THE SECRET TO A HAPPY GUT, HAPPY BRAIN! The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight",
+  "tags": [
+    "gut-brain connection",
+    "microbiome",
+    "mental health",
+    "weight loss",
+    "gut health",
+    "brain health",
+    "nutrition",
+    "wellness",
+    "self-care",
+    "personalized health"
+  ]
+}
+================================================================================
+[2026-04-17T04:54:29.703Z] {
+  "type": "CHUNK",
+  "chunk": {
+    "compliance": {
+      "messages": [
+        "Compliance: [Progress: 5/6] Optimized SEO metadata for discovery."
+      ],
+      "ytMetadata": {
+        "title": "UNLOCK THE SECRET TO A HAPPY GUT, HAPPY BRAIN! The Gut-Brain Connection: How Your Microbiome Affects Your Mood and Weight",
+        "tags": [
+          "gut-brain connection",
+          "microbiome",
+          "mental health",
+          "weight loss",
+          "gut health",
+          "brain health",
+          "nutrition",
+          "wellness",
+          "self-care",
+          "personalized health"
+        ]
+      }
+    }
+  }
+}
+================================================================================
+[2026-04-17T04:54:29.708Z] {
+  "type": "SUCCESS",
+  "message": "Stream finished."
+}
+================================================================================

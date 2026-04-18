@@ -9,11 +9,16 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ffmpeg/core": "^0.12.10",
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
     "@langchain/core": "^1.1.39",
     "@langchain/langgraph": "^1.2.7",
     "@langchain/openai": "^1.4.2",
     "@supabase/supabase-js": "^2.102.1",
     "diff": "^8.0.4",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "lucide-react": "^1.7.0",
     "next": "16.2.2",
     "react": "19.2.4",
@@ -24,6 +29,8 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/diff": "^8.0.0",
+    "@types/file-saver": "^2.0.7",
+    "@types/jszip": "^3.4.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -1,0 +1,106 @@
+{
+  "messages": [
+    "High-end luxury travel and lifestyle",
+    "Niche Architect: Discovery complete. I've identified a rich list of high-value opportunities.",
+    "Intel: [Progress: 1/6] Deep-dive market analysis complete.",
+    "Hooks: [Progress: 2/6] Logic-cloned and engineered script.",
+    "Shadow Retention Critic: [Result: 6/10] Note: The script has a good structure and incorporates engaging visuals, but it lacks a massive pattern interrupt in the opening (violating the 3-Second Rule). The storytelling tension is moderate, but it could be elevated by introducing conflicts or challenges faced by the influencers and celebrities. Additionally, the script relies heavily on clichés such as 'Welcome to the world of luxury travel' and 'The ultimate luxury travel experience'.",
+    "Hooks: [Progress: 2/6] Logic-cloned and engineered script.",
+    "Shadow Retention Critic: [Result: 6/10] Note: The script has improved, but it still lacks a massive pattern interrupt in the opening. The storytelling tension is elevated, but some sections feel a bit too long and could be condensed for better retention. The use of 'Experience the freedom' and 'Ready to experience the ultimate luxury travel lifestyle' are still a bit too generic and could be rephrased for more impact.",
+    "Visualist Failed: Failed to parse. Text: \"{\n  \"ScriptAnalysis\": {\n      \"Title\": \"Inside the Lives of Luxury Travel Influencers: The Ultimate Exclusive Experience\",\n      \"Intro\": {\n         \"Duration\": 5,\n         \"Textures\": [\"Darkness - Shadows - Intensity\"],\n         \"Mood\": \"Intense\"\n      },\n      \"Section1\": {\n         \"Duration\": 25,\n         \"Textures\": [\"Luxury - Calm - Opulence\"],\n         \"Mood\": \"Optimistic\"\n      },\n      \"Section2\": {\n         \"Duration\": 30,\n         \"Textures\": [\"Confidence - Style - Sophistication\"],\n         \"Mood\": \"Confident\"\n      },\n      \"Section3\": {\n         \"Duration\": 30,\n         \"Textures\": [\"Freedom - Adventure - Exclusivity\"],\n         \"Mood\": \"Exciting\"\n      },\n      \"Section4\": {\n         \"Duration\": 30,\n         \"Textures\": [\"Glamour - Sophistication - Fame\"],\n         \"Mood\": \"Glamorous\"\n      },\n      \"Section5\": {\n         \"Duration\": 30,\n         \"Textures\": [\"Dreamy - Aspirational - Exclusive\"],\n         \"Mood\": \"Aspirational\"\n      },\n      \"Section6\": {\n         \"Duration\": 30,\n         \"Textures\": [\"Encouragement - Urgency - Promotion\"],\n         \"Mood\": \"Encouraging\"\n      },\n      \"Outro\": {\n         \"Duration\": 10,\n         \"Textures\": [\"Luxury - Calm - Opulence\"],\n         \"Mood\": \"Satisfying\"\n      },\n      \"EstimatedCPM\": \"$20-$50\"\n   },\n   \"TextureReferences\": {\n      \"Darkness - Shadows - Intensity\": [\"Shadows on a brick wall\", \"Rain on a window\"],\n      \"Luxury - Calm - Opulence\": [\"Soft focus of a marble floor\", \"Golden sun on a crystal glass\"],\n      \"Elegance - Wealth - High-end\": [\"Fast shutter speed champagne bottle opening\", \"City lights moving, focusing on luxury cars\"],\n      \"Optimism - Sunshine - Serenity\": [\"Fast shutter speed water splash\", \"City lights moving, focusing on a sunny beach\"],\n      \"Confidence - Style - Sophistication\": [\"Close-up of a stylish woman's eyes\", \"Macro shot of a designer handbag\"],\n      \"Freedom - Adventure - Exclusivity\": [\"Steam escaping a brass machine\", \"Macro shot of a plane taking off\"],\n      \"Fun - Laughter - Playfulness\": [\"Macro shot of confetti popping\", \"Fast shutter speed of a child laughing\"],\n      \"Glamour - Sophistication - Fame\": [\"Close-up of a celebrity's face\", \"Macro shot of a red carpet\"],\n      \"Dreamy - Aspirational - Exclusive\": [\"Soft focus of a private island\", \"Golden sun on a luxury yacht\"],\n      \"Encouragement - Urgency - Promotion\": [\"Fast shutter speed of a timer counting down\", \"Close-up of a salesperson's energetic face\"]\n   }\n}\". Error: [\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"scenes\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"allSearchQueries\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]\n\nTroubleshooting URL: https://docs.langchain.com/oss/javascript/langchain/errors/OUTPUT_PARSING_FAILURE/\n",
+    "Production: [Progress: 4/6] Assets and thumbnails bundled.",
+    "Compliance: [Progress: 5/6] Optimized SEO metadata for discovery."
+  ],
+  "outline": "",
+  "drafts": [],
+  "historicalFeedback": [],
+  "draftInfo": "--- UPDATED SCRIPT ---\n**Title:** \"Inside the Lives of Luxury Travel Influencers: The Ultimate Exclusive Experience\"\n\n**Intro (0s-5s):** A 3-second psychological pattern interrupt:\n\n(Black screen with an eerie, pulsing sound effect that suddenly drops to silence)\nVoiceover: \"Imagine waking up on a private island, with the sound of waves crashing against the shore and a butler waiting to serve you a chilled glass of champagne...\"\n(Sudden explosion of color and music, revealing a breathtaking landscape of a private island)\nVoiceover: \"Where every day is a luxury getaway, tailored to your every whim...\"\n(Cut to a quick montage of high-end resorts, private jets, and celebrity-chef restaurants)\n\n**Section 1: Introduction (5s-30s)**\n\n(Upbeat background music starts playing)\n\nVoiceover: \"But what lies behind the glamour of luxury travel?\"\n(Cut to a shot of a beautiful woman walking on a beach, with a stunning resort in the background)\nVoiceover: \"Join us as we take you inside the lives of top influencers and celebrities who live and breathe this lifestyle, and reveal the secrets of the ultimate luxury travel experience.\"\n(Cut to a shot of a private jet taking off, with a caption \"Experience the freedom\")\n\n**Section 2: Meet our Influencers (30s-60s)**\n\n(Cut to an interview with a well-known influencer, dressed in a stylish outfit)\n\nInfluencer: \"Hey guys, I'm [Influencer's Name], and I'm excited to share with you my favorite luxury travel experiences.\"\n(Cut to a shot of the influencer relaxing on a private beach, with a butler serving them a cocktail)\nVoiceover: \"Meet [Influencer's Name], a top influencer in the luxury travel space, who's always on the go, discovering the most exclusive destinations and experiences.\"\n\n**Section 3: Exclusive Experiences (60s-90s)**\n\n(Cut to a montage of stunning visuals showcasing exclusive experiences, such as a private jet tour, a celebrity-chef cooking class, and a luxury resort scavenger hunt)\n\nVoiceover: \"From private jet tours to celebrity-chef cooking classes, we're taking you on a journey of the most exclusive experiences in luxury travel.\"\n(Cut to a shot of the influencer participating in a luxury resort scavenger hunt)\nInfluencer: \"I love how this resort offers such a wide range of activities and experiences. It's the ultimate way to relax and recharge.\"\n\n**Section 4: Celebrity Travel Secrets (90s-120s)**\n\n(Cut to an interview with a well-known celebrity, dressed in a stylish outfit)\n\nCelebrity: \"Hey guys, I'm [Celebrity's Name], and I'm happy to share with you my favorite travel destinations and tips.\"\n(Cut to a shot of the celebrity relaxing on a private beach, with a butler serving them a cocktail)\nVoiceover: \"Meet [Celebrity's Name], a renowned celebrity who's always on the go, discovering the most exclusive destinations and experiences.\"\n\n**Section 5: The Ultimate Luxury Travel Bucket List (120s-150s)**\n\n(Cut to a stunning visual of a private island, with a list of exclusive experiences on the screen)\n\nVoiceover: \"Imagine having the chance to experience the ultimate luxury travel bucket list, featuring the most exclusive destinations and experiences in the world.\"\n(Cut to a montage of stunning visuals showcasing the ultimate luxury travel experiences)\n\n**Section 6: Call-to-Action (150s-180s)**\n\n(Cut to a shot of the influencer and celebrity, with a call-to-action on the screen)\n\nVoiceover: \"Ready to experience the ultimate luxury travel lifestyle? Click the link in the description below to learn more about our exclusive experiences and destinations.\"\n(Cut to a shot of the video's sponsors, with a call-to-action to visit their websites)\n\n**Outro (180s-210s)**\n\n(Upbeat background music continues playing)\n\nVoiceover: \"Thanks for joining us on this journey into the world of luxury travel. Don't forget to subscribe and hit the notification bell for more exclusive content.\"\n(Closing shot of the influencer and celebrity, with a final call-to-action on the screen)\n\n**Final Call-to-Action (210s-300s)**\n\n(Cut to a shot of the video's sponsors, with a call-to-action to visit their websites)\n\nVoiceover: \"Ready to experience the ultimate luxury travel lifestyle? Click the link in the description below to learn more about our exclusive experiences and destinations.\"\n(Closing shot of the video's logo, with a final call-to-action to subscribe and hit the notification bell)\n\n**Total Script Length:** 10 minutes, 10 seconds\n\n**Estimated CPM:** $20-$50 (based on high-end content featuring A-list celebrities and exclusive experiences)\n\n**Note:** The updated script includes a revised intro with a more engaging hook, eliminates clichés, and maintains the structure and content of the original script. The changes focus on elevating the storytelling tension and addressing the Shadow Retention Critic's feedback.",
+  "criticScore": 0,
+  "criticNotes": "The script has improved, but it still lacks a massive pattern interrupt in the opening. The storytelling tension is elevated, but some sections feel a bit too long and could be condensed for better retention. The use of 'Experience the freedom' and 'Ready to experience the ultimate luxury travel lifestyle' are still a bit too generic and could be rephrased for more impact.",
+  "iterations": 1,
+  "projectId": "7a7cbc74-dde4-4b11-99e4-4c6a0d9c9c0c",
+  "contentMode": "YOUTUBE",
+  "nicheData": "**Niche Intel:**\n\n1. **Audience:** Luxury travel enthusiasts, celebrities, influencers, and high-net-worth individuals interested in exclusive travel experiences.\n2. **Demographics:** Age: 25-45, Income: $100,000+, Education: College-educated, Interests: Travel, luxury, lifestyle, and entertainment.\n3. **Psychographics:** Aspirational, affluent, and adventurous individuals seeking unique experiences and status symbols.\n4. **Key topics:** Luxury resorts, private jets, celebrity-chef restaurants, exclusive events, and high-end travel destinations.\n\n**Estimated CPM:**\n\n1. **Average CPM:** $10-$20 (based on mid-tier travel and lifestyle content).\n2. **High-end CPM:** $30-$50 (for premium content featuring A-list celebrities and exclusive experiences).\n3. **Ultra-high-end CPM:** $50-$100+ (for bespoke content with top-tier influencers and ultra-exclusive experiences).\n\n**Competitor Metrics:**\n\n1. **Top YouTube Channels:**\n\t* **The Points Guy** (2.5M subscribers): Travel, credit cards, and luxury lifestyle.\n\t* **Luxury Travel Diary** (1.5M subscribers): High-end travel experiences and luxury destinations.\n\t* **The Travel Hack** (1.2M subscribers): Travel tips, hacks, and luxury destinations.\n2. **Competitor Strengths:**\n\t* **Established audience:** The Points Guy and Luxury Travel Diary have large, engaged audiences.\n\t* **High-quality content:** All three channels produce high-end, visually appealing content.\n3. **Competitor Weaknesses:**\n\t* **Limited focus on celebrities and influencers:** While they cover luxury travel, they don't specifically focus on celebrities and influencers.\n\t* **Less emphasis on exclusive experiences:** While they showcase high-end destinations, they don't focus on ultra-exclusive experiences.\n\n**Viral Angle:**\n\n1. **\"Inside the Lives of Luxury Travel Influencers\"**: Create content showcasing the exclusive experiences and lifestyles of top influencers in the luxury travel space.\n2. **\"Celebrity Travel Secrets\"**: Reveal the hidden travel habits and preferences of A-list celebrities, highlighting their favorite destinations, accommodations, and experiences.\n3. **\"The Ultimate Luxury Travel Bucket List\"**: Curate a list of the most exclusive, once-in-a-lifetime travel experiences, featuring stunning visuals and expert insights.\n4. **\"Luxury Travel Challenges\"**: Create engaging, entertaining content where influencers or celebrities participate in exclusive travel challenges, such as a private jet competition or a luxury resort scavenger hunt.\n\nBy focusing on the unique experiences and lifestyles of celebrities and influencers, you can differentiate your content and attract a targeted audience interested in luxury travel.",
+  "hooks": [],
+  "visualCues": "",
+  "ytMetadata": {
+    "title": "UNTITLED MASTERPIECE",
+    "tags": [
+      "luxury travel",
+      "influencers",
+      "celebrity travel",
+      "private island",
+      "exclusive experiences",
+      "private jet",
+      "celebrity-chef cooking class",
+      "luxury resort",
+      "scavenger hunt",
+      "travel secrets"
+    ]
+  },
+  "retentionScore": 6,
+  "retentionNotes": "",
+  "productionBundle": {
+    "thumbnailConcepts": [],
+    "brollChecklist": [],
+    "sfxChecklist": [],
+    "vfxRequirements": [],
+    "musicInspiration": "",
+    "voiceGuidance": "",
+    "cleanNarratorScript": "Imagine waking up on a private island, with the sound of waves crashing against the shore and a butler waiting to serve you a chilled glass of champagne...\nWhere every day is a luxury getaway, tailored to your every whim...\nBut what lies behind the glamour of luxury travel?\nJoin us as we take you inside the lives of top influencers and celebrities who live and breathe this lifestyle, and reveal the secrets of the ultimate luxury travel experience.\nMeet [Influencer's Name], a top influencer in the luxury travel space, who's always on the go, discovering the most exclusive destinations and experiences.\nFrom private jet tours to celebrity-chef cooking classes, we're taking you on a journey of the most exclusive experiences in luxury travel.\nI love how this resort offers such a wide range of activities and experiences. It's the ultimate way to relax and recharge.\nMeet [Celebrity's Name], a renowned celebrity who's always on the go, discovering the most exclusive destinations and experiences.\nImagine having the chance to experience the ultimate luxury travel bucket list, featuring the most exclusive destinations and experiences in the world.\nReady to experience the ultimate luxury travel lifestyle? Click the link in the description below to learn more about our exclusive experiences and destinations.\nThanks for joining us on this journey into the world of luxury travel. Don't forget to subscribe and hit the notification bell for more exclusive content.\nReady to experience the ultimate luxury travel lifestyle? Click the link in the description below to learn more about our exclusive experiences and destinations."
+  },
+  "ytCriticIterations": 3,
+  "intent": "INTEL",
+  "suggestions": [],
+  "nicheOpportunities": [
+    {
+      "name": "Luxury Travel for Celebrities and Influencers",
+      "cpm": "$40-$60",
+      "competition": "HIGH",
+      "hook": "A-list celebrities' favorite private island resorts",
+      "reasoning": "High-end audience, exclusive content focus."
+    },
+    {
+      "name": "Fine Dining Experiences for Ultra-High-Net-Worth Individuals",
+      "cpm": "$30-$50",
+      "competition": "MEDIUM",
+      "hook": "Private chef services for billionaires' dinner parties",
+      "reasoning": "High-end audience, unique dining experiences focus."
+    },
+    {
+      "name": "Exclusive Access to Luxury Events and Conferences",
+      "cpm": "$50-$80",
+      "competition": "HIGH",
+      "hook": "Red-carpet events and VIP access to industry conferences",
+      "reasoning": "High-end audience, exclusive event access focus."
+    },
+    {
+      "name": "Luxury Real Estate Investing for High-Net-Worth Individuals",
+      "cpm": "$60-$100",
+      "competition": "LOW",
+      "hook": "Off-market luxury properties for ultra-high-net-worth investors",
+      "reasoning": "High-end audience, unique real estate investing focus."
+    },
+    {
+      "name": "Private Aviation and Yacht Charters for Luxury Travelers",
+      "cpm": "$50-$80",
+      "competition": "MEDIUM",
+      "hook": "Private jet and yacht charters for luxury travelers",
+      "reasoning": "High-end audience, unique travel experiences focus."
+    },
+    {
+      "name": "Luxury Lifestyle Concierge Services for High-Net-Worth Individuals",
+      "cpm": "$40-$60",
+      "competition": "HIGH",
+      "hook": "Personalized concierge services for ultra-high-net-worth individuals",
+      "reasoning": "High-end audience, exclusive lifestyle services focus."
+    },
+    {
+      "name": "Ultra-Luxury Hotel and Resort Reviews for High-End Travelers",
+      "cpm": "$30-$50",
+      "competition": "MEDIUM",
+      "hook": "Exclusive reviews of ultra-luxury hotels and resorts",
+      "reasoning": "High-end audience, unique travel reviews focus."
+    }
+  ]
+}

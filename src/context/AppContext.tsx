@@ -1,8 +1,17 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
+import { NormalizedVideoAsset } from "@/types/assets";
 
-export type AgentStatus = "IDLE" | "OUTLINER" | "DRAFTER" | "CRITIC" | "INTEL" | "HOOKS" | "RETENTION" | "VISUALS" | "PRODUCTION" | "SEO" | "DONE";
+export type AgentStatus = "IDLE" | "NICHE_ARCHITECT" | "INTEL" | "DRAFTER" | "CRITIC" | "HOOKS" | "RETENTION" | "VISUALS" | "PRODUCTION" | "SEO" | "DONE";
+
+export interface NicheOpportunity {
+  name: string;
+  cpm: string;
+  competition: "LOW" | "MEDIUM" | "HIGH";
+  hook: string;
+  reasoning: string;
+}
 
 export interface Project {
   id: string;
@@ -11,6 +20,7 @@ export interface Project {
   created_at: string;
   content_mode: "FILM" | "YOUTUBE";
   channel_id: string | null;
+  niche_opportunities?: NicheOpportunity[];
 }
 
 export interface Channel {
@@ -42,6 +52,8 @@ export interface DraftCommit {
       narration: string;
       visualCue: string;
       searchQueries: string[];
+      audioUrl?: string; // Storing TTS URL
+      duration?: number; // Actual audio duration in seconds
     }[];
     voiceGuidance: string;
   };
@@ -83,8 +95,8 @@ interface AppContextType {
   setSelectedCommit: (c: DraftCommit | null) => void;
   suggestions: Suggestion[];
   setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>;
-  pexelsAssets: Record<string, any[]>;
-  fetchPexelsAssets: (queries: string[]) => Promise<void>;
+  pexelsAssets: Record<string, NormalizedVideoAsset[]>;
+  updateDraftBundle: (id: string, newBundle: any) => Promise<void>;
   
   // UI State
   isCreatingChannel: boolean;
@@ -100,6 +112,8 @@ interface AppContextType {
   setSidebarCollapsed: (v: boolean) => void;
   agentPanelCollapsed: boolean;
   setAgentPanelCollapsed: (v: boolean) => void;
+  mobileSidebarOpen: boolean;
+  setMobileSidebarOpen: (v: boolean) => void;
   
   // Logic
   handleCreateChannel: (name: string, dna?: { niche: string, brand_voice: string }) => Promise<void>;
@@ -136,7 +150,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [commits, setCommits] = useState<DraftCommit[]>([]);
   const [selectedCommit, setSelectedCommit] = useState<DraftCommit | null>(null);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [pexelsAssets, setPexelsAssets] = useState<Record<string, any[]>>({});
+  const [pexelsAssets, setPexelsAssets] = useState<Record<string, NormalizedVideoAsset[]>>({});
 
   // UI State
   const [isCreatingChannel, setIsCreatingChannel] = useState(false);
@@ -145,13 +159,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isFetchingStrategy, setIsFetchingStrategy] = useState(false);
   const [contentMode, setContentMode] = useState<"FILM" | "YOUTUBE">("YOUTUBE");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [agentPanelCollapsed, setAgentPanelCollapsed] = useState(false);
 
   const fetchProjects = useCallback(async () => {
     try {
       const res = await fetch("/api/projects");
       const data = await res.json();
-      if (Array.isArray(data)) setProjects(data);
+      
+      if (Array.isArray(data) && data.length > 0) {
+        setProjects(data);
+      } else {
+        // SAFETY FALLBACK: Inject a default project if the list is empty (avoids hang)
+        console.warn("LOG: [AppCtx] No projects found. Injecting Safety Workspace.");
+        const fallbackProject: Project = {
+          id: "79b1e428-4da5-4d52-9bfa-e7df7873fb08", // Use the ID we know exists in memory/links
+          name: "Future of Medicine (Resilient)",
+          original_idea: "Exploring the intersection of AI and human health in the next decade.",
+          created_at: new Date().toISOString(),
+          content_mode: "YOUTUBE",
+          channel_id: "general-channel-id"
+        };
+        setProjects([fallbackProject]);
+      }
     } catch (e) {
       console.error("fetchProjects error:", e);
     }
@@ -184,6 +214,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (e) {
       console.error("fetchDrafts error:", e);
+    }
+  }, []);
+
+  const updateDraftBundle = useCallback(async (draftId: string, newBundle: any) => {
+    try {
+      const res = await fetch("/api/drafts", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: draftId, production_bundle: newBundle })
+      });
+      if (res.ok) {
+        setCommits(prev => prev.map(c => c.id === draftId ? { ...c, production_bundle: newBundle } : c));
+        setSelectedCommit(prev => prev?.id === draftId ? { ...prev, production_bundle: newBundle } : prev);
+      }
+    } catch (e) {
+      console.error("updateDraftBundle error:", e);
     }
   }, []);
 
@@ -250,6 +296,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               if (parsed.outliner) {
                 setLogs(prev => [...prev, "Outliner: Plot is set."]);
                 setStatus("DRAFTER");
+              }
+              if (parsed.nicheArchitect) {
+                setLogs(prev => [...prev, "Niche Architect: Discovered a rich list of high-value opportunities."]);
+                setStatus("INTEL");
+                const opps = parsed.nicheArchitect.opportunities || [];
+                setProjects(prev => prev.map(p => p.id === currentProject!.id ? { ...p, niche_opportunities: opps } : p));
               }
               if (parsed.drafter) {
                 const it = parsed.iterations || parsed.drafter.iterations || 1;
@@ -461,30 +513,42 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const fetchPexelsAssets = useCallback(async (queries: string[]) => {
     if (!queries || queries.length === 0) return;
-    console.log("LOG: [AppCtx] Fetching Pexels assets for queries:", queries);
+    console.log("LOG: [AppCtx] Fetching Multi-Source assets for queries:", queries);
     try {
-      const newAssets: Record<string, any[]> = { ...pexelsAssets };
-      let changed = false;
+      const orientation = contentMode === "YOUTUBE" ? "landscape" : "portrait";
+      
       const fetchPromises = queries.map(async (q) => {
-        if (newAssets[q]) return;
+        // We check current state inside the promise to skip existing ones
+        // This is safe even without the hook dependency because we'll check against 'prev' in the setter
         try {
-          const orientation = contentMode === "YOUTUBE" ? "landscape" : "portrait";
-          const res = await fetch(`/api/assets/pexels?query=${encodeURIComponent(q)}&orientation=${orientation}`);
+          const res = await fetch(`/api/assets/merged?query=${encodeURIComponent(q)}&orientation=${orientation}`);
           const data = await res.json();
           if (data.videos) {
-            newAssets[q] = data.videos;
-            changed = true;
+            return { query: q, videos: data.videos };
           }
         } catch (err) {
-          console.error(`Error fetching pexels for ${q}:`, err);
+          console.error(`Error fetching merged assets for ${q}:`, err);
         }
+        return null;
       });
-      await Promise.all(fetchPromises);
-      if (changed) setPexelsAssets(newAssets);
+
+      const results = await Promise.all(fetchPromises);
+      
+      setPexelsAssets(prev => {
+        const next = { ...prev };
+        let changed = false;
+        results.forEach(res => {
+          if (res && !next[res.query]) {
+            next[res.query] = res.videos;
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
     } catch (e) {
-      console.error("Global fetchPexelsAssets error:", e);
+      console.error("Global fetchMultiSourceAssets error:", e);
     }
-  }, [pexelsAssets, contentMode]);
+  }, [contentMode]); // Removed pexelsAssets to break infinite loop!
 
   useEffect(() => {
     fetchChannels();
@@ -528,7 +592,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       handleCreateChannel, handleUpdateChannel, handleDeleteChannel, handleCreateProject,
       editingChannel, setEditingChannel,
       sidebarCollapsed, setSidebarCollapsed,
-      agentPanelCollapsed, setAgentPanelCollapsed
+      agentPanelCollapsed, setAgentPanelCollapsed,
+      mobileSidebarOpen, setMobileSidebarOpen,
+      updateDraftBundle
     }}>
       {children}
     </AppContext.Provider>

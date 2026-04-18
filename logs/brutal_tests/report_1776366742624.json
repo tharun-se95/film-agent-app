@@ -1,0 +1,56 @@
+{
+  "messages": [
+    "The psychological weight of a missed opportunity",
+    "Intel: [Progress: 1/6] Niche intelligence and viral angle identified.",
+    "Hooks: [Progress: 2/6] Logic-cloned and engineered script.",
+    "Shadow Retention Critic: [Result: 6/10] Note: The script has some engaging moments, but it falls short in several areas. The 3-second rule is broken, as the opening is not attention-grabbing enough. The storytelling tension is lacking, and the script feels more like a lecture than a conversation. The cliché 'Welcome to today's conversation' is used, which is a critical error. The pacing is uneven, and some sections feel like they drag on. The graphics and animations are engaging, but they're not enough to save the script from its overall lack of tension and engagement.",
+    "Hooks: [Progress: 2/6] Logic-cloned and engineered script.",
+    "Shadow Retention Critic: [Result: 6/10] Note: The script has some engaging elements, but it falls short in creating a massive pattern interrupt in the opening. The storytelling tension is moderate, but it could be more impactful. The use of clichés like 'Welcome back to the channel' is avoided, but the phrase 'Let's dive in' is used in Section 1. The script also relies heavily on generic statistics and lacks a clear, unique perspective. To improve, consider adding more unexpected twists and surprises to keep the audience engaged.",
+    "Visualist Failed: 429 Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01kmabvmf6fn89k8j1wtg412v7` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 2918, Requested 3161. Please try again in 790ms. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\n\nTroubleshooting URL: https://docs.langchain.com/oss/javascript/langchain/errors/MODEL_RATE_LIMIT/\n",
+    "System Error (Production Bundler): utilityLlm is not defined",
+    "Compliance: [Progress: 5/6] Optimized SEO metadata for discovery."
+  ],
+  "outline": "",
+  "drafts": [],
+  "historicalFeedback": [],
+  "draftInfo": "**Script Title:** \"The Weight of Missed Opportunities: Breaking Free from Regret and Anxiety\"\n\n**Intro (0-10 seconds)**\n\n(Dramatic, pulsing music builds up in the background. The camera lingers on a person's face, eyes closed in despair, but with a hint of a faint smile. The audio is distorted, and the image is grainy.)\n\nVoiceover (in a deep, urgent tone): \"You've been holding onto it for so long. The weight of what could've been. What should've been. But what if I told you that it's not too late to break free?\"\n\n(Suddenly, the music surges forward, and the camera zooms in on the person's face. The image sharpens.)\n\n**Section 1: The Weight of Missed Opportunities (10-40 seconds)**\n\n(Cut to a peaceful, serene background with a soft focus. The host, a young adult with a friendly smile, appears on screen.)\n\nHost: \"I was at a crossroads in my life, and I've been there before. You know that feeling of being stuck in a rut, wondering what could've been if only I took the leap. But what if I told you that I've been there too?\"\n\n**Section 2: The Consequences of Procrastination (40-1:20 minutes)**\n\n(Cut to a dynamic, fast-paced background with a mix of animations and graphics.)\n\nHost: \"Procrastination is a major contributor to missed opportunities. It's when we put off until tomorrow what we can do today. And before we know it, we've lost sight of our goals, and we're stuck in a rut.\"\n\n(Cut to a graphic with the title \"The Regret Jar\" and the hashtag #TheRegretJar)\n\nHost: \"I want to share a statistic with you: 75% of people regret not taking the leap and pursuing their passions. The regret jar is a great way to confront those missed opportunities and what we can learn from them.\"\n\n**Section 3: Overcoming Impostor Syndrome and Anxiety (1:20-2:40 minutes)**\n\n(Cut to a calming, peaceful background with a soft focus. The host appears on screen with a gentle smile.)\n\nHost: \"Impostor syndrome and anxiety are major obstacles to taking the leap. We feel like we're not good enough, that we'll be exposed, and that we'll fail.\"\n\n(Cut to a graphic with the title \"The Opportunity Reboot\" and the hashtag #TheOpportunityReboot)\n\nHost: \"The opportunity reboot is a great way to reassess our priorities and create a plan to overcome those obstacles. It's about taking small steps towards our goals and celebrating our successes.\"\n\n**Section 4: Creating a Plan to Overcome Missed Opportunities (2:40-4:00 minutes)**\n\n(Cut to a dynamic, fast-paced background with a mix of animations and graphics.)\n\nHost: \"So, how do we create a plan to overcome missed opportunities? It's about being intentional with our time, setting clear goals, and taking small steps towards those goals.\"\n\n(Cut to a graphic with the title \"The Missed Opportunity Challenge\" and the hashtag #TheMissedOpportunityChallenge)\n\nHost: \"I want to challenge you to take the first step towards your goals. Share your story, and let's work together to overcome those missed opportunities.\"\n\n**Section 5: Conclusion and Call-to-Action (4:00-9:40 minutes)**\n\n(Cut to a peaceful, serene background with a soft focus. The host appears on screen with a friendly smile.)\n\nHost: \"Thank you for joining me on this conversation. Remember, missed opportunities are a natural part of growth and development. It's about learning from them and using that knowledge to create a better future.\"\n\n(Cut to a graphic with the title \"The Opportunity Audit\" and the hashtag #TheOpportunityAudit)\n\nHost: \"If you want to share your story and join the conversation, use the hashtag #TheOpportunityAudit. Let's work together to overcome those missed opportunities and create a better future.\"\n\n**Outro (9:40-10:00 minutes)**\n\n(Cut to a calm, peaceful background with a soft focus. The host appears on screen with a friendly smile.)\n\nHost: \"Thanks for watching, and I'll see you in the next video.\"\n\n(The screen fades to black with the channel's logo and a call-to-action to subscribe.)\n\nVoiceover (in a soft, gentle tone): \"The weight of missed opportunities is real, but it's not too late to break free. Join the conversation and start overcoming your regrets today.\"",
+  "criticScore": 0,
+  "criticNotes": "The script has some engaging elements, but it falls short in creating a massive pattern interrupt in the opening. The storytelling tension is moderate, but it could be more impactful. The use of clichés like 'Welcome back to the channel' is avoided, but the phrase 'Let's dive in' is used in Section 1. The script also relies heavily on generic statistics and lacks a clear, unique perspective. To improve, consider adding more unexpected twists and surprises to keep the audience engaged.",
+  "iterations": 1,
+  "projectId": "e7dc6f0c-bcf9-4475-808f-334ca061ee7f",
+  "contentMode": "YOUTUBE",
+  "nicheData": "**Niche Intel:**\n\n1. **Primary Niche:** Self-Improvement, Mental Health, Personal Development\n2. **Secondary Niche:** Productivity, Career Development, Motivation\n3. **Target Audience:** Young adults (18-35) interested in personal growth and self-improvement\n4. **Trending Topics:** Impostor syndrome, anxiety, burnout, and the consequences of procrastination\n\n**Estimated CPM (Cost Per Mille):**\n\nBased on current market trends and ad demand, here's an estimated CPM range for the topic:\n\n* Average CPM: $5-$10\n* High-end CPM: $15-$20 (for premium content with high engagement and relevance to brands)\n\n**Competitor Metrics:**\n\n1. **Top Channels:**\n\t* Tony Robbins (5.5M subscribers, 10M views/month)\n\t* GaryVee (3.5M subscribers, 5M views/month)\n\t* Tim Ferriss (5M subscribers, 2M views/month)\n2. **Content Style:** Vlogs, motivational speeches, interviews with thought leaders, and self-improvement tips\n3. **Engagement:** Average watch time: 10-15 minutes; engagement rate: 2-5%\n4. **Monetization:** Sponsorships, affiliate marketing, and product sales\n\n**Competitor Gaps:**\n\n1. **Niche Focus:** While top channels cover a broad range of self-improvement topics, there's room for a more focused approach on the psychological weight of missed opportunities.\n2. **Storytelling:** Many top channels rely on motivational speeches and interviews. A more narrative-driven approach, focusing on personal stories and case studies, could differentiate a channel.\n3. **Interactive Content:** Incorporating interactive elements, such as quizzes, polls, or Q&A sessions, could increase engagement and encourage audience participation.\n4. **Community Building:** Fostering a community around the topic, through live streams, webinars, or online forums, could help establish a loyal following.\n\n**Viral Angle:**\n\n1. **\"The Opportunity Audit\":** Create a series of videos where you invite guests to share their most significant missed opportunities and what they learned from them.\n2. **\"The Regret Jar\":** Encourage viewers to share their own regrets and missed opportunities, and create a \"regret jar\" where you collect and respond to submissions.\n3. **\"The Missed Opportunity Challenge\":** Design a challenge where viewers have to confront and overcome their own missed opportunities, with a prize or recognition for those who succeed.\n4. **\"The Opportunity Reboot\":** Create a series of videos where you help viewers reassess their priorities and create a plan to overcome their missed opportunities.\n\nBy focusing on a specific aspect of the topic, incorporating interactive elements, and fostering a community, you can differentiate your content and increase engagement, ultimately leading to higher CPMs and a loyal following.",
+  "hooks": [],
+  "visualCues": "",
+  "ytMetadata": {
+    "title": "BREAK FREE FROM REGRET: The Shocking Truth About Missed Opportunities & How to Overcome Them!",
+    "tags": [
+      "Missed Opportunities",
+      "Regret",
+      "Anxiety",
+      "Impostor Syndrome",
+      "Procrastination",
+      "Goal Setting",
+      "Personal Growth",
+      "Self Improvement",
+      "Productivity",
+      "Motivation"
+    ]
+  },
+  "retentionScore": 6,
+  "retentionNotes": "",
+  "productionBundle": {
+    "thumbnailConcepts": [],
+    "brollChecklist": [],
+    "sfxChecklist": [],
+    "vfxRequirements": [],
+    "musicInspiration": "",
+    "voiceGuidance": "",
+    "cleanNarratorScript": "",
+    "scenes": [],
+    "brollSearchQueries": []
+  },
+  "ytCriticIterations": 3,
+  "intent": "FULL",
+  "suggestions": []
+}

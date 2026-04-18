@@ -4,6 +4,25 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
+// RESILIENCY: Custom fetch wrapper with extended timeout (30s)
+const resilientFetch: typeof fetch = (url, options) => {
+  return fetch(url, {
+    ...options,
+    // @ts-ignore - Some environments might support longer timeouts via signal
+    signal: AbortSignal.timeout(30000), 
+  });
+};
+
+const CLIENT_OPTIONS = {
+  global: {
+    fetch: resilientFetch,
+  },
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+  }
+};
+
 // We use a safe factory function so the application doesn't crash 
 // at boot if the user hasn't supplied the keys yet.
 export const getSupabaseClient = () => {
@@ -11,7 +30,7 @@ export const getSupabaseClient = () => {
     console.warn("Supabase keys are missing. Database persistence is disabled.");
     return null;
   }
-  return createClient(supabaseUrl, supabaseKey);
+  return createClient(supabaseUrl, supabaseKey, CLIENT_OPTIONS);
 };
 
 // ADMIN CLIENT: Uses the secret key to bypass RLS for server-side operations
@@ -23,5 +42,5 @@ export const getSupabaseAdminClient = () => {
     // Fallback to regular client if secret is missing but anon is present
     return getSupabaseClient();
   }
-  return createClient(supabaseUrl, supabaseSecret);
+  return createClient(supabaseUrl, supabaseSecret, CLIENT_OPTIONS);
 };
