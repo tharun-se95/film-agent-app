@@ -1173,14 +1173,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
                              );
                           })()}
                           
-                          {/* Debug HUD Overlay */}
-                          <div className="absolute top-4 right-4 px-3 py-1.5 bg-black/50 backdrop-blur-xl border border-white/10 rounded-xl z-30">
-                             <span className="text-[9px] font-mono text-white/60">
-                               S{cinemaSceneIdx + 1} : CL{cinemaClipIdx + 1}
-                             </span>
-                          </div>
-
-                          {/* Playback Controls Overlay */}
+                           {/* Playback Controls Overlay */}
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/preview:opacity-100 transition-opacity z-20">
                             <button 
                               onClick={() => setIsPlaying(!isPlaying)}
