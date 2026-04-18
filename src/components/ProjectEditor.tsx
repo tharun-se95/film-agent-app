@@ -487,6 +487,21 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     pexelsAssets, updateDraftBundle, fetchPexelsAssets
   } = useAppContext();
 
+  // ESTIMATION HELPERS
+  const estimateDuration = (text: string) => Math.max(2, text.split(' ').length / 2.5); // ~150 wpm
+
+  const getAudioDuration = (url: string): Promise<number> => {
+    return new Promise((resolve) => {
+      const audio = new Audio(url);
+      audio.addEventListener("loadedmetadata", () => {
+        resolve(audio.duration);
+      });
+      audio.addEventListener("error", () => {
+        resolve(estimateDuration("")); // Fallback
+      });
+    });
+  };
+
   const [localViewMode, setLocalViewMode] = useState<"script" | "assets">("script");
   const [assetCycleMap, setAssetCycleMap] = useState<Record<string, number>>({});
   const [isExporting, setIsExporting] = useState(false);
@@ -541,19 +556,6 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     }
   }, [localViewMode]);
 
-  // ESTIMATION HELPERS
-  const estimateDuration = (text: string) => Math.max(2, text.split(' ').length / 2.5); // ~150 wpm
-
-  const getAudioDuration = (url: string): Promise<number> => {
-    return new Promise((resolve) => {
-      const audio = new Audio(url);
-      audio.addEventListener("loadedmetadata", () => {
-        resolve(audio.duration);
-      });
-      setTimeout(() => resolve(0), 5000);
-      audio.onerror = () => resolve(0);
-    });
-  };
 
   const handleGenerateVoice = async (sceneText: string, sceneIdx: number, currentBundle: any) => {
     if (!selectedCommit?.id) return null;
@@ -680,7 +682,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
   useEffect(() => {
     if (localViewMode === 'script' && selectedCommit?.production_bundle?.scenes) {
       const scene = selectedCommit.production_bundle.scenes[cinemaSceneIdx];
-      if (scene?.audioUrl && isPlaying) {
+      if (scene?.audioUrl && isPlaying && !isCinemaMode) {
         if (audioRef.current) {
           const isNewSrc = audioRef.current.src !== scene.audioUrl;
           if (isNewSrc) {
@@ -697,7 +699,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     } else {
       audioRef.current?.pause();
     }
-  }, [cinemaSceneIdx, localViewMode, selectedCommit, isPlaying, playbackRate]);
+  }, [cinemaSceneIdx, localViewMode, selectedCommit, isPlaying, playbackRate, isCinemaMode]);
 
   // Sync playbackRate changes to audio element even while playing
   useEffect(() => {
@@ -706,7 +708,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
 
   // VIRTUAL CLOCK: Drive playback when audio is missing or empty
   useEffect(() => {
-    if (!isPlaying || !selectedCommit?.production_bundle?.scenes) return;
+    if (!isPlaying || isCinemaMode || !selectedCommit?.production_bundle?.scenes) return;
     const scene = selectedCommit.production_bundle.scenes[cinemaSceneIdx];
     
     // Check if audio is actually ready and playing
@@ -744,7 +746,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
     }, interval);
 
     return () => clearInterval(timer);
-  }, [isPlaying, cinemaSceneIdx, selectedCommit, playbackRate, sceneStarts]);
+  }, [isPlaying, cinemaSceneIdx, selectedCommit, playbackRate, sceneStarts, isCinemaMode]);
 
   // Keyboard Orchestration
   useEffect(() => {
@@ -1039,7 +1041,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
           <button onClick={exportProject} disabled={isExporting || !selectedCommit} className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-[10px] md:text-xs font-bold disabled:opacity-50"><Download className={`w-4 h-4 ${isExporting ? 'animate-bounce text-primary' : ''}`} /> <span className="hidden sm:inline">{isExporting ? 'Zipping...' : 'Export ZIP'}</span></button>
           <button 
             disabled={!isProductionReady}
-            onClick={() => { setIsCinemaMode(true); setCinemaSceneIdx(0); }} 
+            onClick={() => { setIsCinemaMode(true); setCinemaSceneIdx(0); setIsPlaying(false); }} 
             className={`flex items-center gap-2 px-6 py-2 rounded-xl font-black text-xs transition-all shadow-lg 
               ${isProductionReady 
                 ? "bg-primary text-white hover:scale-105 active:scale-95 shadow-primary/20" 
@@ -1396,7 +1398,7 @@ export default function ProjectEditor({ projectId }: { projectId: string }) {
 
                       <div className="w-px h-4 bg-white/10 mx-1" />
                       <span className="text-[9px] font-black text-neutral-600 uppercase">Scene {cinemaSceneIdx + 1}/{selectedCommit?.production_bundle?.scenes?.length||0}</span>
-                      <button onClick={() => setIsCinemaMode(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-black transition-all">
+                      <button onClick={() => { setIsCinemaMode(true); setIsPlaying(false); }} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-black transition-all">
                         <Play size={9} fill="currentColor" /> Full Preview
                       </button>
                     </div>
